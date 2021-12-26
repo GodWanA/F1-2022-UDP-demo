@@ -1,0 +1,61 @@
+﻿<Application x:Class="F1TelemetryClient.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:F1TelemetryClient"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <FontFamily x:Key="Formula1 Display">/Fonts/#Formula1 Display</FontFamily>
+
+        <Style TargetType="Label">
+            <Setter Property="TextElement.FontFamily" Value="{StaticResource Formula1 Display}"/>
+            <Setter Property="TextElement.FontSize" Value="11 px"/>
+        </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="TextElement.FontFamily" Value="{StaticResource Formula1 Display}"/>
+            <Setter Property="TextElement.FontSize" Value="11 px"/>
+        </Style>
+        <BorderGapMaskConverter x:Key="BorderGapMaskConverter"/>
+        <Style TargetType="GroupBox">
+            <Setter Property="BorderBrush" Value="white" />
+            <Setter Property="Foreground" Value="white" />
+            <Setter Property="Background" Value="#7F000000" />
+            <Setter Property="BorderThickness" Value="3" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GroupBox}">
+                        <Border SnapsToDevicePixels="true" Padding="5,0,5,5" CornerRadius="5" Background="{TemplateBinding Background}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="6" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="6" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="6" />
+                                </Grid.RowDefinitions>
+                                <Border CornerRadius="5" Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="4" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="Transparent"/>
+                                <Border Name="Header" Padding="3,1,3,0" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1">
+                                    <ContentPresenter ContentSource="Header" RecognizesAccessKey="true" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                </Border>
+                                <ContentPresenter Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                <Border Grid.Row="1" Grid.RowSpan="3" Grid.ColumnSpan="4"  BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="3">
+                                    <Border.OpacityMask>
+                                        <MultiBinding Converter="{StaticResource BorderGapMaskConverter}" ConverterParameter="7">
+                                            <Binding ElementName="Header" Path="ActualWidth" />
+                                            <Binding Path="ActualWidth" RelativeSource="{RelativeSource Self}" />
+                                            <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}" />
+                                        </MultiBinding>
+                                    </Border.OpacityMask>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Application.Resources>
+</Application>
