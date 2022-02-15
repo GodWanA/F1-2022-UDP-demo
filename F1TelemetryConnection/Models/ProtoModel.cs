@@ -2,11 +2,22 @@
 
 namespace F1Telemetry.Models
 {
-    public abstract class ProtoModel
+    public abstract class ProtoModel : IDisposable, ICloneable
     {
         public ProtoModel() { }
 
         public int Index { get; protected set; }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            GC.Collect();
+        }
 
         /// <summary>
         /// Select reader by packetformat.

@@ -98,7 +98,7 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        public double BreakTemperature
+        public double BrakesTemperature
         {
             get
             {
@@ -109,7 +109,7 @@ namespace F1TelemetryApp.UserControls
                 if (value != this._breakTemperature)
                 {
                     this._breakTemperature = value;
-                    this.OnPropertyChanged("BreakTemperature");
+                    this.OnPropertyChanged("BrakesTemperature");
                 }
             }
         }

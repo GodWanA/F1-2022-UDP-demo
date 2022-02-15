@@ -52,7 +52,7 @@ namespace F1Telemetry
         public PacketFinalClassificationData LastFinalClassificationPacket { get; private set; }
         public PacketLobbyInfoData LastLobbyInfoPacket { get; private set; }
         public PacketSessionHistoryData LastSessionHistoryPacket { get; private set; }
-        internal PacketCarDamageData LastCarDemagePacket { get; private set; }
+        public PacketCarDamageData LastCarDemagePacket { get; private set; }
 
         public event EventHandler ConnectionError;
         public event EventHandler DataReadError;
@@ -102,6 +102,8 @@ namespace F1Telemetry
 
                 try
                 {
+                    ulong tick = 0;
+
                     while (this.IsConnecting)
                     {
                         byte[] array = this.Connection.Receive(ref groupEP);
@@ -110,42 +112,64 @@ namespace F1Telemetry
                         switch (header.PacketID)
                         {
                             case PacketTypes.CarMotion:
-                                Task.Run(() => this.CarMotion(array, header));
+                                //Task.Run(() => this.CarMotion(array, header));
+                                this.CarMotion(array, header);
                                 break;
                             case PacketTypes.Session:
-                                Task.Run(() => this.Session(array, header));
+                                //Task.Run(() => this.Session(array, header));
+                                this.Session(array, header);
                                 break;
                             case PacketTypes.LapData:
-                                Task.Run(() => this.Lapdata(array, header));
+                                //Task.Run(() => this.Lapdata(array, header));
+                                this.Lapdata(array, header);
                                 break;
                             case PacketTypes.Event:
-                                Task.Run(() => this.Event(array, header));
+                                //Task.Run(() => this.Event(array, header));
+                                this.Event(array, header);
                                 break;
                             case PacketTypes.Participants:
-                                Task.Run(() => this.Participants(array, header));
+                                //Task.Run(() => this.Participants(array, header));
+                                this.Participants(array, header);
                                 break;
                             case PacketTypes.CarSetups:
-                                Task.Run(() => this.CarSetups(array, header));
+                                //Task.Run(() => this.CarSetups(array, header));
+                                this.CarSetups(array, header);
                                 break;
                             case PacketTypes.CarTelemetry:
-                                Task.Run(() => this.CarTelemetry(array, header));
+                                //Task.Run(() => this.CarTelemetry(array, header));
+                                this.CarTelemetry(array, header);
                                 break;
                             case PacketTypes.CarStatus:
-                                Task.Run(() => this.CarStatus(array, header));
+                                //Task.Run(() => this.CarStatus(array, header));
+                                this.CarStatus(array, header);
                                 break;
                             case PacketTypes.FinalClassification:
-                                Task.Run(() => this.FinalClassification(array, header));
+                                //Task.Run(() => this.FinalClassification(array, header));
+                                this.FinalClassification(array, header);
                                 break;
                             case PacketTypes.LobbyInfo:
-                                Task.Run(() => this.LobbyInfo(array, header));
+                                //Task.Run(() => this.LobbyInfo(array, header));
+                                this.LobbyInfo(array, header);
                                 break;
                             case PacketTypes.CarDamage:
-                                Task.Run(() => this.CarDamage(array, header));
+                                //Task.Run(() => this.CarDamage(array, header));
+                                this.CarDamage(array, header);
                                 break;
                             case PacketTypes.SessionHistory:
-                                Task.Run(() => this.SessionHistory(array, header));
+                                //Task.Run(() => this.SessionHistory(array, header));
+                                this.SessionHistory(array, header);
                                 break;
                         }
+
+                        //if (tick++ % 100 == 0)
+                        //{
+                        //    tick = 0;
+
+                        //    GC.WaitForPendingFinalizers();
+                        //    GC.WaitForFullGCApproach();
+                        //    GC.WaitForPendingFinalizers();
+                        //    GC.Collect();
+                        //}
                     }
                 }
                 catch (Exception ex)
@@ -273,6 +297,7 @@ namespace F1Telemetry
                         this.OnEventPacketButtons((Buttons)data);
                         break;
                 }
+                //data.Dispose();
             }
             catch (Exception ex)
             {
@@ -406,67 +431,67 @@ namespace F1Telemetry
 
         protected virtual void OnCarMotionPacket(PacketMotionData sender)
         {
-            this.LastMotionPacket = sender;
+            this.LastMotionPacket = (PacketMotionData)sender.Clone();
             this.CarMotionPacket?.Invoke(sender, new EventArgs());
         }
 
         protected virtual void OnSessionPacket(PacketSessionData sender)
         {
-            this.LastSessionDataPacket = sender;
+            this.LastSessionDataPacket = (PacketSessionData)sender.Clone(); ;
             this.SessionPacket?.Invoke(sender, new EventArgs());
         }
 
         protected virtual void OnLapDataPacket(PacketLapData sender)
         {
-            this.LastLapDataPacket = sender;
+            this.LastLapDataPacket = (PacketLapData)sender.Clone();
             this.LapDataPacket?.Invoke(sender, new EventArgs());
         }
 
         protected virtual void OnParticipantsPacket(PacketParticipantsData sender)
         {
-            this.LastParticipantsPacket = sender;
+            this.LastParticipantsPacket = (PacketParticipantsData)sender.Clone();
             this.ParticipantsPacket?.Invoke(sender, new EventArgs());
         }
 
         protected virtual void OnCarSetupsPacket(PacketCarSetupData sender)
         {
-            this.LastCarSetupPacket = sender;
+            this.LastCarSetupPacket = (PacketCarSetupData)sender.Clone();
             this.CarSetupsPacket?.Invoke(sender, new EventArgs());
         }
 
         protected virtual void OnCarTelemetryPacket(PacketCarTelemetryData sender)
         {
-            this.LastCartelmetryPacket = sender;
+            this.LastCartelmetryPacket = (PacketCarTelemetryData)sender.Clone();
             this.CarTelemetryPacket?.Invoke(sender, new EventArgs());
         }
 
         protected virtual void OnCarStatusPacket(PacketCarStatusData sender)
         {
-            this.LastCarStatusDataPacket = sender;
+            this.LastCarStatusDataPacket = (PacketCarStatusData)sender.Clone();
             this.CarStatusPacket?.Invoke(sender, new EventArgs());
         }
 
         protected virtual void OnFinalClassificationPacket(PacketFinalClassificationData sender)
         {
-            this.LastFinalClassificationPacket = sender;
+            this.LastFinalClassificationPacket = (PacketFinalClassificationData)sender.Clone();
             this.FinalClassificationPacket?.Invoke(sender, new EventArgs());
         }
 
         protected virtual void OnLobbyInfoPacket(PacketLobbyInfoData sender)
         {
-            this.LastLobbyInfoPacket = sender;
+            this.LastLobbyInfoPacket = (PacketLobbyInfoData)sender.Clone();
             this.LobbyInfoPacket?.Invoke(sender, new EventArgs());
         }
 
         protected virtual void OnSessionHistoryPacket(PacketSessionHistoryData sender)
         {
-            this.LastSessionHistoryPacket = sender;
+            this.LastSessionHistoryPacket = (PacketSessionHistoryData)sender.Clone();
             this.SessionHistoryPacket?.Invoke(sender, new EventArgs());
         }
 
         protected virtual void OnCarDemagePacket(PacketCarDamageData sender)
         {
-            this.LastCarDemagePacket = sender;
+            this.LastCarDemagePacket = (PacketCarDamageData)sender.Clone();
             this.DemagePacket?.Invoke(sender, new EventArgs());
         }
 

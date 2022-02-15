@@ -40,7 +40,7 @@
 
                 <TextBlock x:Name="textBlock_inner" Text="{Binding TyreInnerTemperature, FallbackValue=--}" TextAlignment="Right" Foreground="White"  Margin="5,0,0,0" Grid.Column="1" Grid.Row="0" FontSize="10"/>
                 <TextBlock x:Name="textBlock_surface" Text="{Binding TyreSurfaceTemperature, FallbackValue=--}" TextAlignment="Right" Foreground="White"  Margin="5,0,0,0" Grid.Column="1" Grid.Row="1" FontSize="10"/>
-                <TextBlock x:Name="textBlock_break" Text="{Binding BreakTemperature, FallbackValue=--}" TextAlignment="Right" Foreground="White" Margin="5,0,0,0" Grid.Column="1" Grid.Row="2" FontSize="10"/>
+                <TextBlock x:Name="textBlock_break" Text="{Binding BrakesTemperature, FallbackValue=--}" TextAlignment="Right" Foreground="White" Margin="5,0,0,0" Grid.Column="1" Grid.Row="2" FontSize="10"/>
                 <TextBlock x:Name="textBlock_pressure" Text="{Binding Pressure, FallbackValue=--, StringFormat={}{0:0.00}}" TextAlignment="Right" Foreground="White"  Margin="5,0,0,0" Grid.Column="1" Grid.Row="4" FontSize="10"/>
                 <TextBlock x:Name="textBlock_wear" Text="{Binding Wear, FallbackValue=--, StringFormat={}{0:0.00}}" TextAlignment="Right" Foreground="White"  Margin="5,0,0,0" Grid.Column="1" Grid.Row="5" FontSize="10"/>
                 <TextBlock x:Name="textBlock_demager" Text="{Binding Demage, FallbackValue=--, StringFormat={}{0:0.00}}" TextAlignment="Right" Foreground="White"  Margin="5,0,0,0" Grid.Column="1" Grid.Row="6" FontSize="10"/>

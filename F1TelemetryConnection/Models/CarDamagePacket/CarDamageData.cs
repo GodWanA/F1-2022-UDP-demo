@@ -27,6 +27,7 @@ namespace F1Telemetry.Models.CarDamagePacket
         public byte EngineESWear { get; private set; }
         public byte EngineICEWear { get; private set; }
         public byte EngineMGUKWear { get; private set; }
+        public byte EngineMGUHWear { get; private set; }
         public byte EngineTCWear { get; private set; }
 
         protected override void Reader2021(byte[] array)
@@ -87,7 +88,7 @@ namespace F1Telemetry.Models.CarDamagePacket
 
             //uint8 m_engineMGUHWear;                   // Engine wear MGU-H (percentage)
             index += ByteReader.ToUInt8(array, index, out valb);
-            this.GearBoxWear = valb;
+            this.EngineMGUHWear = valb;
 
             //uint8 m_engineESWear;                     // Engine wear ES (percentage)
             index += ByteReader.ToUInt8(array, index, out valb);

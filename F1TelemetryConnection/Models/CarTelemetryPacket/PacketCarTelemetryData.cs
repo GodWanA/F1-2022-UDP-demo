@@ -30,6 +30,12 @@ namespace F1Telemetry.Models.CarTelemetryPacket
             //CarTelemetryData m_carTelemetryData[22];
             this.CarTelemetryData = new CarTelemetryData[22];
 
+            for (int i = 0; i < this.CarTelemetryData.Length; i++)
+            {
+                this.CarTelemetryData[i] = new CarTelemetryData(index, this.Header.PacketFormat, array);
+                index = this.CarTelemetryData[i].Index;
+            }
+
             //uint8 m_mfdPanelIndex;       // Index of MFD panel open - 255 = MFD closed
             //                             // Single player, race – 0 = Car setup, 1 = Pits
             //                             // 2 = Damage, 3 =  Engine, 4 = Temperatures

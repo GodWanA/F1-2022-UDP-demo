@@ -33,6 +33,7 @@ namespace F1Telemetry.Models.CarStatusPacket
         public float ERSHarvestedThisLapMGUH { get; private set; }
         public float ERSDeployedThisLap { get; private set; }
         public bool IsNetworkPaused { get; private set; }
+        public TyreCompounds ViszalTyreCompound { get; private set; }
 
         protected override void Reader2021(byte[] array)
         {
@@ -109,7 +110,7 @@ namespace F1Telemetry.Models.CarStatusPacket
             //                                  // F2 ‘19, 15 = wet, 19 – super soft, 20 = soft
             //                                  // 21 = medium , 22 = hard
             index += ByteReader.ToUInt8(array, index, out valb);
-            this.ActualTyreCompound = (TyreCompounds)valb;
+            this.ViszalTyreCompound = (TyreCompounds)valb;
 
             //uint8 m_tyresAgeLaps;             // Age in laps of the current set of tyres
             index += ByteReader.ToUInt8(array, index, out valb);
