@@ -104,6 +104,17 @@ namespace F1Telemetry.Helpers
             Haas2020 = 92,
             McLaren2020 = 93,
             AlfaRomeo2020 = 94,
+            Prema21 = 106,
+            UniVirtuosi21 = 107,
+            Carlin21 = 108,
+            Hitech21 = 109,
+            ArtGP21 = 110,
+            MPMotorsport21 = 111,
+            Charouz21 = 112,
+            Dams21 = 113,
+            Campos21 = 114,
+            BWT21 = 115,
+            Trident21 = 116,
         }
 
         public enum Tracks
@@ -244,6 +255,18 @@ namespace F1Telemetry.Helpers
             JensonButton = 109,
             DavidCoulthard = 110,
             NicoRosberg = 111,
+            OscarPiastri = 112,
+            LiamLawson = 113,
+            JuriVips = 114,
+            TheoPourchaire = 115,
+            RichardVerschoor = 116,
+            LirimZendeli = 117,
+            DavidBeckmann = 118,
+            GianlucaPetecof = 119,
+            MatteoNannini = 120,
+            AlessioDeledda = 121,
+            BentViscaal = 122,
+            EnzoFittipaldi = 123,
             Unknown = 255,
         }
 
@@ -551,6 +574,7 @@ namespace F1Telemetry.Helpers
 
         public enum TyreCompounds
         {
+            Unknown = -1,
             HyperSoft,
             UltraSoft,
             SuperSoft,

@@ -1,4 +1,5 @@
 ﻿using F1Telemetry.Helpers;
+using System;
 
 namespace F1Telemetry.Models.SessionHistoryPacket
 {
@@ -20,6 +21,8 @@ namespace F1Telemetry.Models.SessionHistoryPacket
         public byte BestSector2LapNumber { get; private set; }
         public byte BestSector3LapNumber { get; private set; }
         public LapHistoryData[] LapHistoryData { get; private set; }
+        public TimeSpan TotalSectorTimes { get; private set; }
+        public TimeSpan TotalLapTimes { get; private set; }
         public TyreStintHistoryData[] TyreStintsHistoryData { get; private set; }
 
         protected override void Reader2021(byte[] array)
@@ -58,11 +61,22 @@ namespace F1Telemetry.Models.SessionHistoryPacket
 
             //LapHistoryData m_lapHistoryData[100];   // 100 laps of data max
             this.LapHistoryData = new LapHistoryData[100];
+            TimeSpan sumSector = new TimeSpan();
+            TimeSpan sumAll = new TimeSpan();
             for (int i = 0; i < this.LapHistoryData.Length; i++)
             {
                 this.LapHistoryData[i] = new LapHistoryData(index, this.Header.PacketFormat, array);
                 index = this.LapHistoryData[i].Index;
+
+                sumSector += this.LapHistoryData[i].Sector1Time;
+                sumSector += this.LapHistoryData[i].Sector2Time;
+                sumSector += this.LapHistoryData[i].Sector3Time;
+
+                sumAll += this.LapHistoryData[i].LapTime;
             }
+
+            this.TotalSectorTimes = sumSector;
+            this.TotalLapTimes = sumAll;
 
             //TyreStintHistoryData m_tyreStintsHistoryData[8];
             this.TyreStintsHistoryData = new TyreStintHistoryData[8];
@@ -73,6 +87,25 @@ namespace F1Telemetry.Models.SessionHistoryPacket
             }
 
             this.Index = index;
+        }
+
+        public TimeSpan GetTimeSum(int lap, int sector)
+        {
+            var ret = new TimeSpan();
+
+            if (lap > 0 && lap < this.LapHistoryData.Length-1)
+            {
+                for (int i = 0; i < lap-1; i++)
+                {
+                    ret += this.LapHistoryData[i].LapTime;
+                }
+
+                if (sector >= 1) ret += this.LapHistoryData[lap-1].Sector1Time;
+                if (sector >= 2) ret += this.LapHistoryData[lap-1].Sector2Time;
+                if (sector >= 3) ret += this.LapHistoryData[lap-1].Sector3Time;
+            }
+
+            return ret;
         }
     }
 }

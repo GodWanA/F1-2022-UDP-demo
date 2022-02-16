@@ -1,4 +1,5 @@
 ﻿using F1Telemetry.Helpers;
+using System;
 using static F1Telemetry.Helpers.Appendences;
 
 namespace F1Telemetry.Models.CarStatusPacket
@@ -33,7 +34,7 @@ namespace F1Telemetry.Models.CarStatusPacket
         public float ERSHarvestedThisLapMGUH { get; private set; }
         public float ERSDeployedThisLap { get; private set; }
         public bool IsNetworkPaused { get; private set; }
-        public TyreCompounds ViszalTyreCompound { get; private set; }
+        public TyreCompounds VisualTyreCompound { get; private set; }
 
         protected override void Reader2021(byte[] array)
         {
@@ -102,7 +103,10 @@ namespace F1Telemetry.Models.CarStatusPacket
             //                               // F2 – 11 = super soft, 12 = soft, 13 = medium, 14 = hard
             //                               // 15 = wet
             index += ByteReader.ToUInt8(array, index, out valb);
-            this.ActualTyreCompound = (TyreCompounds)valb;
+            TyreCompounds tyre = TyreCompounds.Unknown;
+
+            if (Enum.TryParse<TyreCompounds>(valb.ToString(), out tyre)) this.ActualTyreCompound = tyre;
+            else this.ActualTyreCompound = TyreCompounds.Unknown;
 
             //uint8 m_visualTyreCompound;       // F1 visual (can be different from actual compound)
             //                                  // 16 = soft, 17 = medium, 18 = hard, 7 = inter, 8 = wet
@@ -110,7 +114,13 @@ namespace F1Telemetry.Models.CarStatusPacket
             //                                  // F2 ‘19, 15 = wet, 19 – super soft, 20 = soft
             //                                  // 21 = medium , 22 = hard
             index += ByteReader.ToUInt8(array, index, out valb);
-            this.ViszalTyreCompound = (TyreCompounds)valb;
+
+            if (valb == 24) valb = 24;
+
+            //this.VisualTyreCompound = (TyreCompounds)valb;
+            //tyre=( TyreCompounds )Enum.ToObject(TyreCompounds.C1.GetType(), valb);
+            if (Enum.TryParse<TyreCompounds>(valb.ToString(), out tyre) && Enum.GetValues(tyre.GetType()).Length > valb) this.VisualTyreCompound = tyre;
+            else this.VisualTyreCompound = TyreCompounds.Unknown;
 
             //uint8 m_tyresAgeLaps;             // Age in laps of the current set of tyres
             index += ByteReader.ToUInt8(array, index, out valb);

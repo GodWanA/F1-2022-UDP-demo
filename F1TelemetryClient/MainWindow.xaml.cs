@@ -49,7 +49,10 @@ namespace F1TelemetryClient
         {
             InitializeComponent();
             this.DataContext = this;
+        }
 
+        private void Window_Initialized(object sender, EventArgs e)
+        {
             this.cleaner = new DispatcherTimer();
             this.cleaner.Interval = TimeSpan.FromSeconds(30);
             this.cleaner.Tick += this.Cleaner_Tick;
@@ -62,9 +65,18 @@ namespace F1TelemetryClient
             this.udp.DemagePacket += Udp_DemagePacket;
             this.udp.CarStatusPacket += Udp_CarStatusPacket;
             this.udp.CarTelemetryPacket += Udp_CarTelemetryPacket;
+            this.udp.SessionHistoryPacket += Udp_SessionHistoryPacket;
 
             this.listBox_drivers.Items.IsLiveSorting = true;
             this.listBox_drivers.Items.SortDescriptions.Add(new SortDescription("CarPosition", ListSortDirection.Ascending));
+        }
+
+        private void Udp_SessionHistoryPacket(object sender, EventArgs e)
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                this.CalculateInterval();
+            });
         }
 
         private void Udp_CarTelemetryPacket(object sender, EventArgs e)
@@ -94,7 +106,7 @@ namespace F1TelemetryClient
                         if (elem != null)
                         {
                             elem.TyreCompund = current.ActualTyreCompound;
-                            elem.VisualTyreCompund = current.ViszalTyreCompound;
+                            elem.VisualTyreCompund = current.VisualTyreCompound;
                         }
                     }
                 }
@@ -113,6 +125,8 @@ namespace F1TelemetryClient
         {
             this.Dispatcher.Invoke(() =>
             {
+                int index = this.listBox_drivers.SelectedIndex;
+
                 var participants = this.udp.LastParticipantsPacket;
                 this.PlyerList(participants.Participants.Length);
                 var items = this.listBox_drivers.ItemsSource?.Cast<PlayerListItemData>();
@@ -127,7 +141,7 @@ namespace F1TelemetryClient
                         if (elem != null)
                         {
                             elem.DriverID = current.DriverID;
-                            elem.Name = current.Name;
+                            elem.DriverName = current.Name;
                             elem.Nationality = current.Nationality;
                             elem.TeamID = current.TeamID;
                             elem.IsAI = current.IsAIControlled;
@@ -137,6 +151,11 @@ namespace F1TelemetryClient
                         }
                     }
                 }
+
+                if (index != -1) this.listBox_drivers.SelectedIndex = index;
+                else if (participants.Header.Player1CarIndex != 255) this.listBox_drivers.SelectedIndex = participants.Header.Player1CarIndex;
+
+                this.CalculateInterval();
             });
         }
 
@@ -241,13 +260,13 @@ namespace F1TelemetryClient
             if (this.listBox_drivers.SelectedIndex != -1)
             {
                 int i = (this.listBox_drivers.SelectedItem as PlayerListItemData).ArrayIndex;
-                var demage = this.udp.LastCarDemagePacket.CarDamageData[i];
-                var status = this.udp.LastCarStatusDataPacket.CarStatusData[i];
-                var telemtry = this.udp.LastCartelmetryPacket.CarTelemetryData[i];
+                var demage = this.udp.LastCarDemagePacket?.CarDamageData[i];
+                var status = this.udp.LastCarStatusDataPacket?.CarStatusData[i];
+                var telemtry = this.udp.LastCartelmetryPacket?.CarTelemetryData[i];
 
                 if (status != null)
                 {
-                    this.ActualTyreCpompund = status.ViszalTyreCompound.ToString();
+                    this.ActualTyreCpompund = status.VisualTyreCompound.ToString();
                     this.LapAges = (int)status.TyresAgeLaps;
                 }
 
@@ -302,6 +321,204 @@ namespace F1TelemetryClient
                     this.wear_mguk.Percent = 100.0 - demage.EngineMGUKWear;
                     this.wear_tc.Percent = 100.0 - demage.EngineTCWear;
                 }
+            }
+        }
+
+        private void CalculateInterval()
+        {
+            var items = this.listBox_drivers.ItemsSource?.Cast<PlayerListItemData>();
+            if (items != null)
+            {
+                var history = this.udp.LastSessionHistoryPacket;
+                var firstCar = items.Where(x => x.CarPosition == 1).FirstOrDefault();
+
+                foreach (var item in items)
+                {
+                    var prev = items.Where(x => x.CarPosition == item.CarPosition - 1).FirstOrDefault();
+
+                    if (prev != null)
+                    {
+                        var current = history[item.ArrayIndex];
+                        var previous = history[prev.ArrayIndex];
+
+                        if (current != null && previous != null)
+                        {
+                            int lap = current.NumberOfLaps;
+                            int sector = 0;
+
+                            if (current.LapHistoryData[lap - 1].Sector1Time != TimeSpan.Zero) sector = 1;
+                            else if (current.LapHistoryData[lap - 1].Sector2Time != TimeSpan.Zero) sector = 2;
+                            else if (current.LapHistoryData[lap - 1].Sector3Time != TimeSpan.Zero) sector = 3;
+
+                            var done = previous.GetTimeSum(lap, sector);
+                            var delta = current.GetTimeSum(lap, sector) - done;
+
+                            item.FormattedAllTime = (delta > TimeSpan.Zero ? "+" : "") + (int)delta.TotalSeconds + "." + delta.ToString(@"fff");
+
+                            if (firstCar != null)
+                            {
+                                var first = history[firstCar.ArrayIndex];
+                                if (first != null)
+                                {
+                                    done = first.GetTimeSum(lap, sector);
+                                    delta = current.GetTimeSum(lap, sector) - done;
+                                    item.FormattedLeaderTime = (delta > TimeSpan.Zero ? "+" : "") + (int)delta.TotalSeconds + "." + delta.ToString(@"fff");
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+                if (firstCar != null)
+                {
+                    firstCar.FormattedAllTime = "interval";
+                    firstCar.FormattedLeaderTime = "leader";
+                }
+            }
+        }
+
+        private void Window_LayoutUpdated(object sender, EventArgs e)
+        {
+            if (this.ActualWidth < 950)
+            {
+                Grid.SetColumn(this.groupbox_wear, 0);
+                Grid.SetColumn(this.groupbox_demage, 0);
+                Grid.SetColumn(this.groupbox_motor, 0);
+
+                Grid.SetColumnSpan(this.groupbox_wear, 12);
+                Grid.SetColumnSpan(this.groupbox_demage, 12);
+                Grid.SetColumnSpan(this.groupbox_motor, 12);
+
+                Grid.SetRow(this.groupbox_wear, 0);
+                Grid.SetRow(this.groupbox_demage, 1);
+                Grid.SetRow(this.groupbox_motor, 2);
+
+                Grid.SetColumn(this.wear_ce, 0);
+                Grid.SetColumn(this.wear_es, 3);
+                Grid.SetColumn(this.wear_ice, 0);
+                Grid.SetColumn(this.wear_mguh, 3);
+                Grid.SetColumn(this.wear_mguk, 0);
+                Grid.SetColumn(this.wear_tc, 3);
+
+                Grid.SetColumnSpan(this.wear_ce, 3);
+                Grid.SetColumnSpan(this.wear_es, 3);
+                Grid.SetColumnSpan(this.wear_ice, 3);
+                Grid.SetColumnSpan(this.wear_mguh, 3);
+                Grid.SetColumnSpan(this.wear_mguk, 3);
+                Grid.SetColumnSpan(this.wear_tc, 3);
+
+                Grid.SetRow(this.wear_ce, 0);
+                Grid.SetRow(this.wear_es, 0);
+                Grid.SetRow(this.wear_ice, 1);
+                Grid.SetRow(this.wear_mguh, 1);
+                Grid.SetRow(this.wear_mguk, 2);
+                Grid.SetRow(this.wear_tc, 2);
+            }
+            else if (this.ActualWidth < 1400)
+            {
+                Grid.SetColumn(this.groupbox_wear, 0);
+                Grid.SetColumn(this.groupbox_demage, 8);
+                Grid.SetColumn(this.groupbox_motor, 0);
+
+                Grid.SetColumnSpan(this.groupbox_wear, 8);
+                Grid.SetColumnSpan(this.groupbox_demage, 4);
+                Grid.SetColumnSpan(this.groupbox_motor, 12);
+
+                Grid.SetRow(this.groupbox_wear, 0);
+                Grid.SetRow(this.groupbox_demage, 0);
+                Grid.SetRow(this.groupbox_motor, 1);
+
+                Grid.SetColumn(this.wear_ce, 0);
+                Grid.SetColumn(this.wear_es, 1);
+                Grid.SetColumn(this.wear_ice, 2);
+                Grid.SetColumn(this.wear_mguh, 3);
+                Grid.SetColumn(this.wear_mguk, 4);
+                Grid.SetColumn(this.wear_tc, 5);
+
+                Grid.SetColumnSpan(this.wear_ce, 1);
+                Grid.SetColumnSpan(this.wear_es, 1);
+                Grid.SetColumnSpan(this.wear_ice, 1);
+                Grid.SetColumnSpan(this.wear_mguh, 1);
+                Grid.SetColumnSpan(this.wear_mguk, 1);
+                Grid.SetColumnSpan(this.wear_tc, 1);
+
+                Grid.SetRow(this.wear_ce, 0);
+                Grid.SetRow(this.wear_es, 0);
+                Grid.SetRow(this.wear_ice, 0);
+                Grid.SetRow(this.wear_mguh, 0);
+                Grid.SetRow(this.wear_mguk, 0);
+                Grid.SetRow(this.wear_tc, 0);
+            }
+            else if (this.ActualWidth < 1800)
+            {
+                Grid.SetColumn(this.groupbox_wear, 0);
+                Grid.SetColumn(this.groupbox_demage, 6);
+                Grid.SetColumn(this.groupbox_motor, 0);
+
+                Grid.SetColumnSpan(this.groupbox_wear, 6);
+                Grid.SetColumnSpan(this.groupbox_demage, 6);
+                Grid.SetColumnSpan(this.groupbox_motor, 12);
+
+                Grid.SetRow(this.groupbox_wear, 0);
+                Grid.SetRow(this.groupbox_demage, 0);
+                Grid.SetRow(this.groupbox_motor, 1);
+
+                Grid.SetColumn(this.wear_ce, 0);
+                Grid.SetColumn(this.wear_es, 1);
+                Grid.SetColumn(this.wear_ice, 2);
+                Grid.SetColumn(this.wear_mguh, 3);
+                Grid.SetColumn(this.wear_mguk, 4);
+                Grid.SetColumn(this.wear_tc, 5);
+
+                Grid.SetColumnSpan(this.wear_ce, 1);
+                Grid.SetColumnSpan(this.wear_es, 1);
+                Grid.SetColumnSpan(this.wear_ice, 1);
+                Grid.SetColumnSpan(this.wear_mguh, 1);
+                Grid.SetColumnSpan(this.wear_mguk, 1);
+                Grid.SetColumnSpan(this.wear_tc, 1);
+
+                Grid.SetRow(this.wear_ce, 0);
+                Grid.SetRow(this.wear_es, 0);
+                Grid.SetRow(this.wear_ice, 0);
+                Grid.SetRow(this.wear_mguh, 0);
+                Grid.SetRow(this.wear_mguk, 0);
+                Grid.SetRow(this.wear_tc, 0);
+            }
+            else
+            {
+                Grid.SetColumn(this.groupbox_wear, 0);
+                Grid.SetColumn(this.groupbox_demage, 5);
+                Grid.SetColumn(this.groupbox_motor, 9);
+
+                Grid.SetColumnSpan(this.groupbox_wear, 5);
+                Grid.SetColumnSpan(this.groupbox_demage, 4);
+                Grid.SetColumnSpan(this.groupbox_motor, 3);
+
+                Grid.SetRow(this.groupbox_wear, 0);
+                Grid.SetRow(this.groupbox_demage, 0);
+                Grid.SetRow(this.groupbox_motor, 0);
+
+                Grid.SetColumn(this.wear_ce, 0);
+                Grid.SetColumn(this.wear_es, 3);
+                Grid.SetColumn(this.wear_ice, 0);
+                Grid.SetColumn(this.wear_mguh, 3);
+                Grid.SetColumn(this.wear_mguk, 0);
+                Grid.SetColumn(this.wear_tc, 3);
+
+                Grid.SetColumnSpan(this.wear_ce, 3);
+                Grid.SetColumnSpan(this.wear_es, 3);
+                Grid.SetColumnSpan(this.wear_ice, 3);
+                Grid.SetColumnSpan(this.wear_mguh, 3);
+                Grid.SetColumnSpan(this.wear_mguk, 3);
+                Grid.SetColumnSpan(this.wear_tc, 3);
+
+                Grid.SetRow(this.wear_ce, 0);
+                Grid.SetRow(this.wear_es, 0);
+                Grid.SetRow(this.wear_ice, 1);
+                Grid.SetRow(this.wear_mguh, 1);
+                Grid.SetRow(this.wear_mguk, 2);
+                Grid.SetRow(this.wear_tc, 2);
             }
         }
     }

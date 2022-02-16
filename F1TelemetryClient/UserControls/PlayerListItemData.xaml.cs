@@ -126,6 +126,64 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
+        private TimeSpan _totalTime;
+        public TimeSpan TotalTime
+        {
+            get { return _totalTime; }
+            set
+            {
+                if (TotalTime != value)
+                {
+                    _totalTime = value;
+                    this.FormattedAllTime = _currentLapTime.ToString(@"mm\:ss\.fff");
+                    this.OnPropertyChanged("TotalTime");
+                }
+            }
+        }
+
+        private string _formattedAllTime;
+        public string FormattedAllTime
+        {
+            get { return _formattedAllTime; }
+            set
+            {
+                if (this.FormattedAllTime != value)
+                {
+                    _formattedAllTime = value;
+                    this.OnPropertyChanged("FormattedAllTime");
+                }
+            }
+        }
+
+        private TimeSpan _totalLeaderTime;
+        public TimeSpan TotalLeaderTime
+        {
+            get { return _totalLeaderTime; }
+            set
+            {
+                if (_totalLeaderTime != value)
+                {
+                    _totalTime = value;
+                    this.FormattedAllTime = _currentLapTime.ToString(@"mm\:ss\.fff");
+                    this.OnPropertyChanged("TotalTime");
+                }
+            }
+        }
+
+        private string _formattedLeaderTime;
+        public string FormattedLeaderTime
+        {
+            get { return _formattedLeaderTime; }
+            set
+            {
+                if (this.FormattedLeaderTime != value)
+                {
+                    _formattedLeaderTime = value;
+                    this.OnPropertyChanged("FormattedLeaderTime");
+                }
+            }
+        }
+
         private Drivers _driverID;
         public Drivers DriverID
         {

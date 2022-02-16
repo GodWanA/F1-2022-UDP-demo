@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:F1TelemetryClient"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" Initialized="Window_Initialized" LayoutUpdated="Window_LayoutUpdated">
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FFE4E4E4" Offset="0"/>
@@ -37,9 +37,29 @@
             </ListView>
         </Grid>
         <ScrollViewer Margin="280,10,10,10">
-            <StackPanel Margin="0,0,2,0">
-                <GroupBox Header="Tyre conditions" FontWeight="Normal" Margin="0,0,0,5" >
-                    <Grid>
+            <Grid x:Name="grid_status" Margin="0,0,2,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <GroupBox x:Name="groupbox_wear" Header="Tyre conditions" FontWeight="Normal" Margin="0,0,5,5" Grid.Column="0" Grid.ColumnSpan="12" Grid.Row="0">
+                    <Grid x:Name="grid_waar">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
@@ -77,7 +97,7 @@
                         <UserControls:TyreDataControl x:Name="tyredata_rr" Grid.Row="2" Grid.Column="1"/>
                     </Grid>
                 </GroupBox>
-                <GroupBox Header="Demage conditions" Margin="0,0,0,5">
+                <GroupBox x:Name="groupbox_demage" Header="Demage conditions" Margin="0,0,5,5" Grid.Column="0" Grid.ColumnSpan="12" Grid.Row="1">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -106,7 +126,7 @@
                     </Grid>
                 </GroupBox>
 
-                <GroupBox Header="Power unit condition">
+                <GroupBox x:Name="groupbox_motor" Header="Power unit conditions" Margin="0,0,5,5" Grid.ColumnSpan="12" Grid.Column="0" Grid.Row="2">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -117,7 +137,12 @@
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
                         <UserControls:DemageAndWearDataControl x:Name="wear_ce" Header="CE" Grid.Column="0"/>
                         <UserControls:DemageAndWearDataControl x:Name="wear_ice" Header="ICE" Grid.Column="1"/>
@@ -127,7 +152,7 @@
                         <UserControls:DemageAndWearDataControl x:Name="wear_es" Header="ES" Grid.Column="5"/>
                     </Grid>
                 </GroupBox>
-            </StackPanel>
+            </Grid>
         </ScrollViewer>
     </Grid>
 </Window>

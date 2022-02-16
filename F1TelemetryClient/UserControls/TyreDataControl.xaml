@@ -33,7 +33,7 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Inner temperature:" TextAlignment="Right" Foreground="White" Grid.Row="0" FontSize="10" TextTrimming="CharacterEllipsis"/>
                 <TextBlock Text="Surface temperature:" TextAlignment="Right" Foreground="White" Grid.Row="1" FontSize="10" TextTrimming="CharacterEllipsis"/>
-                <TextBlock Text="Break temperature:" TextAlignment="Right" Foreground="White" Grid.Row="2" FontSize="10" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="Brake temperature:" TextAlignment="Right" Foreground="White" Grid.Row="2" FontSize="10" TextTrimming="CharacterEllipsis"/>
                 <TextBlock Text="Tyre pressure:" TextAlignment="Right" Foreground="White" Grid.Row="4" FontSize="10" TextTrimming="CharacterEllipsis"/>
                 <TextBlock Text="Tyre wear:" TextAlignment="Right" Foreground="White" Grid.Row="5" FontSize="10" TextTrimming="CharacterEllipsis"/>
                 <TextBlock Text="Tyre demage:" TextAlignment="Right" Foreground="White" Grid.Row="6" FontSize="10" TextTrimming="CharacterEllipsis"/>

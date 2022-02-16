@@ -48,10 +48,10 @@ namespace F1TelemetryApp.UserControls
                     this._wear = value;
                     this.Condition = 100.0 - this.Wear;
 
-                    var red = (byte)Math.Round(255 * this.Wear / 100 * 3.0303030303);
-                    var green = (byte)Math.Round(255 * this.Condition / 100 * 3.0303030303);
+                    var red = (byte)Math.Round(255 * this.Wear / 100.0 * 3.0303030303);
+                    var green = (byte)Math.Round(255 * this.Condition / 100.0 * 3.0303030303);
 
-                    if (this.Wear <= 50)
+                    if (this.Wear <= 66)
                     {
                         this.progreassBar_Condition.Foreground = new SolidColorBrush(Color.FromRgb(red, 255, 0));
                     }

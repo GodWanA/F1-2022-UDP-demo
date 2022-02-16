@@ -57,13 +57,17 @@
         </Grid>
         <Grid Grid.Row="1" Background="#3F000000">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
                 <ColumnDefinition Width="20"/>
                 <ColumnDefinition Width="20"/>
             </Grid.ColumnDefinitions>
             <Label Grid.Column="0" Foreground="White" Content="{Binding FormattedTime, FallbackValue=00:00.000}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0" FontFamily="{StaticResource Formula1 Display}"/>
-            <Label Grid.Column="1" Foreground="White" Content="{Binding VisualTyreCompund}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0"/>
-            <Label Grid.Column="2" Foreground="White" Content="{Binding TyreCompund}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0"/>
+            <Label Grid.Column="1" Foreground="White" Content="{Binding FormattedAllTime, FallbackValue=interval}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0" FontFamily="{StaticResource Formula1 Display}"/>
+            <Label Grid.Column="2" Foreground="White" Content="{Binding FormattedLeaderTime, FallbackValue=leader}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0" FontFamily="{StaticResource Formula1 Display}"/>
+            <Label Grid.Column="3" Foreground="White" Content="{Binding VisualTyreCompund, FallbackValue=--}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0"/>
+            <Label Grid.Column="4" Foreground="White" Content="{Binding TyreCompund, FallbackValue=--}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0"/>
         </Grid>
         <Grid Grid.Row="2" Background="#3F000000">
             <ProgressBar x:Name="progressBar_Lap" BorderBrush="{x:Null}" Value="{Binding TrackLengthPercent}" Background="{x:Null}" Height="2"/>
