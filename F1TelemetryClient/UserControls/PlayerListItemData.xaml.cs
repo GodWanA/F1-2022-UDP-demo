@@ -15,6 +15,20 @@ namespace F1TelemetryApp.UserControls
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private Brush _textColor;
+        public Brush TextColor
+        {
+            get { return _textColor; }
+            set
+            {
+                if (TextColor != value)
+                {
+                    _textColor = value;
+                    this.OnPropertyChanged("TextColor");
+                }
+            }
+        }
+
         private int _carPosition;
         public int CarPosition
         {
@@ -163,7 +177,7 @@ namespace F1TelemetryApp.UserControls
             {
                 if (_totalLeaderTime != value)
                 {
-                    _totalTime = value;
+                    _totalLeaderTime = value;
                     this.FormattedAllTime = _currentLapTime.ToString(@"mm\:ss\.fff");
                     this.OnPropertyChanged("TotalTime");
                 }

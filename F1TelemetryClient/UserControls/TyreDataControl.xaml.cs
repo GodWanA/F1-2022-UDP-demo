@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using F1TelemetryApp.Classes;
+using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace F1TelemetryApp.UserControls
 {
@@ -28,7 +18,6 @@ namespace F1TelemetryApp.UserControls
         private double _tyreInnerTemperature;
         private double _tyreSurfaceTemperature;
         private double _pressure;
-
         public TyreDataControl()
         {
             InitializeComponent();
@@ -48,18 +37,7 @@ namespace F1TelemetryApp.UserControls
                     this._wear = value;
                     this.Condition = 100.0 - this.Wear;
 
-                    var red = (byte)Math.Round(255 * this.Wear / 100.0 * 3.0303030303);
-                    var green = (byte)Math.Round(255 * this.Condition / 100.0 * 3.0303030303);
-
-                    if (this.Wear <= 66)
-                    {
-                        this.progreassBar_Condition.Foreground = new SolidColorBrush(Color.FromRgb(red, 255, 0));
-                    }
-                    else
-                    {
-                        this.progreassBar_Condition.Foreground = new SolidColorBrush(Color.FromRgb(255, green, 0));
-                    }
-
+                    this.progreassBar_Condition.Foreground = new SolidColorBrush(this.ColorMap.GradientStops.GetRelativeColor(this.Condition / 100.0));
 
                     this.OnPropertyChanged("Wear");
                 }
@@ -159,11 +137,27 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
+        public LinearGradientBrush ColorMap { get; set; } = null;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(string propertyName)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void UserControl_Initialized(object sender, EventArgs e)
+        {
+            if (this.ColorMap == null)
+            {
+                var colors = new GradientStopCollection();
+                colors.Add(new GradientStop(Color.FromRgb(255, 0, 0), 0));
+                colors.Add(new GradientStop(Color.FromRgb(255, 0, 0), 0.33));
+                colors.Add(new GradientStop(Color.FromRgb(255, 187, 51), 0.66));
+                colors.Add(new GradientStop(Color.FromRgb(45, 179, 0), 1));
+
+                this.ColorMap = new LinearGradientBrush(colors);
+            }
         }
     }
 }

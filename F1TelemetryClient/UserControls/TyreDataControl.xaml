@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:F1TelemetryApp.UserControls"
              mc:Ignorable="d" 
-             d:DesignWidth="250" Height="auto">
+             d:DesignWidth="250" Height="auto" Initialized="UserControl_Initialized">
     <Border Background="Black" CornerRadius="5" Padding="5" Margin="2">
         <Grid>
             <Grid.RowDefinitions>
@@ -54,7 +54,11 @@
             </Grid>
             <Grid Margin="2" Grid.Column="1" Grid.Row="1">
                 <ProgressBar x:Name="progreassBar_Condition" Value="{Binding Condition}" Orientation="Vertical" Grid.Row="1" Background="#B2A20000" BorderBrush="#FFB40000"/>
-                <TextBlock Text="{Binding Condition, StringFormat={}{0:0.0}, FallbackValue=--}" Grid.Row="1" Foreground="Black" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="WrapWithOverflow"/>
+                <TextBlock Text="{Binding Condition, StringFormat={}{0:0.0}, FallbackValue=--}" Grid.Row="1" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="WrapWithOverflow">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Direction="270" ShadowDepth="2" BlurRadius="7"/>
+                    </TextBlock.Effect>
+                </TextBlock>
             </Grid>
         </Grid>
     </Border>

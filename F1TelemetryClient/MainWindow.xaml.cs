@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace F1TelemetryClient
@@ -115,7 +116,7 @@ namespace F1TelemetryClient
 
         private void Udp_DemagePacket(object sender, EventArgs e)
         {
-            this.Dispatcher.Invoke(() =>
+            this.Dispatcher.BeginInvoke(() =>
             {
                 this.LoadWear();
             });
@@ -123,7 +124,7 @@ namespace F1TelemetryClient
 
         private void Udp_ParticipantsPacket(object sender, EventArgs e)
         {
-            this.Dispatcher.Invoke(() =>
+            this.Dispatcher.BeginInvoke(() =>
             {
                 int index = this.listBox_drivers.SelectedIndex;
 
@@ -156,12 +157,17 @@ namespace F1TelemetryClient
                 else if (participants.Header.Player1CarIndex != 255) this.listBox_drivers.SelectedIndex = participants.Header.Player1CarIndex;
 
                 this.CalculateInterval();
+
+                if (this.listBox_drivers.SelectedItem != null)
+                {
+                    this.listBox_drivers.ScrollIntoView(this.listBox_drivers.SelectedItem);
+                }
             });
         }
 
         private void Udp_LapDataPacket(object sender, EventArgs e)
         {
-            this.Dispatcher.Invoke(() =>
+            this.Dispatcher.BeginInvoke(() =>
             {
                 var lapData = this.udp.LastLapDataPacket;
                 var sessionData = this.udp.LastSessionDataPacket;
@@ -176,7 +182,7 @@ namespace F1TelemetryClient
                         if (elem != null)
                         {
                             elem.CurrentLapTime = current.CurrentLapTime;
-                            elem.TrackLengthPercent = current.LapDistance / sessionData.TrackLength * 100.0;
+                            elem.TrackLengthPercent = current.LapDistance / (float)sessionData.TrackLength * 100.0f;
                             elem.CarPosition = current.CarPosition;
 
                             if (elem.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
@@ -201,7 +207,7 @@ namespace F1TelemetryClient
 
         private void Upp_SessionPacket(object sender, EventArgs e)
         {
-            this.Dispatcher.Invoke(() =>
+            this.Dispatcher.BeginInvoke(() =>
             {
                 var sessionData = this.udp.LastSessionDataPacket;
                 var lapData = this.udp.LastLapDataPacket;
@@ -214,6 +220,8 @@ namespace F1TelemetryClient
                 sb.Append("TimeLeft: " + sessionData.SessionTimeLeft.ToString());
 
                 this.textBlock_counterHead.Text = sb.ToString();
+
+                this.weatherController.setActualWeather(sessionData.Weather, 0, sessionData.TrackTemperature, sessionData.AirTemperature);
             });
         }
 
@@ -326,14 +334,20 @@ namespace F1TelemetryClient
 
         private void CalculateInterval()
         {
+            var sessionType = this.udp.LastSessionDataPacket?.SessionType;
             var items = this.listBox_drivers.ItemsSource?.Cast<PlayerListItemData>();
+
             if (items != null)
             {
+
                 var history = this.udp.LastSessionHistoryPacket;
                 var firstCar = items.Where(x => x.CarPosition == 1).FirstOrDefault();
 
                 foreach (var item in items)
                 {
+                    item.FormattedAllTime = "";
+                    item.FormattedLeaderTime = "";
+                    item.TextColor = Brushes.White;
                     var prev = items.Where(x => x.CarPosition == item.CarPosition - 1).FirstOrDefault();
 
                     if (prev != null)
@@ -343,29 +357,66 @@ namespace F1TelemetryClient
 
                         if (current != null && previous != null)
                         {
-                            int lap = current.NumberOfLaps;
-                            int sector = 0;
-
-                            if (current.LapHistoryData[lap - 1].Sector1Time != TimeSpan.Zero) sector = 1;
-                            else if (current.LapHistoryData[lap - 1].Sector2Time != TimeSpan.Zero) sector = 2;
-                            else if (current.LapHistoryData[lap - 1].Sector3Time != TimeSpan.Zero) sector = 3;
-
-                            var done = previous.GetTimeSum(lap, sector);
-                            var delta = current.GetTimeSum(lap, sector) - done;
-
-                            item.FormattedAllTime = (delta > TimeSpan.Zero ? "+" : "") + (int)delta.TotalSeconds + "." + delta.ToString(@"fff");
-
-                            if (firstCar != null)
+                            if (
+                                sessionType == F1Telemetry.Helpers.Appendences.SessionTypes.Race ||
+                                sessionType == F1Telemetry.Helpers.Appendences.SessionTypes.Race2
+                            )
                             {
-                                var first = history[firstCar.ArrayIndex];
-                                if (first != null)
+                                int lap = current.NumberOfLaps;
+                                int sector = 0;
+
+                                if (current.LapHistoryData[lap - 1].Sector1Time != TimeSpan.Zero) sector = 1;
+                                else if (current.LapHistoryData[lap - 1].Sector2Time != TimeSpan.Zero) sector = 2;
+                                else if (current.LapHistoryData[lap - 1].Sector3Time != TimeSpan.Zero) sector = 3;
+
+                                var done = previous.GetTimeSum(lap, sector);
+                                var delta = current.GetTimeSum(lap, sector) - done;
+
+                                item.FormattedAllTime = (delta > TimeSpan.Zero ? "+" : "") + (int)delta.TotalSeconds + "." + delta.ToString(@"fff");
+                                if (delta < TimeSpan.FromSeconds(2)) item.TextColor = Brushes.Yellow;
+                                if (delta < TimeSpan.FromSeconds(1)) item.TextColor = Brushes.Orange;
+
+                                if (firstCar != null)
                                 {
-                                    done = first.GetTimeSum(lap, sector);
-                                    delta = current.GetTimeSum(lap, sector) - done;
-                                    item.FormattedLeaderTime = (delta > TimeSpan.Zero ? "+" : "") + (int)delta.TotalSeconds + "." + delta.ToString(@"fff");
+                                    var first = history[firstCar.ArrayIndex];
+                                    if (first != null)
+                                    {
+                                        done = first.GetTimeSum(lap, sector);
+                                        delta = current.GetTimeSum(lap, sector) - done;
+                                        item.FormattedLeaderTime = (delta > TimeSpan.Zero ? "+" : "") + (int)delta.TotalSeconds + "." + delta.ToString(@"fff");
+
+                                    }
                                 }
                             }
+                            else
+                            {
+                                if (
+                                    current.BestLapTimeLapNumber > 0 &&
+                                    previous.BestLapTimeLapNumber > 0
+                                )
+                                {
+                                    var bestLapCurr = current.LapHistoryData[current.BestLapTimeLapNumber - 1].LapTime;
 
+
+                                    var bestLapPrev = previous.LapHistoryData[previous.BestLapTimeLapNumber - 1].LapTime;
+                                    var delta = bestLapCurr - bestLapPrev;
+
+                                    item.FormattedAllTime = (delta > TimeSpan.Zero ? "+" : "") + (int)delta.TotalSeconds + "." + delta.ToString(@"fff");
+
+
+                                    if (firstCar != null)
+                                    {
+                                        var first = history[firstCar.ArrayIndex];
+                                        if (first != null && first.BestLapTimeLapNumber != 0)
+                                        {
+                                            var bestLapFirst = first.LapHistoryData[first.BestLapTimeLapNumber - 1].LapTime;
+                                            delta = bestLapCurr - bestLapFirst;
+
+                                            item.FormattedLeaderTime = (delta > TimeSpan.Zero ? "+" : "") + (int)delta.TotalSeconds + "." + delta.ToString(@"fff");
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -378,7 +429,7 @@ namespace F1TelemetryClient
             }
         }
 
-        private void Window_LayoutUpdated(object sender, EventArgs e)
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (this.ActualWidth < 950)
             {

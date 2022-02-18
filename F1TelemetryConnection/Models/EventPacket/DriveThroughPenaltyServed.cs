@@ -20,7 +20,6 @@ namespace F1Telemetry.Models.EventPacket
         {
             int index = this.Index;
             byte valb;
-            float valf;
 
             //uint8 vehicleIdx;                 // Vehicle index of the vehicle serving drive through
             index += ByteReader.ToUInt8(array, index, out valb);

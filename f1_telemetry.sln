@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31624.102
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "F1Telemetry", "F1TelemetryConnection\F1Telemetry.csproj", "{2D501BAA-611E-4760-8F93-DCDBA17888A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F1TelemetryApp", "F1TelemetryClient\F1TelemetryApp.csproj", "{66EADF2B-D7B8-48FC-BD27-38634DC8495A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "F1TelemetryApp", "F1TelemetryClient\F1TelemetryApp.csproj", "{66EADF2B-D7B8-48FC-BD27-38634DC8495A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

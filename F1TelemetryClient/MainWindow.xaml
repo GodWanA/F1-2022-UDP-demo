@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:F1TelemetryClient"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Initialized="Window_Initialized" LayoutUpdated="Window_LayoutUpdated">
+        Title="MainWindow" Height="450" Width="800" Initialized="Window_Initialized" SizeChanged="Window_SizeChanged">
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FFE4E4E4" Offset="0"/>
@@ -36,123 +36,135 @@
                 </ListView.ItemContainerStyle>
             </ListView>
         </Grid>
-        <ScrollViewer Margin="280,10,10,10">
-            <Grid x:Name="grid_status" Margin="0,0,2,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                <GroupBox x:Name="groupbox_wear" Header="Tyre conditions" FontWeight="Normal" Margin="0,0,5,5" Grid.Column="0" Grid.ColumnSpan="12" Grid.Row="0">
-                    <Grid x:Name="grid_waar">
+        <TabControl Margin="280,10,10,10" Padding="0">
+            <TabControl.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Gainsboro" Offset="1"/>
+                    <GradientStop Color="White" Offset="0"/>
+                </LinearGradientBrush>
+            </TabControl.Background>
+            <TabItem Header="Summary">
+                <ScrollViewer Margin="0" Padding="1">
+                    <Grid x:Name="grid_status" Margin="0,0,2,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Border Grid.ColumnSpan="2" Background="Black" CornerRadius="5" Padding="5" Margin="2,2,2,2">
+                        <GroupBox x:Name="groupbox_wear" Header="Tyre conditions" FontWeight="Normal" Margin="2" Grid.Column="0" Grid.ColumnSpan="12" Grid.Row="0">
+                            <Grid x:Name="grid_waar">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.ColumnSpan="2" Background="Black" CornerRadius="5" Padding="5" Margin="2,2,2,2">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock TextAlignment="Right" Text="Current tyre compound: " Grid.Column="0" Grid.Row="0"/>
+                                        <TextBlock TextAlignment="Left" Text="{Binding ActualTyreCpompund, FallbackValue=--}" Grid.Column="1" Grid.Row="0" Margin="5,0,0,0"/>
+
+                                        <TextBlock TextAlignment="Right" Text="Tyre age: " Grid.Column="2" Grid.Row="0" Margin="15,0,0,0"/>
+                                        <TextBlock TextAlignment="Left" Text="{Binding LapAges,FallbackValue=0}" Grid.Column="3" Grid.Row="0" Margin="5,0,0,0"/>
+                                        <TextBlock TextAlignment="Left" Text="Laps" Grid.Column="4" Grid.Row="0" Margin="5,0,0,0"/>
+                                    </Grid>
+                                </Border>
+                                <UserControls:TyreDataControl x:Name="tyredata_fl" Grid.Row="1" Grid.Column="0"/>
+                                <UserControls:TyreDataControl x:Name="tyredata_fr" Grid.Row="1" Grid.Column="1"/>
+                                <UserControls:TyreDataControl x:Name="tyredata_rl" Grid.Row="2" Grid.Column="0"/>
+                                <UserControls:TyreDataControl x:Name="tyredata_rr" Grid.Row="2" Grid.Column="1"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox x:Name="groupbox_demage" Header="Demage conditions" Margin="2" Grid.Column="0" Grid.ColumnSpan="12" Grid.Row="1">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
 
-                                <TextBlock TextAlignment="Right" Text="Current tyre compound: " Grid.Column="0" Grid.Row="0"/>
-                                <TextBlock TextAlignment="Left" Text="{Binding ActualTyreCpompund, FallbackValue=--}" Grid.Column="1" Grid.Row="0" Margin="5,0,0,0"/>
-
-                                <TextBlock TextAlignment="Right" Text="Tyre age: " Grid.Column="2" Grid.Row="0" Margin="15,0,0,0"/>
-                                <TextBlock TextAlignment="Left" Text="{Binding LapAges,FallbackValue=0}" Grid.Column="3" Grid.Row="0" Margin="5,0,0,0"/>
-                                <TextBlock TextAlignment="Left" Text="Laps" Grid.Column="4" Grid.Row="0" Margin="5,0,0,0"/>
+                                <UserControls:DemageAndWearDataControl x:Name="demage_fwLeft" Header="Frontwing 'LEFT' side" Grid.Column="0" Grid.ColumnSpan="3"/>
+                                <UserControls:DemageAndWearDataControl x:Name="demage_fwRight" Header="Frontwing 'RIGHT' side" Grid.Column="3" Grid.ColumnSpan="3"/>
+                                <UserControls:DemageAndWearDataControl x:Name="demage_fl" Header="Floor" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"/>
+                                <UserControls:DemageAndWearDataControl x:Name="demage_sp" Header="Sidepod" Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="1"/>
+                                <UserControls:DemageAndWearDataControl x:Name="demage_en" Header="Engine" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"/>
+                                <UserControls:DemageAndWearDataControl x:Name="demage_ex" Header="Exhaust" Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="2"/>
+                                <UserControls:DemageAndWearDataControl x:Name="demage_gb" Header="Gearbox" Grid.Column="4" Grid.ColumnSpan="2" Grid.Row="2"/>
+                                <UserControls:DemageAndWearDataControl x:Name="demage_df" Header="Diffuser" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="3"/>
+                                <UserControls:DemageAndWearDataControl x:Name="demage_rw" Header="Rearwing" Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="3"/>
                             </Grid>
-                        </Border>
-                        <UserControls:TyreDataControl x:Name="tyredata_fl" Grid.Row="1" Grid.Column="0"/>
-                        <UserControls:TyreDataControl x:Name="tyredata_fr" Grid.Row="1" Grid.Column="1"/>
-                        <UserControls:TyreDataControl x:Name="tyredata_rl" Grid.Row="2" Grid.Column="0"/>
-                        <UserControls:TyreDataControl x:Name="tyredata_rr" Grid.Row="2" Grid.Column="1"/>
+                        </GroupBox>
+                        <GroupBox x:Name="groupbox_motor" Header="Power unit conditions" Margin="2" Grid.ColumnSpan="12" Grid.Column="0" Grid.Row="2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <UserControls:DemageAndWearDataControl x:Name="wear_ce" Header="CE" Grid.Column="0"/>
+                                <UserControls:DemageAndWearDataControl x:Name="wear_ice" Header="ICE" Grid.Column="1"/>
+                                <UserControls:DemageAndWearDataControl x:Name="wear_tc" Header="TC" Grid.Column="2"/>
+                                <UserControls:DemageAndWearDataControl x:Name="wear_mguh" Header="MGU-H" Grid.Column="3"/>
+                                <UserControls:DemageAndWearDataControl x:Name="wear_mguk" Header="MGU-K" Grid.Column="4"/>
+                                <UserControls:DemageAndWearDataControl x:Name="wear_es" Header="ES" Grid.Column="5"/>
+                            </Grid>
+                        </GroupBox>
+                        <UserControls:WeatherDisplayController x:Name="weatherController" Margin="2" VerticalAlignment="Top" Height="auto" Grid.ColumnSpan="12" Grid.Column="0" Grid.Row="10"/>
                     </Grid>
-                </GroupBox>
-                <GroupBox x:Name="groupbox_demage" Header="Demage conditions" Margin="0,0,5,5" Grid.Column="0" Grid.ColumnSpan="12" Grid.Row="1">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
 
-                        <UserControls:DemageAndWearDataControl x:Name="demage_fwLeft" Header="Frontwing 'LEFT' side" Grid.Column="0" Grid.ColumnSpan="3"/>
-                        <UserControls:DemageAndWearDataControl x:Name="demage_fwRight" Header="Frontwing 'RIGHT' side" Grid.Column="3" Grid.ColumnSpan="3"/>
-                        <UserControls:DemageAndWearDataControl x:Name="demage_fl" Header="Floor" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"/>
-                        <UserControls:DemageAndWearDataControl x:Name="demage_sp" Header="Sidepod" Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="1"/>
-                        <UserControls:DemageAndWearDataControl x:Name="demage_en" Header="Engine" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"/>
-                        <UserControls:DemageAndWearDataControl x:Name="demage_ex" Header="Exhaust" Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="2"/>
-                        <UserControls:DemageAndWearDataControl x:Name="demage_gb" Header="Gearbox" Grid.Column="4" Grid.ColumnSpan="2" Grid.Row="2"/>
-                        <UserControls:DemageAndWearDataControl x:Name="demage_df" Header="Diffuser" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="3"/>
-                        <UserControls:DemageAndWearDataControl x:Name="demage_rw" Header="Rearwing" Grid.Column="3" Grid.ColumnSpan="3" Grid.Row="3"/>
-                    </Grid>
-                </GroupBox>
-
-                <GroupBox x:Name="groupbox_motor" Header="Power unit conditions" Margin="0,0,5,5" Grid.ColumnSpan="12" Grid.Column="0" Grid.Row="2">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
-                        <UserControls:DemageAndWearDataControl x:Name="wear_ce" Header="CE" Grid.Column="0"/>
-                        <UserControls:DemageAndWearDataControl x:Name="wear_ice" Header="ICE" Grid.Column="1"/>
-                        <UserControls:DemageAndWearDataControl x:Name="wear_tc" Header="TC" Grid.Column="2"/>
-                        <UserControls:DemageAndWearDataControl x:Name="wear_mguh" Header="MGU-H" Grid.Column="3"/>
-                        <UserControls:DemageAndWearDataControl x:Name="wear_mguk" Header="MGU-K" Grid.Column="4"/>
-                        <UserControls:DemageAndWearDataControl x:Name="wear_es" Header="ES" Grid.Column="5"/>
-                    </Grid>
-                </GroupBox>
-            </Grid>
-        </ScrollViewer>
     </Grid>
 </Window>

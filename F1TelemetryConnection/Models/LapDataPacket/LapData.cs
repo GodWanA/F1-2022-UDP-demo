@@ -33,6 +33,7 @@ namespace F1Telemetry.Models.LapDataPacket
         public TimeSpan PitLaneTimeInLane { get; private set; }
         public TimeSpan PitLaneTimer { get; private set; }
         public bool IsPitStopServePenalty { get; private set; }
+        public float TotalLapDistance { get; private set; }
 
         protected override void Reader2021(byte[] array)
         {
@@ -68,7 +69,7 @@ namespace F1Telemetry.Models.LapDataPacket
             //float m_totalDistance;       // Total distance travelled in session in metres – could
             //                             // be negative if line hasn’t been crossed yet
             index += ByteReader.ToFloat(array, index, out valf);
-            this.LapDistance = valf;
+            this.TotalLapDistance = valf;
 
             //float m_safetyCarDelta;            // Delta in seconds for safety car
             index += ByteReader.ToFloat(array, index, out valf);

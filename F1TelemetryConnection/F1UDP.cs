@@ -106,6 +106,7 @@ namespace F1Telemetry
             catch (Exception ex)
             {
                 this.OnConnectionError(ex);
+                this.Connection.Close();
             }
         }
 

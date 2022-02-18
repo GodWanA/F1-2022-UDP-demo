@@ -163,6 +163,9 @@
   <data name="Chilean" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\chilean.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="clear" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\weathericons\clear.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Colombian" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\colombian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -214,6 +217,9 @@
   <data name="Guatemalan" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\guatemalan.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="HeavyRain" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\weathericons\heavyrain.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Honduran" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\honduran.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -259,6 +265,12 @@
   <data name="Lebanese" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\lebanese.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="LightRain" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\weathericons\lightrain.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LitghtCloud" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\weathericons\litghtcloud.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Lithuanian" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\lithuanian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -288,6 +300,9 @@
   </data>
   <data name="Omani" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\omani.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Overcast" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\weathericons\overcast.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Pakistani" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\pakistani.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -345,6 +360,9 @@
   </data>
   <data name="Spanish" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\spanish.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Storm" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\weathericons\storm.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Swedish" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\swedish.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

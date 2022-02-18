@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using F1TelemetryApp.Classes;
+using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace F1TelemetryApp.UserControls
 {
@@ -48,23 +38,15 @@ namespace F1TelemetryApp.UserControls
                 {
                     _percent = value;
 
-                    var red = (byte)Math.Round(255 * (100 - this.Percent) / 100 * 2);
-                    var green = (byte)Math.Round(255 * this.Percent / 100 * 2);
 
-                    if (this.Percent >= 50)
-                    {
-                        this.progressbar_percent.Foreground = new SolidColorBrush(Color.FromRgb(red, 255, 0));
-                    }
-                    else
-                    {
-                        this.progressbar_percent.Foreground = new SolidColorBrush(Color.FromRgb(255, green, 0));
-                    }
+                    this.progressbar_percent.Foreground = new SolidColorBrush(this.ColorMap.GradientStops.GetRelativeColor(this._percent / 100.0));
 
                     this.OnPropertyChanged("Percent");
                 }
             }
         }
 
+        public LinearGradientBrush ColorMap { get; set; } = null;
 
         public DemageAndWearDataControl()
         {
@@ -113,6 +95,19 @@ namespace F1TelemetryApp.UserControls
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        private void UserControl_Initialized(object sender, EventArgs e)
+        {
+            if (this.ColorMap == null)
+            {
+                var colors = new GradientStopCollection();
+                colors.Add(new GradientStop(Color.FromRgb(255, 0, 0), 0));
+                colors.Add(new GradientStop(Color.FromRgb(255, 187, 51), 0.5));
+                colors.Add(new GradientStop(Color.FromRgb(45, 179, 0), 1));
+
+                this.ColorMap = new LinearGradientBrush(colors);
+            }
         }
     }
 }
