@@ -1,19 +1,7 @@
-﻿using F1TelemetryApp.Classes;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using static F1Telemetry.Helpers.Appendences;
 
 namespace F1TelemetryApp.UserControls
@@ -21,7 +9,7 @@ namespace F1TelemetryApp.UserControls
     /// <summary>
     /// Interaction logic for WheatherNode.xaml
     /// </summary>
-    public partial class WheatherNode : UserControl, INotifyPropertyChanged
+    public partial class WheatherNode : UserControl, INotifyPropertyChanged, IDisposable
     {
         public WheatherNode()
         {
@@ -34,6 +22,19 @@ namespace F1TelemetryApp.UserControls
         private void OnPropertyChanged(string propertyName)
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Dispose()
+        {
+            while (this.LogicalChildren.Current != null)
+            {
+                var child = this.LogicalChildren.Current;
+                this.RemoveLogicalChild(child);
+                this.LogicalChildren.Reset();
+                GC.SuppressFinalize(child);
+            }
+
+            GC.SuppressFinalize(this);
         }
 
         private string offsetTimeText;

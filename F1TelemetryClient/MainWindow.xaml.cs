@@ -221,7 +221,8 @@ namespace F1TelemetryClient
 
                 this.textBlock_counterHead.Text = sb.ToString();
 
-                this.weatherController.setActualWeather(sessionData.Weather, 0, sessionData.TrackTemperature, sessionData.AirTemperature);
+                this.weatherController.SetActualWeather(sessionData.Weather, 0, sessionData.TrackTemperature, sessionData.AirTemperature);
+                this.weatherController.SetWeatherForecast(sessionData.SessionDuration, sessionData.WeatherForcastSample);
             });
         }
 

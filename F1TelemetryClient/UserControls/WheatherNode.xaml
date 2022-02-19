@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:F1TelemetryApp.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="100" d:DesignWidth="40">
+             d:DesignHeight="100" d:DesignWidth="60" MinWidth="30">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="2*" MinHeight="30"/>
@@ -16,8 +16,8 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <ProgressBar x:Name="rectangle_rainRercent"  Background="Transparent" BorderThickness="0" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Value="{Binding RainPercentage,FallbackValue=5}" Grid.ColumnSpan="6" Orientation="Vertical">
             <ProgressBar.Foreground>
@@ -27,12 +27,12 @@
                 </LinearGradientBrush>
             </ProgressBar.Foreground>
         </ProgressBar>
-        <Image x:Name="image_wheather" Grid.Column="0" Stretch="Uniform" MaxHeight="50" Grid.ColumnSpan="6" Margin="0" Source="/Images/WeatherIcons/clear.png" Grid.RowSpan="2"/>
+        <Image x:Name="image_wheather" Grid.Column="0" Stretch="Uniform" MaxHeight="50" Grid.ColumnSpan="6" Margin="0" Grid.RowSpan="2"/>
         <TextBlock Text="{Binding RainPercentage,FallbackValue=--}" Foreground="White" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="6" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         <TextBlock Text="{Binding AirTemperature,FallbackValue=--}" Foreground="White" Grid.Column="0" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="1" FontSize="10"/>
         <TextBlock Text="°C" Foreground="White" Grid.Column="1" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="1" FontSize="10"/>
         <TextBlock Text="{Binding TrackTemperature,FallbackValue=--}" Foreground="White" Grid.Column="0" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="1" FontSize="10"/>
         <TextBlock Text="°C" Foreground="White" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="1" FontSize="10"/>
-        <TextBlock Text="{Binding OffsetTimeText,FallbackValue=+--:--}" Grid.Column="0" Grid.Row="5" Foreground="White"  VerticalAlignment="Stretch" Grid.ColumnSpan="6" HorizontalAlignment="Center" FontSize="8"/>
+        <TextBlock Text="{Binding OffsetTimeText,FallbackValue=--:--}" Grid.Column="0" Grid.Row="5" Foreground="White"  VerticalAlignment="Stretch" Grid.ColumnSpan="6" HorizontalAlignment="Center" FontSize="8"/>
     </Grid>
 </UserControl>
