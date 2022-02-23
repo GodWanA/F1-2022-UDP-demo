@@ -1,35 +1,48 @@
 ﻿using F1Telemetry;
+using F1Telemetry.Models.CarStatusPacket;
+using F1Telemetry.Models.LapDataPacket;
+using F1Telemetry.Models.LobbyInfoPacket;
+using F1Telemetry.Models.ParticipantsPacket;
+using F1Telemetry.Models.SessionHistoryPacket;
+using F1Telemetry.Models.SessionPacket;
+using F1TelemetryApp.Classes;
 using F1TelemetryApp.UserControls;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using static F1Telemetry.Helpers.Appendences;
 
 namespace F1TelemetryClient
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : Window
     {
         private F1UDP udp;
-        private DispatcherTimer cleaner;
+        private DispatcherTimer deltaTimer = new DispatcherTimer();
 
-        private string actualTyreCpompund;
-
-        public string ActualTyreCpompund
+        private TyreCompounds actualTyreCpompund;
+        public TyreCompounds ActualTyreCpompund
         {
             get { return actualTyreCpompund; }
             set
             {
-                actualTyreCpompund = value;
-                this.OnPropertyChanged("ActualTyreCpompund");
+                if (value != actualTyreCpompund)
+                {
+                    actualTyreCpompund = value;
+                    this.image_tyre.Source = u.TyreCompoundToImage(this.actualTyreCpompund);
+                }
             }
         }
 
@@ -40,190 +53,338 @@ namespace F1TelemetryClient
             set
             {
                 lapAges = value;
+                //this.textBlock_tyreAge.Text = this.lapAges.ToString();
                 this.OnPropertyChanged("LapAges");
             }
         }
 
+        private ObservableCollection<PlayerListItemData> participantsList;
+
+        public ObservableCollection<PlayerListItemData> ParticipantsList
+        {
+            get { return participantsList; }
+            set
+            {
+                if (value != participantsList)
+                {
+                    participantsList = value;
+                    this.OnPropertyChanged("ParticipantsList");
+                }
+            }
+        }
+
+
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private bool isWorking_SessionData = false;
+        private bool isWorking_LapData = false;
+        private bool isWorking_ParticipantsData = false;
+        private bool isWorking_DemageData = false;
+        private bool isWorking_CarStatusData = false;
+        private bool isWorking_CarTelemetryData = false;
+        private bool ordering = false;
+        private bool isLoadingWear = false;
 
         public MainWindow()
         {
             InitializeComponent();
             this.DataContext = this;
+            this.participantsList = new ObservableCollection<PlayerListItemData>();
         }
 
         private void Window_Initialized(object sender, EventArgs e)
         {
-            this.cleaner = new DispatcherTimer();
-            this.cleaner.Interval = TimeSpan.FromSeconds(30);
-            this.cleaner.Tick += this.Cleaner_Tick;
-            this.cleaner.Start();
-
             this.udp = new F1UDP("127.0.0.1", 20777);
+            //this.udp = new F1UDP("192.168.0.112", 20777);
             this.udp.SessionPacket += this.Upp_SessionPacket;
             this.udp.LapDataPacket += this.Udp_LapDataPacket;
             this.udp.ParticipantsPacket += this.Udp_ParticipantsPacket;
-            this.udp.DemagePacket += Udp_DemagePacket;
+            this.udp.DemagePacket += this.Udp_DemagePacket;
             this.udp.CarStatusPacket += Udp_CarStatusPacket;
             this.udp.CarTelemetryPacket += Udp_CarTelemetryPacket;
             this.udp.SessionHistoryPacket += Udp_SessionHistoryPacket;
 
-            this.listBox_drivers.Items.IsLiveSorting = true;
             this.listBox_drivers.Items.SortDescriptions.Add(new SortDescription("CarPosition", ListSortDirection.Ascending));
+            this.listBox_drivers.Items.IsLiveSorting = true;
         }
-
         private void Udp_SessionHistoryPacket(object sender, EventArgs e)
         {
-            this.Dispatcher.Invoke(() =>
+            this.Dispatcher.BeginInvoke(() =>
             {
-                this.CalculateInterval();
-            });
+                var curHistory = sender as PacketSessionHistoryData;
+
+                var arrayHistory = this.udp.LastSessionHistoryPacket;
+                var sessionData = this.udp.LastSessionDataPacket;
+                var lapData = this.udp.LastLapDataPacket;
+
+                var itemSource = this.listBox_drivers.ItemsSource?.Cast<PlayerListItemData>();
+                var curItem = itemSource?.Where(x => x.ArrayIndex == curHistory.CarIndex).FirstOrDefault();
+                Brush fontColor = Brushes.White;
+
+                if (curItem != null)
+                {
+                    if (curItem.CarPosition == 1)
+                    {
+                        curItem.IntervalTime = "interval";
+                        curItem.LeaderIntervalTime = "leader";
+                        curItem.TextColor = fontColor;
+                    }
+                    else
+                    {
+                        curItem.IntervalTime = "";
+                        curItem.LeaderIntervalTime = "";
+                        var curLapdata = lapData?.Lapdata[curItem.ArrayIndex];
+
+                        var prevItem = itemSource.Where(x => x.CarPosition == curItem.CarPosition - 1).FirstOrDefault();
+                        if (prevItem != null)
+                        {
+                            var prevHistory = arrayHistory.Where(x => x?.CarIndex == prevItem.ArrayIndex).FirstOrDefault();
+                            string s = this.CalculateDelta(arrayHistory, lapData, sessionData, curHistory, prevHistory, out fontColor);
+                            if (s != null && s != "") curItem.IntervalTime = s;
+                            curItem.TextColor = fontColor;
+                            prevItem = null;
+                            prevItem = null;
+                        }
+
+                        var firstItem = itemSource.Where(x => x.CarPosition == 1).FirstOrDefault();
+                        if (firstItem != null)
+                        {
+                            var firstHistory = arrayHistory.Where(x => x?.CarIndex == firstItem.ArrayIndex).FirstOrDefault();
+                            string s = this.CalculateDelta(arrayHistory, lapData, sessionData, curHistory, firstHistory, out fontColor);
+                            if (s != null && s != "") curItem.LeaderIntervalTime = s;
+                            firstItem = null;
+                            firstHistory = null;
+                        }
+                    }
+                }
+            }, DispatcherPriority.Background);
+        }
+
+        private string CalculateDelta(
+            PacketSessionHistoryData[] arrayHistory,
+            PacketLapData lapDatas,
+            PacketSessionData sessionData,
+            PacketSessionHistoryData curHistory,
+            PacketSessionHistoryData prevHistory,
+            out Brush fontColor
+        )
+        {
+            StringBuilder sb = new StringBuilder();
+            fontColor = Brushes.White;
+
+            if (
+                arrayHistory != null &&
+                lapDatas != null &&
+                sessionData != null &&
+                curHistory != null &&
+                prevHistory != null
+            )
+            {
+                switch (sessionData.SessionType)
+                {
+                    case SessionTypes.Race:
+                    case SessionTypes.Race2:
+                        {
+                            int lap = curHistory.NumberOfLaps;
+                            int sector = 0;
+
+                            if (lap > 0)
+                            {
+                                if (curHistory.LapHistoryData[lap - 1].Sector1Time != TimeSpan.Zero) sector = 1;
+                                else if (curHistory.LapHistoryData[lap - 1].Sector2Time != TimeSpan.Zero) sector = 2;
+                                else if (curHistory.LapHistoryData[lap - 1].Sector3Time != TimeSpan.Zero) sector = 3;
+                            }
+
+                            var deltaTime = curHistory.GetTimeSum(lap, sector) - prevHistory.GetTimeSum(lap, sector);
+
+                            var deltaLaps = (int)MathF.Round(lapDatas.Lapdata[prevHistory.CarIndex].TotalLapDistance - lapDatas.Lapdata[curHistory.CarIndex].TotalLapDistance) / sessionData.TrackLength;
+
+                            if (deltaTime <= TimeSpan.FromSeconds(1)) fontColor = Brushes.Orange;
+                            else if (deltaTime <= TimeSpan.FromSeconds(2)) fontColor = Brushes.Yellow;
+
+                            if (deltaTime >= TimeSpan.Zero) sb.Append("+");
+                            else sb.Append("-");
+
+                            if (deltaLaps > 0) sb.Append((int)deltaTime.TotalSeconds + deltaTime.ToString(@"\.f") + "(+" + deltaLaps + " L)");
+                            else sb.Append((int)deltaTime.TotalSeconds + deltaTime.ToString(@"\.fff"));
+                        }
+                        break;
+                    default:
+                        {
+                            if (curHistory.BestLapTimeLapNumber > 0 && prevHistory.BestLapTimeLapNumber > 0)
+                            {
+                                var curLaptime = curHistory.LapHistoryData[curHistory.BestLapTimeLapNumber - 1].LapTime;
+                                var prevLaptime = prevHistory.LapHistoryData[prevHistory.BestLapTimeLapNumber - 1].LapTime;
+
+                                if (curLaptime != TimeSpan.Zero && prevLaptime != TimeSpan.Zero)
+                                {
+                                    var deltaTime = curLaptime - prevLaptime;
+
+                                    if (deltaTime >= TimeSpan.Zero) sb.Append("+");
+                                    else sb.Append("-");
+
+                                    sb.Append((int)deltaTime.TotalSeconds + deltaTime.ToString(@"\.fff"));
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+
+            return sb.ToString();
         }
 
         private void Udp_CarTelemetryPacket(object sender, EventArgs e)
         {
-            this.Dispatcher.Invoke(() =>
+            this.Dispatcher.BeginInvoke(() =>
             {
-                this.LoadWear();
-            });
+                if (!this.isWorking_CarTelemetryData)
+                {
+                    this.isWorking_CarTelemetryData = true;
+                    this.LoadWear();
+                    this.isWorking_CarTelemetryData = false;
+                }
+            }, DispatcherPriority.Background);
         }
 
         private void Udp_CarStatusPacket(object sender, EventArgs e)
         {
-            this.Dispatcher.Invoke(() =>
+            this.Dispatcher.BeginInvoke(() =>
             {
-                this.LoadWear();
-
-                var items = this.listBox_drivers.ItemsSource?.Cast<PlayerListItemData>();
-                if (items != null)
+                if (!this.isWorking_CarStatusData)
                 {
-                    var status = this.udp.LastCarStatusDataPacket;
+                    this.isWorking_CarStatusData = true;
 
-                    for (int i = 0; i < status.CarStatusData.Length; i++)
+                    this.LoadWear();
+                    var items = this.listBox_drivers.ItemsSource;
+                    if (items != null)
                     {
-                        var current = status.CarStatusData[i];
-                        var elem = items.Where(x => x.ArrayIndex == i).FirstOrDefault();
+                        var status = sender as PacketCarStatusData;
 
-                        if (elem != null)
+                        foreach (PlayerListItemData item in items)
                         {
-                            elem.TyreCompund = current.ActualTyreCompound;
-                            elem.VisualTyreCompund = current.VisualTyreCompound;
+                            var current = status.CarStatusData[item.ArrayIndex];
+                            item.TyreCompund = current.VisualTyreCompound;
                         }
                     }
+
+                    this.isWorking_CarStatusData = false;
                 }
-            });
+            }, DispatcherPriority.Background);
         }
 
         private void Udp_DemagePacket(object sender, EventArgs e)
         {
             this.Dispatcher.BeginInvoke(() =>
             {
-                this.LoadWear();
-            });
+                if (!this.isWorking_DemageData)
+                {
+                    this.isWorking_DemageData = true;
+                    this.LoadWear();
+                    this.isWorking_DemageData = false;
+                }
+            }, DispatcherPriority.Background);
         }
 
         private void Udp_ParticipantsPacket(object sender, EventArgs e)
         {
             this.Dispatcher.BeginInvoke(() =>
             {
-                int index = this.listBox_drivers.SelectedIndex;
-
-                var participants = this.udp.LastParticipantsPacket;
-                this.PlyerList(participants.Participants.Length);
-                var items = this.listBox_drivers.ItemsSource?.Cast<PlayerListItemData>();
-
-                if (items != null)
+                if (!this.isWorking_ParticipantsData)
                 {
+                    this.isWorking_ParticipantsData = true;
+                    int index = this.listBox_drivers.SelectedIndex;
 
-                    for (int i = 0; i < participants.Participants.Length; i++)
+                    var participants = sender as PacketParticipantsData;
+                    this.PlayerList(participants.Participants.Length);
+                    var items = this.listBox_drivers.Items?.Cast<PlayerListItemData>();
+
+                    foreach (PlayerListItemData item in this.participantsList)
                     {
-                        var current = participants.Participants[i];
-                        var elem = items.Where(x => x.ArrayIndex == i).FirstOrDefault();
-                        if (elem != null)
-                        {
-                            elem.DriverID = current.DriverID;
-                            elem.DriverName = current.Name;
-                            elem.Nationality = current.Nationality;
-                            elem.TeamID = current.TeamID;
-                            elem.IsAI = current.IsAIControlled;
-                            elem.IsMyTeam = current.IsMyTeam;
-                            elem.IsHuman = !current.IsAIControlled;
-                            elem.RaceNumber = current.RaceNumber;
-                        }
+                        var current = participants.Participants[item.ArrayIndex];
+                        item.DriverName = current.Name;
+                        item.Nationality = current.Nationality;
+                        item.TeamID = current.TeamID;
+                        item.IsMyTeam = current.IsMyTeam;
+                        item.RaceNumber = current.RaceNumber;
                     }
+
+                    if (index != -1) this.listBox_drivers.SelectedIndex = index;
+                    else if (participants.Header.Player1CarIndex != 255) this.listBox_drivers.SelectedIndex = participants.Header.Player1CarIndex;
+
+                    //this.CalculateInterval();
+
+                    if (this.listBox_drivers.SelectedItem != null)
+                    {
+                        this.listBox_drivers.ScrollIntoView(this.listBox_drivers.SelectedItem);
+                    }
+
+                    this.isWorking_ParticipantsData = false;
                 }
-
-                if (index != -1) this.listBox_drivers.SelectedIndex = index;
-                else if (participants.Header.Player1CarIndex != 255) this.listBox_drivers.SelectedIndex = participants.Header.Player1CarIndex;
-
-                this.CalculateInterval();
-
-                if (this.listBox_drivers.SelectedItem != null)
-                {
-                    this.listBox_drivers.ScrollIntoView(this.listBox_drivers.SelectedItem);
-                }
-            });
+            }, DispatcherPriority.Background);
         }
 
         private void Udp_LapDataPacket(object sender, EventArgs e)
         {
             this.Dispatcher.BeginInvoke(() =>
             {
-                var lapData = this.udp.LastLapDataPacket;
-                var sessionData = this.udp.LastSessionDataPacket;
-                var items = this.listBox_drivers.ItemsSource?.Cast<PlayerListItemData>();
-
-                if (items != null)
+                if (!this.isWorking_LapData)
                 {
-                    for (int i = 0; i < lapData.Lapdata.Length; i++)
+                    this.isWorking_LapData = true;
+
+                    var lapData = sender as PacketLapData;
+                    var sessionData = this.udp.LastSessionDataPacket;
+
+                    foreach (PlayerListItemData elem in this.participantsList)
                     {
-                        var current = lapData.Lapdata[i];
-                        var elem = items.Where(x => x.ArrayIndex == i).FirstOrDefault();
-                        if (elem != null)
-                        {
-                            elem.CurrentLapTime = current.CurrentLapTime;
-                            elem.TrackLengthPercent = current.LapDistance / (float)sessionData.TrackLength * 100.0f;
-                            elem.CarPosition = current.CarPosition;
+                        var current = lapData.Lapdata[elem.ArrayIndex];
+                        float p = current.LapDistance / (float)sessionData.TrackLength * 100.0f;
 
-                            if (elem.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
-                            else elem.Visibility = Visibility.Visible;
-                        }
+                        elem.CurrentLapTime = current.CurrentLapTime;
+                        elem.TrackLengthPercent = p;
+                        elem.CarPosition = current.CarPosition;
+
+                        if (current.IsCurrentLapInvalid) elem.TimerForeground = Brushes.Red;
+                        else elem.TimerForeground = Brushes.White;
+
+                        if (elem.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
+                        else elem.Visibility = Visibility.Visible;
                     }
+
+                    this.listBox_drivers.Items.Refresh();
+
+                    this.isWorking_LapData = false;
                 }
-            });
+            }, DispatcherPriority.Background);
         }
 
-        private void Cleaner_Tick(object sender, EventArgs e)
-        {
-            this.cleaner.Stop();
-
-            GC.WaitForPendingFinalizers();
-            GC.WaitForFullGCApproach();
-            GC.WaitForFullGCComplete();
-            GC.Collect();
-
-            this.cleaner.Start();
-        }
 
         private void Upp_SessionPacket(object sender, EventArgs e)
         {
             this.Dispatcher.BeginInvoke(() =>
             {
-                var sessionData = this.udp.LastSessionDataPacket;
-                var lapData = this.udp.LastLapDataPacket;
-                var first = lapData?.Lapdata?.Where(x => x.CarPosition == 1).FirstOrDefault();
+                if (!this.isWorking_SessionData)
+                {
+                    this.isWorking_SessionData = true;
 
-                StringBuilder sb = new StringBuilder();
+                    var sessionData = sender as PacketSessionData;
+                    var lapData = this.udp.LastLapDataPacket;
+                    var first = lapData?.Lapdata?.Where(x => x.CarPosition == 1).FirstOrDefault();
 
-                sb.AppendLine("Session: " + Regex.Replace(sessionData.SessionType.ToString(), "([A-Z])", " $1", RegexOptions.Compiled).Trim());
-                sb.AppendLine("Laps: " + first?.CurrentLapNum + " / " + sessionData.TotalLaps);
-                sb.Append("TimeLeft: " + sessionData.SessionTimeLeft.ToString());
+                    StringBuilder sb = new StringBuilder();
 
-                this.textBlock_counterHead.Text = sb.ToString();
+                    sb.AppendLine("Session: " + Regex.Replace(sessionData.SessionType.ToString(), "([A-Z])", " $1", RegexOptions.Compiled).Trim());
+                    sb.AppendLine("Laps: " + first?.CurrentLapNum + " / " + sessionData.TotalLaps);
+                    sb.Append("TimeLeft: " + sessionData.SessionTimeLeft.ToString());
 
-                this.weatherController.SetActualWeather(sessionData.Weather, 0, sessionData.TrackTemperature, sessionData.AirTemperature);
-                this.weatherController.SetWeatherForecast(sessionData.SessionDuration, sessionData.WeatherForcastSample);
-            });
+                    this.textBlock_counterHead.Text = sb.ToString();
+
+                    this.weatherController.SetActualWeather(sessionData.Weather, sessionData.SessionType, sessionData.TrackTemperature, sessionData.AirTemperature);
+                    this.weatherController.SetWeatherForecast(sessionData.WeatherForcastSample);
+
+                    this.isWorking_SessionData = false;
+                }
+            }, DispatcherPriority.Background);
         }
 
         private void listBox_drivers_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -242,191 +403,96 @@ namespace F1TelemetryClient
 
         }
 
-        private void PlyerList(int numberOfPlayers)
+        private void PlayerList(int numberOfPlayers)
         {
             if (this.listBox_drivers.Items.Count == 0)
             {
-                var tmp = new ObservableCollection<PlayerListItemData>();
-
                 for (int i = 0; i < numberOfPlayers; i++)
                 {
                     var data = new PlayerListItemData();
                     data.ArrayIndex = i;
-                    tmp.Add(data);
+                    this.participantsList.Add(data);
                 }
-
-                this.listBox_drivers.ItemsSource = tmp;
             }
         }
 
         private void OnPropertyChanged(string propertyName)
         {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
 
         private void LoadWear()
         {
-            if (this.listBox_drivers.SelectedIndex != -1)
+            if (!this.isLoadingWear)
             {
-                int i = (this.listBox_drivers.SelectedItem as PlayerListItemData).ArrayIndex;
-                var demage = this.udp.LastCarDemagePacket?.CarDamageData[i];
-                var status = this.udp.LastCarStatusDataPacket?.CarStatusData[i];
-                var telemtry = this.udp.LastCartelmetryPacket?.CarTelemetryData[i];
-
-                if (status != null)
+                this.isLoadingWear = true;
+                if (this.listBox_drivers.SelectedIndex != -1)
                 {
-                    this.ActualTyreCpompund = status.VisualTyreCompound.ToString();
-                    this.LapAges = (int)status.TyresAgeLaps;
-                }
+                    int i = (this.listBox_drivers.SelectedItem as PlayerListItemData).ArrayIndex;
+                    var demage = this.udp.LastCarDemagePacket?.CarDamageData[i];
+                    var status = this.udp.LastCarStatusDataPacket?.CarStatusData[i];
+                    var telemtry = this.udp.LastCartelmetryPacket?.CarTelemetryData[i];
 
-                if (telemtry != null)
-                {
-                    this.tyredata_fl.TyreInnerTemperature = telemtry.TyresInnerTemperature["FrontLeft"];
-                    this.tyredata_fr.TyreInnerTemperature = telemtry.TyresInnerTemperature["FrontRight"];
-                    this.tyredata_rl.TyreInnerTemperature = telemtry.TyresInnerTemperature["RearLeft"];
-                    this.tyredata_rr.TyreInnerTemperature = telemtry.TyresInnerTemperature["RearRight"];
-
-                    this.tyredata_fl.TyreSurfaceTemperature = telemtry.TyresSurfaceTemperature["FrontLeft"];
-                    this.tyredata_fr.TyreSurfaceTemperature = telemtry.TyresInnerTemperature["FrontRight"];
-                    this.tyredata_rl.TyreSurfaceTemperature = telemtry.TyresInnerTemperature["RearLeft"];
-                    this.tyredata_rr.TyreSurfaceTemperature = telemtry.TyresInnerTemperature["RearRight"];
-
-                    this.tyredata_fl.Pressure = telemtry.TyresPressure["FrontLeft"];
-                    this.tyredata_fr.Pressure = telemtry.TyresPressure["FrontRight"];
-                    this.tyredata_rl.Pressure = telemtry.TyresPressure["RearLeft"];
-                    this.tyredata_rr.Pressure = telemtry.TyresPressure["RearRight"];
-
-                    this.tyredata_fl.BrakesTemperature = telemtry.BrakesTemperature["FrontLeft"];
-                    this.tyredata_fr.BrakesTemperature = telemtry.BrakesTemperature["FrontRight"];
-                    this.tyredata_rl.BrakesTemperature = telemtry.BrakesTemperature["RearLeft"];
-                    this.tyredata_rr.BrakesTemperature = telemtry.BrakesTemperature["RearRight"];
-                }
-
-                if (demage != null)
-                {
-                    this.tyredata_fl.Wear = demage.TyreWear["FrontLeft"];
-                    this.tyredata_fr.Wear = demage.TyreWear["FrontRight"];
-                    this.tyredata_rl.Wear = demage.TyreWear["RearLeft"];
-                    this.tyredata_rr.Wear = demage.TyreWear["RearRight"];
-
-                    this.tyredata_fl.Demage = demage.TyreDemage["FrontLeft"];
-                    this.tyredata_fr.Demage = demage.TyreDemage["FrontRight"];
-                    this.tyredata_rl.Demage = demage.TyreDemage["RearLeft"];
-                    this.tyredata_rr.Demage = demage.TyreDemage["RearRight"];
-
-                    this.demage_fwLeft.Percent = 100.0 - demage.FrontLeftWingDemage;
-                    this.demage_fwRight.Percent = 100.0 - demage.FrontRightWingDemage;
-                    this.demage_fl.Percent = 100.0 - demage.FloorDemage;
-                    this.demage_df.Percent = 100.0 - demage.DiffurerDemage;
-                    this.demage_en.Percent = 100.0 - demage.EngineDemage;
-                    this.demage_gb.Percent = 100.0 - demage.GearBoxDemage;
-                    this.demage_rw.Percent = 100.0 - demage.RearWingDemage;
-                    this.demage_sp.Percent = 100.0 - demage.SidepodDemage;
-
-                    this.wear_ce.Percent = 100.0 - demage.EngineICEWear;
-                    this.wear_es.Percent = 100.0 - demage.EngineESWear;
-                    this.wear_ice.Percent = 100.0 - demage.EngineICEWear;
-                    this.wear_mguh.Percent = 100.0 - demage.EngineMGUKWear;
-                    this.wear_mguk.Percent = 100.0 - demage.EngineMGUKWear;
-                    this.wear_tc.Percent = 100.0 - demage.EngineTCWear;
-                }
-            }
-        }
-
-        private void CalculateInterval()
-        {
-            var sessionType = this.udp.LastSessionDataPacket?.SessionType;
-            var items = this.listBox_drivers.ItemsSource?.Cast<PlayerListItemData>();
-
-            if (items != null)
-            {
-
-                var history = this.udp.LastSessionHistoryPacket;
-                var firstCar = items.Where(x => x.CarPosition == 1).FirstOrDefault();
-
-                foreach (var item in items)
-                {
-                    item.FormattedAllTime = "";
-                    item.FormattedLeaderTime = "";
-                    item.TextColor = Brushes.White;
-                    var prev = items.Where(x => x.CarPosition == item.CarPosition - 1).FirstOrDefault();
-
-                    if (prev != null)
+                    if (status != null)
                     {
-                        var current = history[item.ArrayIndex];
-                        var previous = history[prev.ArrayIndex];
+                        this.ActualTyreCpompund = status.VisualTyreCompound;
+                        this.LapAges = (int)status.TyresAgeLaps;
+                    }
 
-                        if (current != null && previous != null)
-                        {
-                            if (
-                                sessionType == F1Telemetry.Helpers.Appendences.SessionTypes.Race ||
-                                sessionType == F1Telemetry.Helpers.Appendences.SessionTypes.Race2
-                            )
-                            {
-                                int lap = current.NumberOfLaps;
-                                int sector = 0;
+                    if (telemtry != null)
+                    {
+                        this.tyredata_fl.TyreInnerTemperature = telemtry.TyresInnerTemperature["FrontLeft"];
+                        this.tyredata_fr.TyreInnerTemperature = telemtry.TyresInnerTemperature["FrontRight"];
+                        this.tyredata_rl.TyreInnerTemperature = telemtry.TyresInnerTemperature["RearLeft"];
+                        this.tyredata_rr.TyreInnerTemperature = telemtry.TyresInnerTemperature["RearRight"];
 
-                                if (current.LapHistoryData[lap - 1].Sector1Time != TimeSpan.Zero) sector = 1;
-                                else if (current.LapHistoryData[lap - 1].Sector2Time != TimeSpan.Zero) sector = 2;
-                                else if (current.LapHistoryData[lap - 1].Sector3Time != TimeSpan.Zero) sector = 3;
+                        this.tyredata_fl.TyreSurfaceTemperature = telemtry.TyresSurfaceTemperature["FrontLeft"];
+                        this.tyredata_fr.TyreSurfaceTemperature = telemtry.TyresInnerTemperature["FrontRight"];
+                        this.tyredata_rl.TyreSurfaceTemperature = telemtry.TyresInnerTemperature["RearLeft"];
+                        this.tyredata_rr.TyreSurfaceTemperature = telemtry.TyresInnerTemperature["RearRight"];
 
-                                var done = previous.GetTimeSum(lap, sector);
-                                var delta = current.GetTimeSum(lap, sector) - done;
+                        this.tyredata_fl.Pressure = telemtry.TyresPressure["FrontLeft"];
+                        this.tyredata_fr.Pressure = telemtry.TyresPressure["FrontRight"];
+                        this.tyredata_rl.Pressure = telemtry.TyresPressure["RearLeft"];
+                        this.tyredata_rr.Pressure = telemtry.TyresPressure["RearRight"];
 
-                                item.FormattedAllTime = (delta > TimeSpan.Zero ? "+" : "") + (int)delta.TotalSeconds + "." + delta.ToString(@"fff");
-                                if (delta < TimeSpan.FromSeconds(2)) item.TextColor = Brushes.Yellow;
-                                if (delta < TimeSpan.FromSeconds(1)) item.TextColor = Brushes.Orange;
+                        this.tyredata_fl.BrakesTemperature = telemtry.BrakesTemperature["FrontLeft"];
+                        this.tyredata_fr.BrakesTemperature = telemtry.BrakesTemperature["FrontRight"];
+                        this.tyredata_rl.BrakesTemperature = telemtry.BrakesTemperature["RearLeft"];
+                        this.tyredata_rr.BrakesTemperature = telemtry.BrakesTemperature["RearRight"];
+                    }
 
-                                if (firstCar != null)
-                                {
-                                    var first = history[firstCar.ArrayIndex];
-                                    if (first != null)
-                                    {
-                                        done = first.GetTimeSum(lap, sector);
-                                        delta = current.GetTimeSum(lap, sector) - done;
-                                        item.FormattedLeaderTime = (delta > TimeSpan.Zero ? "+" : "") + (int)delta.TotalSeconds + "." + delta.ToString(@"fff");
+                    if (demage != null)
+                    {
+                        this.tyredata_fl.Wear = demage.TyreWear["FrontLeft"];
+                        this.tyredata_fr.Wear = demage.TyreWear["FrontRight"];
+                        this.tyredata_rl.Wear = demage.TyreWear["RearLeft"];
+                        this.tyredata_rr.Wear = demage.TyreWear["RearRight"];
 
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (
-                                    current.BestLapTimeLapNumber > 0 &&
-                                    previous.BestLapTimeLapNumber > 0
-                                )
-                                {
-                                    var bestLapCurr = current.LapHistoryData[current.BestLapTimeLapNumber - 1].LapTime;
+                        this.tyredata_fl.Demage = demage.TyreDemage["FrontLeft"];
+                        this.tyredata_fr.Demage = demage.TyreDemage["FrontRight"];
+                        this.tyredata_rl.Demage = demage.TyreDemage["RearLeft"];
+                        this.tyredata_rr.Demage = demage.TyreDemage["RearRight"];
 
+                        this.demage_fwLeft.Percent = 100.0 - demage.FrontLeftWingDemage;
+                        this.demage_fwRight.Percent = 100.0 - demage.FrontRightWingDemage;
+                        this.demage_fl.Percent = 100.0 - demage.FloorDemage;
+                        this.demage_df.Percent = 100.0 - demage.DiffurerDemage;
+                        this.demage_en.Percent = 100.0 - demage.EngineDemage;
+                        this.demage_gb.Percent = 100.0 - demage.GearBoxDemage;
+                        this.demage_rw.Percent = 100.0 - demage.RearWingDemage;
+                        this.demage_sp.Percent = 100.0 - demage.SidepodDemage;
 
-                                    var bestLapPrev = previous.LapHistoryData[previous.BestLapTimeLapNumber - 1].LapTime;
-                                    var delta = bestLapCurr - bestLapPrev;
-
-                                    item.FormattedAllTime = (delta > TimeSpan.Zero ? "+" : "") + (int)delta.TotalSeconds + "." + delta.ToString(@"fff");
-
-
-                                    if (firstCar != null)
-                                    {
-                                        var first = history[firstCar.ArrayIndex];
-                                        if (first != null && first.BestLapTimeLapNumber != 0)
-                                        {
-                                            var bestLapFirst = first.LapHistoryData[first.BestLapTimeLapNumber - 1].LapTime;
-                                            delta = bestLapCurr - bestLapFirst;
-
-                                            item.FormattedLeaderTime = (delta > TimeSpan.Zero ? "+" : "") + (int)delta.TotalSeconds + "." + delta.ToString(@"fff");
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        this.wear_ce.Percent = 100.0 - demage.EngineCEWear;
+                        this.wear_es.Percent = 100.0 - demage.EngineESWear;
+                        this.wear_ice.Percent = 100.0 - demage.EngineICEWear;
+                        this.wear_mguh.Percent = 100.0 - demage.EngineMGUKWear;
+                        this.wear_mguk.Percent = 100.0 - demage.EngineMGUKWear;
+                        this.wear_tc.Percent = 100.0 - demage.EngineTCWear;
                     }
                 }
-
-                if (firstCar != null)
-                {
-                    firstCar.FormattedAllTime = "interval";
-                    firstCar.FormattedLeaderTime = "leader";
-                }
+                this.isLoadingWear = false;
             }
         }
 
@@ -572,6 +638,11 @@ namespace F1TelemetryClient
                 Grid.SetRow(this.wear_mguk, 2);
                 Grid.SetRow(this.wear_tc, 2);
             }
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            this.udp.Close();
         }
     }
 }

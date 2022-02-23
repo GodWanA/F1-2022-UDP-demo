@@ -82,5 +82,16 @@ namespace F1Telemetry.Models.EventPacket
 
             this.Index = index;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Header.Dispose();
+                this.EventCode = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

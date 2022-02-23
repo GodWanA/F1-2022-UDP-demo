@@ -63,6 +63,7 @@ namespace F1Telemetry.Helpers
         public enum Teams
         {
             MyTeam = 255,
+            Unknown = -1,
             Mercedes = 0,
             Ferrari = 1,
             RedBullRacing = 2,
@@ -154,6 +155,7 @@ namespace F1Telemetry.Helpers
 
         public enum Drivers
         {
+            Unknown = -1,
             CarlosSainz = 0,
             DaniilKvyat = 1,
             DanielRicciardo = 2,
@@ -267,7 +269,6 @@ namespace F1Telemetry.Helpers
             AlessioDeledda = 121,
             BentViscaal = 122,
             EnzoFittipaldi = 123,
-            Unknown = 255,
         }
 
         public enum ButtonFlags
@@ -615,6 +616,7 @@ namespace F1Telemetry.Helpers
 
         public enum WeatherTypes
         {
+            Unknown = -1,
             Clear,
             LitghtCloud,
             Overcast,

@@ -35,5 +35,18 @@ namespace F1Telemetry.Models.ParticipantsPacket
 
             this.Index = index;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Header.Dispose();
+
+                for (int i = 0; i < this.Participants.Length; i++) this.Participants[i].Dispose();
+                this.Participants = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

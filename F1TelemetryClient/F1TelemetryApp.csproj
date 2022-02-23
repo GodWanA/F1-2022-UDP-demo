@@ -5,10 +5,12 @@
 		<TargetFramework>net5.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
 		<StartupObject></StartupObject>
+		<PlatformTarget>x64</PlatformTarget>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<Optimize>False</Optimize>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -65,6 +67,7 @@
 		<None Remove="Images\Flags\Latvian.png" />
 		<None Remove="Images\Flags\Lebanese.png" />
 		<None Remove="Images\Flags\Lithuanian.png" />
+		<None Remove="Images\Flags\luxembourger.png" />
 		<None Remove="Images\Flags\Malaysian.png" />
 		<None Remove="Images\Flags\Maltese.png" />
 		<None Remove="Images\Flags\Mexican.png" />
@@ -107,6 +110,18 @@
 		<None Remove="Images\Masks\natinalityMask2.png" />
 		<None Remove="Images\Masks\natinalityMask3.png" />
 		<None Remove="Images\Nationality\coverimage.png" />
+		<None Remove="Images\Tyres\C3.png" />
+		<None Remove="Images\Tyres\C4.png" />
+		<None Remove="Images\Tyres\C5.png" />
+		<None Remove="Images\Tyres\hard.png" />
+		<None Remove="Images\Tyres\hypersoft.png" />
+		<None Remove="Images\Tyres\inter.png" />
+		<None Remove="Images\Tyres\medium.png" />
+		<None Remove="Images\Tyres\soft.png" />
+		<None Remove="Images\Tyres\superhard.png" />
+		<None Remove="Images\Tyres\supersoft.png" />
+		<None Remove="Images\Tyres\ultrasoft.png" />
+		<None Remove="Images\Tyres\wet.png" />
 		<None Remove="Images\WeatherIcons\clear.png" />
 		<None Remove="Images\WeatherIcons\HeavyRain.png" />
 		<None Remove="Images\WeatherIcons\LightRain.png" />
@@ -199,6 +214,7 @@
 		<Resource Include="Images\Flags\Latvian.png" />
 		<Resource Include="Images\Flags\Lebanese.png" />
 		<Resource Include="Images\Flags\Lithuanian.png" />
+		<Resource Include="Images\Flags\luxembourger.png" />
 		<Resource Include="Images\Flags\Malaysian.png" />
 		<Resource Include="Images\Flags\Maltese.png" />
 		<Resource Include="Images\Flags\Mexican.png" />
@@ -241,6 +257,18 @@
 		<Resource Include="Images\Masks\natinalityMask2.png" />
 		<Resource Include="Images\Masks\natinalityMask3.png" />
 		<Resource Include="Images\Nationality\coverimage.png" />
+		<Resource Include="Images\Tyres\C3.png" />
+		<Resource Include="Images\Tyres\hard.png" />
+		<Resource Include="Images\Tyres\hypersoft.png" />
+		<Resource Include="Images\Tyres\inter.png" />
+		<Resource Include="Images\Tyres\C4.png" />
+		<Resource Include="Images\Tyres\C5.png" />
+		<Resource Include="Images\Tyres\medium.png" />
+		<Resource Include="Images\Tyres\soft.png" />
+		<Resource Include="Images\Tyres\superhard.png" />
+		<Resource Include="Images\Tyres\supersoft.png" />
+		<Resource Include="Images\Tyres\ultrasoft.png" />
+		<Resource Include="Images\Tyres\wet.png" />
 		<Resource Include="Images\WeatherIcons\Clear.png" />
 		<Resource Include="Images\WeatherIcons\HeavyRain.png" />
 		<Resource Include="Images\WeatherIcons\LightRain.png" />

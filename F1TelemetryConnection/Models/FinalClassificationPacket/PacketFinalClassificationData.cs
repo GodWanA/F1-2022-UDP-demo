@@ -36,5 +36,18 @@ namespace F1Telemetry.Models.FinalClassificationPacket
 
             this.Index = index;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Header.Dispose();
+
+                for (int i = 0; i < this.ClassificationData.Length; i++) this.ClassificationData[i].Dispose();
+                this.ClassificationData = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

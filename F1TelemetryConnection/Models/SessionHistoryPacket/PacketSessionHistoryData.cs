@@ -93,19 +93,35 @@ namespace F1Telemetry.Models.SessionHistoryPacket
         {
             var ret = new TimeSpan();
 
-            if (lap > 0 && lap < this.LapHistoryData.Length-1)
+            if (lap > 0 && lap < this.LapHistoryData.Length - 1)
             {
-                for (int i = 0; i < lap-1; i++)
+                for (int i = 0; i < lap - 1; i++)
                 {
                     ret += this.LapHistoryData[i].LapTime;
                 }
 
-                if (sector >= 1) ret += this.LapHistoryData[lap-1].Sector1Time;
-                if (sector >= 2) ret += this.LapHistoryData[lap-1].Sector2Time;
-                if (sector >= 3) ret += this.LapHistoryData[lap-1].Sector3Time;
+                if (sector >= 1) ret += this.LapHistoryData[lap - 1].Sector1Time;
+                if (sector >= 2) ret += this.LapHistoryData[lap - 1].Sector2Time;
+                if (sector >= 3) ret += this.LapHistoryData[lap - 1].Sector3Time;
             }
 
             return ret;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Header.Dispose();
+
+                for (int i = 0; i < this.LapHistoryData.Length; i++) this.LapHistoryData[i].Dispose();
+                this.LapHistoryData = null;
+
+                for (int i = 0; i < this.TyreStintsHistoryData.Length; i++) this.TyreStintsHistoryData[i].Dispose();
+                this.TyreStintsHistoryData = null;
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

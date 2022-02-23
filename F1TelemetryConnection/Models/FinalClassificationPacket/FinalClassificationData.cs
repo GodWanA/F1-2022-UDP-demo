@@ -90,5 +90,16 @@ namespace F1Telemetry.Models.FinalClassificationPacket
 
             this.Index = index;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.TyreStintsActual = null;
+                this.TyreStintsVisual = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

@@ -213,9 +213,9 @@ namespace F1TelemetryApp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap clear {
+        internal static System.Drawing.Bitmap Clear {
             get {
-                object obj = ResourceManager.GetObject("clear", resourceCulture);
+                object obj = ResourceManager.GetObject("Clear", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -931,12 +931,12 @@ namespace F1TelemetryApp.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static byte[] Unknown {
+        internal static System.Drawing.Bitmap Unknown {
             get {
                 object obj = ResourceManager.GetObject("Unknown", resourceCulture);
-                return ((byte[])(obj));
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

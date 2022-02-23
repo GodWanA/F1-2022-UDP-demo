@@ -49,5 +49,16 @@ namespace F1Telemetry.Models.SessionHistoryPacket
 
             this.Index = index;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.LapValids.Clear();
+                this.LapValids = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

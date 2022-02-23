@@ -29,6 +29,7 @@ namespace F1Telemetry.Models.CarDamagePacket
         public byte EngineMGUKWear { get; private set; }
         public byte EngineMGUHWear { get; private set; }
         public byte EngineTCWear { get; private set; }
+        public byte EngineCEWear { get; private set; }
 
         protected override void Reader2021(byte[] array)
         {
@@ -96,7 +97,7 @@ namespace F1Telemetry.Models.CarDamagePacket
 
             //uint8 m_engineCEWear;                     // Engine wear CE (percentage)
             index += ByteReader.ToUInt8(array, index, out valb);
-            this.EngineESWear = valb;
+            this.EngineCEWear = valb;
 
             //uint8 m_engineICEWear;                    // Engine wear ICE (percentage)
             index += ByteReader.ToUInt8(array, index, out valb);
@@ -111,6 +112,21 @@ namespace F1Telemetry.Models.CarDamagePacket
             this.EngineTCWear = valb;
 
             this.Index = index;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.TyreWear.Clear();
+                this.TyreWear = null;
+                this.TyreDemage.Clear();
+                this.TyreDemage = null;
+                this.BrakesDemage.Clear();
+                this.BrakesDemage = null;
+            }
+
+            base.Dispose(disposing);
         }
     }
 }

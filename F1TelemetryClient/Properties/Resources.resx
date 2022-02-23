@@ -163,7 +163,7 @@
   <data name="Chilean" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\chilean.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="clear" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="Clear" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\weathericons\clear.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Colombian" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -380,7 +380,7 @@
     <value>..\images\flags\ukrainian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Unknown" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\images\flags\unknown.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\images\flags\unknown.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Uruguayan" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\uruguayan.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

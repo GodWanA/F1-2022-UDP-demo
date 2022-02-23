@@ -16,24 +16,24 @@ namespace F1Telemetry.Models.LapDataPacket
         public TimeSpan CurrentLapTime { get; private set; }
         public TimeSpan Sector1Time { get; private set; }
         public TimeSpan Sector2Time { get; private set; }
+        public TimeSpan Penalties { get; private set; }
+        public TimeSpan PitLaneTimer { get; private set; }
+        public TimeSpan PitLaneTimeInLane { get; private set; }
+        public PitStatuses PitStatus { get; private set; }
+        public DriverSatuses DriverStatus { get; private set; }
+        public ResultSatuses ResultStatus { get; private set; }
         public float LapDistance { get; private set; }
+        public float TotalLapDistance { get; private set; }
         public byte CarPosition { get; private set; }
         public byte CurrentLapNum { get; private set; }
-        public PitStatuses PitStatus { get; private set; }
         public byte NumberOfPitStops { get; private set; }
         public bool IsCurrentLapInvalid { get; private set; }
-        public TimeSpan Penalties { get; private set; }
         public byte Warnings { get; private set; }
         public byte NumberOfUnservedDriveThroughPenalties { get; private set; }
         public byte NumberOfUnservedStopGoPenalties { get; private set; }
         public byte GridPosition { get; private set; }
-        public DriverSatuses DriverStatus { get; private set; }
-        public ResultSatuses ResultStatus { get; private set; }
         public bool IsPitLaneTimerActive { get; private set; }
-        public TimeSpan PitLaneTimeInLane { get; private set; }
-        public TimeSpan PitLaneTimer { get; private set; }
         public bool IsPitStopServePenalty { get; private set; }
-        public float TotalLapDistance { get; private set; }
 
         protected override void Reader2021(byte[] array)
         {

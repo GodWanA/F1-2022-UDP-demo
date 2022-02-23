@@ -27,5 +27,18 @@ namespace F1Telemetry.Models.CarSetupsPacket
 
             this.Index = index;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Header.Dispose();
+
+                for (int i = 0; i < this.CarSetups.Length; i++) this.CarSetups[i].Dispose();
+                this.CarSetups = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

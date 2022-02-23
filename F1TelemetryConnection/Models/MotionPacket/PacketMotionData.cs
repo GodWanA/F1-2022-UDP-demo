@@ -90,5 +90,30 @@ namespace F1Telemetry.Models.MotionPacket
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.FrontWheelAngle = f;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Header.Dispose();
+
+                for (int i = 0; i < this.CarMotionData.Length; i++) this.CarMotionData[i].Dispose();
+                this.CarMotionData = null;
+
+                this.SuspensionAcceleration.Clear();
+                this.SuspensionVelocity.Clear();
+                this.SuspensionPosition.Clear();
+                this.WheelSlip.Clear();
+                this.WheelSpeed.Clear();
+
+                this.SuspensionAcceleration = null;
+                this.SuspensionVelocity = null;
+                this.SuspensionPosition = null;
+                this.WheelSlip = null;
+                this.WheelSpeed = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

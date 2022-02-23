@@ -26,5 +26,18 @@ namespace F1Telemetry.Models.LapDataPacket
 
             this.Index = index;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Header.Dispose();
+
+                for (int i = 0; i < this.Lapdata.Length; i++) this.Lapdata[i].Dispose();
+                this.Lapdata = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

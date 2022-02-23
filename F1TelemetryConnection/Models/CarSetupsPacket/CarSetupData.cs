@@ -119,5 +119,16 @@ namespace F1Telemetry.Models.CarSetupsPacket
 
             this.Index = index;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.TyrePressure.Clear();
+                this.TyrePressure = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

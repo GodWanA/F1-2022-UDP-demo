@@ -34,5 +34,16 @@ namespace F1Telemetry.Models.EventPacket
 
             this.Index = index;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.PressedButtons.Clear();
+                this.PressedButtons = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

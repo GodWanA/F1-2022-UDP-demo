@@ -52,5 +52,15 @@ namespace F1Telemetry.Models.LobbyInfoPacket
 
             this.Index = index;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Name = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

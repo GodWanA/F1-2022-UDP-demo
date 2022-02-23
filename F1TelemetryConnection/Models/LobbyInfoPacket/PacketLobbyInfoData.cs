@@ -35,5 +35,18 @@ namespace F1Telemetry.Models.LobbyInfoPacket
 
             this.Index = index;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Header.Dispose();
+
+                for (int i = 0; i < this.LobbyPlayers.Length; i++) this.LobbyPlayers[i].Dispose();
+                this.LobbyPlayers = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

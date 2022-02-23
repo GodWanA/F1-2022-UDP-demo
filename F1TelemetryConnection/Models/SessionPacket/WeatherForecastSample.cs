@@ -13,7 +13,7 @@ namespace F1Telemetry.Models.SessionPacket
         public TemperatureChanges TrackTemperatureChage { get; private set; }
         public sbyte AirTemperature { get; private set; }
         public TemperatureChanges AirTemperatureChage { get; private set; }
-        public byte RainPercentage { get; private set; }
+        public int RainPercentage { get; private set; }
 
         public WeatherForecastSample(int index, int format, byte[] array)
         {
@@ -60,7 +60,7 @@ namespace F1Telemetry.Models.SessionPacket
 
             //uint8 m_rainPercentage;           // Rain percentage (0-100)
             index += ByteReader.ToUInt8(array, index, out valb);
-            this.RainPercentage = valb;
+            this.RainPercentage = (int)valb;
 
             this.Index = index;
         }

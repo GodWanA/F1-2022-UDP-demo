@@ -229,5 +229,21 @@ namespace F1Telemetry.Models.SessionPacket
 
             this.Index = index;
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Header.Dispose();
+
+                for (int i = 0; i < this.MarshalZones.Length; i++) this.MarshalZones[i].Dispose();
+                this.MarshalZones = null;
+
+                for (int i = 0; i < this.WeatherForcastSample.Length; i++) this.WeatherForcastSample[i].Dispose();
+                this.WeatherForcastSample = null;
+            }
+
+            base.Dispose(disposing);
+        }
     }
 }

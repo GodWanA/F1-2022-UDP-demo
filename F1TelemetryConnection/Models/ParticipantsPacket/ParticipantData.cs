@@ -1,4 +1,5 @@
 ﻿using F1Telemetry.Helpers;
+using System;
 using static F1Telemetry.Helpers.Appendences;
 
 namespace F1Telemetry.Models.ParticipantsPacket
@@ -34,7 +35,8 @@ namespace F1Telemetry.Models.ParticipantsPacket
 
             //uint8 m_driverId;       // Driver id - see appendix, 255 if network human
             index += ByteReader.ToUInt8(array, index, out valb);
-            this.DriverID = (Drivers)valb;
+            if (valb <= Enum.GetValues(Nationalities.Unknown.GetType()).Length - 1) this.DriverID = (Drivers)valb;
+            else this.DriverID = Drivers.Unknown;
 
             //uint8 m_networkId;      // Network id – unique identifier for network players
             index += ByteReader.ToUInt8(array, index, out valb);
@@ -42,7 +44,9 @@ namespace F1Telemetry.Models.ParticipantsPacket
 
             //uint8 m_teamId;                 // Team id - see appendix
             index += ByteReader.ToUInt8(array, index, out valb);
-            this.TeamID = (Teams)valb;
+            if (valb <= Enum.GetValues(Teams.Unknown.GetType()).Length - 2) this.TeamID = (Teams)valb;
+            else if (valb == (int)Teams.MyTeam) this.TeamID = Teams.MyTeam;
+            else this.TeamID = Teams.Unknown;
 
             //uint8 m_myTeam;                 // My team flag – 1 = My Team, 0 = otherwise
             index += ByteReader.ToBoolFromUint8(array, index, out valbo);
@@ -54,7 +58,8 @@ namespace F1Telemetry.Models.ParticipantsPacket
 
             //uint8 m_nationality;            // Nationality of the driver
             index += ByteReader.ToUInt8(array, index, out valb);
-            this.Nationality = (Nationalities)valb;
+            if (valb < Enum.GetValues(Nationalities.Unknown.GetType()).Length) this.Nationality = (Nationalities)valb;
+            else this.Nationality = Nationalities.Unknown;
 
             //char m_name[48];               // Name of participant in UTF-8 format – null terminated
             //                               // Will be truncated with … (U+2026) if too long
@@ -66,6 +71,16 @@ namespace F1Telemetry.Models.ParticipantsPacket
             this.YouTelemetry = (TelemetrySettings)valb;
 
             this.Index = index;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Name = null;
+            }
+
+            base.Dispose(disposing);
         }
     }
 }
