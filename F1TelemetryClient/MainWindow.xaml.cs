@@ -1,14 +1,12 @@
 ﻿using F1Telemetry;
 using F1Telemetry.Models.CarStatusPacket;
 using F1Telemetry.Models.LapDataPacket;
-using F1Telemetry.Models.LobbyInfoPacket;
 using F1Telemetry.Models.ParticipantsPacket;
 using F1Telemetry.Models.SessionHistoryPacket;
 using F1Telemetry.Models.SessionPacket;
 using F1TelemetryApp.Classes;
 using F1TelemetryApp.UserControls;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -18,7 +16,6 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using static F1Telemetry.Helpers.Appendences;
 
@@ -30,7 +27,8 @@ namespace F1TelemetryClient
     public partial class MainWindow : Window
     {
         private F1UDP udp;
-        private DispatcherTimer deltaTimer = new DispatcherTimer();
+        private DispatcherTimer lockTimer = new DispatcherTimer();
+        private DispatcherTimer cleanTimer = new DispatcherTimer();
 
         private TyreCompounds actualTyreCpompund;
         public TyreCompounds ActualTyreCpompund
@@ -82,8 +80,8 @@ namespace F1TelemetryClient
         private bool isWorking_DemageData = false;
         private bool isWorking_CarStatusData = false;
         private bool isWorking_CarTelemetryData = false;
-        private bool ordering = false;
         private bool isLoadingWear = false;
+        private bool canDoUdp = true;
 
         public MainWindow()
         {
@@ -105,59 +103,104 @@ namespace F1TelemetryClient
             this.udp.SessionHistoryPacket += Udp_SessionHistoryPacket;
 
             this.listBox_drivers.Items.SortDescriptions.Add(new SortDescription("CarPosition", ListSortDirection.Ascending));
+
             this.listBox_drivers.Items.IsLiveSorting = true;
+            this.listBox_drivers.Items.IsLiveFiltering = true;
+
+            this.lockTimer.Interval = TimeSpan.FromMilliseconds(500);
+            this.lockTimer.Tick += LockTimer_Tick;
+
+            //this.cleanTimer.Interval = TimeSpan.FromSeconds(1);
+            //this.cleanTimer.Tick += CleanTimer_Tick;
+        }
+
+        private void CleanTimer_Tick(object sender, EventArgs e)
+        {
+            this.cleanTimer.Stop();
+
+            //this.listBox_drivers.Items.Refresh();
+            this.listBox_drivers.Items.DeferRefresh();
+
+            this.cleanTimer.Start();
+        }
+
+        private void LockTimer_Tick(object sender, EventArgs e)
+        {
+            this.lockTimer.Stop();
+            GC.WaitForFullGCApproach();
+            GC.WaitForFullGCComplete();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+            this.UpdateLayout();
+            this.canDoUdp = true;
+        }
+
+        private bool ListFilter(object o)
+        {
+            if (o is PlayerListItemData)
+            {
+                if ((o as PlayerListItemData).CarPosition > 0) return true;
+                else return false;
+            }
+            else
+            {
+                return false;
+            }
         }
         private void Udp_SessionHistoryPacket(object sender, EventArgs e)
         {
-            this.Dispatcher.BeginInvoke(() =>
+            if (this.canDoUdp)
             {
-                var curHistory = sender as PacketSessionHistoryData;
-
-                var arrayHistory = this.udp.LastSessionHistoryPacket;
-                var sessionData = this.udp.LastSessionDataPacket;
-                var lapData = this.udp.LastLapDataPacket;
-
-                var itemSource = this.listBox_drivers.ItemsSource?.Cast<PlayerListItemData>();
-                var curItem = itemSource?.Where(x => x.ArrayIndex == curHistory.CarIndex).FirstOrDefault();
-                Brush fontColor = Brushes.White;
-
-                if (curItem != null)
+                this.Dispatcher.BeginInvoke(() =>
                 {
-                    if (curItem.CarPosition == 1)
-                    {
-                        curItem.IntervalTime = "interval";
-                        curItem.LeaderIntervalTime = "leader";
-                        curItem.TextColor = fontColor;
-                    }
-                    else
-                    {
-                        curItem.IntervalTime = "";
-                        curItem.LeaderIntervalTime = "";
-                        var curLapdata = lapData?.Lapdata[curItem.ArrayIndex];
+                    var curHistory = sender as PacketSessionHistoryData;
 
-                        var prevItem = itemSource.Where(x => x.CarPosition == curItem.CarPosition - 1).FirstOrDefault();
-                        if (prevItem != null)
+                    var arrayHistory = this.udp.LastSessionHistoryPacket;
+                    var sessionData = this.udp.LastSessionDataPacket;
+                    var lapData = this.udp.LastLapDataPacket;
+
+                    var itemSource = this.listBox_drivers.ItemsSource?.Cast<PlayerListItemData>();
+                    var curItem = itemSource?.Where(x => x.ArrayIndex == curHistory.CarIndex).FirstOrDefault();
+                    Brush fontColor = Brushes.White;
+
+                    if (curItem != null)
+                    {
+                        if (curItem.CarPosition == 1)
                         {
-                            var prevHistory = arrayHistory.Where(x => x?.CarIndex == prevItem.ArrayIndex).FirstOrDefault();
-                            string s = this.CalculateDelta(arrayHistory, lapData, sessionData, curHistory, prevHistory, out fontColor);
-                            if (s != null && s != "") curItem.IntervalTime = s;
+                            curItem.IntervalTime = "interval";
+                            curItem.LeaderIntervalTime = "leader";
                             curItem.TextColor = fontColor;
-                            prevItem = null;
-                            prevItem = null;
                         }
-
-                        var firstItem = itemSource.Where(x => x.CarPosition == 1).FirstOrDefault();
-                        if (firstItem != null)
+                        else
                         {
-                            var firstHistory = arrayHistory.Where(x => x?.CarIndex == firstItem.ArrayIndex).FirstOrDefault();
-                            string s = this.CalculateDelta(arrayHistory, lapData, sessionData, curHistory, firstHistory, out fontColor);
-                            if (s != null && s != "") curItem.LeaderIntervalTime = s;
-                            firstItem = null;
-                            firstHistory = null;
+                            curItem.IntervalTime = "";
+                            curItem.LeaderIntervalTime = "";
+                            var curLapdata = lapData?.Lapdata[curItem.ArrayIndex];
+
+                            var prevItem = itemSource.Where(x => x.CarPosition == curItem.CarPosition - 1).FirstOrDefault();
+                            if (prevItem != null)
+                            {
+                                var prevHistory = arrayHistory.Where(x => x?.CarIndex == prevItem.ArrayIndex).FirstOrDefault();
+                                string s = this.CalculateDelta(arrayHistory, lapData, sessionData, curHistory, prevHistory, out fontColor);
+                                if (s != null && s != "") curItem.IntervalTime = s;
+                                curItem.TextColor = fontColor;
+                                prevItem = null;
+                                prevItem = null;
+                            }
+
+                            var firstItem = itemSource.Where(x => x.CarPosition == 1).FirstOrDefault();
+                            if (firstItem != null)
+                            {
+                                var firstHistory = arrayHistory.Where(x => x?.CarIndex == firstItem.ArrayIndex).FirstOrDefault();
+                                string s = this.CalculateDelta(arrayHistory, lapData, sessionData, curHistory, firstHistory, out fontColor);
+                                if (s != null && s != "") curItem.LeaderIntervalTime = s;
+                                firstItem = null;
+                                firstHistory = null;
+                            }
                         }
                     }
-                }
-            }, DispatcherPriority.Background);
+                }, DispatcherPriority.Background);
+            }
         }
 
         private string CalculateDelta(
@@ -236,63 +279,58 @@ namespace F1TelemetryClient
 
         private void Udp_CarTelemetryPacket(object sender, EventArgs e)
         {
-            this.Dispatcher.BeginInvoke(() =>
+            if (!this.isWorking_CarTelemetryData && this.canDoUdp)
             {
-                if (!this.isWorking_CarTelemetryData)
+                this.isWorking_CarTelemetryData = true;
+                this.Dispatcher.BeginInvoke(() =>
                 {
-                    this.isWorking_CarTelemetryData = true;
                     this.LoadWear();
                     this.isWorking_CarTelemetryData = false;
-                }
-            }, DispatcherPriority.Background);
+                }, DispatcherPriority.Background);
+            }
         }
 
         private void Udp_CarStatusPacket(object sender, EventArgs e)
         {
-            this.Dispatcher.BeginInvoke(() =>
+            if (!this.isWorking_CarStatusData && this.canDoUdp)
             {
-                if (!this.isWorking_CarStatusData)
+                this.isWorking_CarStatusData = true;
+                this.Dispatcher.BeginInvoke(() =>
                 {
-                    this.isWorking_CarStatusData = true;
-
                     this.LoadWear();
-                    var items = this.listBox_drivers.ItemsSource;
-                    if (items != null)
-                    {
-                        var status = sender as PacketCarStatusData;
+                    var status = sender as PacketCarStatusData;
 
-                        foreach (PlayerListItemData item in items)
-                        {
-                            var current = status.CarStatusData[item.ArrayIndex];
-                            item.TyreCompund = current.VisualTyreCompound;
-                        }
+                    foreach (PlayerListItemData item in this.participantsList)
+                    {
+                        var current = status.CarStatusData[item.ArrayIndex];
+                        item.TyreCompund = current.VisualTyreCompound;
                     }
 
                     this.isWorking_CarStatusData = false;
-                }
-            }, DispatcherPriority.Background);
+                }, DispatcherPriority.Background);
+            }
         }
 
         private void Udp_DemagePacket(object sender, EventArgs e)
         {
-            this.Dispatcher.BeginInvoke(() =>
+            if (!this.isWorking_DemageData && this.canDoUdp)
             {
-                if (!this.isWorking_DemageData)
+                this.isWorking_DemageData = true;
+                this.Dispatcher.BeginInvoke(() =>
                 {
-                    this.isWorking_DemageData = true;
                     this.LoadWear();
                     this.isWorking_DemageData = false;
-                }
-            }, DispatcherPriority.Background);
+                }, DispatcherPriority.Background);
+            }
         }
 
         private void Udp_ParticipantsPacket(object sender, EventArgs e)
         {
-            this.Dispatcher.BeginInvoke(() =>
+            if (!this.isWorking_ParticipantsData && this.canDoUdp)
             {
-                if (!this.isWorking_ParticipantsData)
+                this.isWorking_ParticipantsData = true;
+                this.Dispatcher.BeginInvoke(() =>
                 {
-                    this.isWorking_ParticipantsData = true;
                     int index = this.listBox_drivers.SelectedIndex;
 
                     var participants = sender as PacketParticipantsData;
@@ -310,7 +348,7 @@ namespace F1TelemetryClient
                     }
 
                     if (index != -1) this.listBox_drivers.SelectedIndex = index;
-                    else if (participants.Header.Player1CarIndex != 255) this.listBox_drivers.SelectedIndex = participants.Header.Player1CarIndex;
+                    else if (participants.Header.Player1CarIndex != 255) this.listBox_drivers.SelectedItem = this.participantsList[participants.Header.Player1CarIndex];
 
                     //this.CalculateInterval();
 
@@ -320,53 +358,65 @@ namespace F1TelemetryClient
                     }
 
                     this.isWorking_ParticipantsData = false;
-                }
-            }, DispatcherPriority.Background);
+                }, DispatcherPriority.Background);
+            }
         }
 
         private void Udp_LapDataPacket(object sender, EventArgs e)
         {
-            this.Dispatcher.BeginInvoke(() =>
+            if (!this.isWorking_LapData && this.canDoUdp)
             {
-                if (!this.isWorking_LapData)
-                {
-                    this.isWorking_LapData = true;
+                this.isWorking_LapData = true;
+                this.Dispatcher.BeginInvoke(() =>
+               {
+                   var lapData = sender as PacketLapData;
+                   var sessionData = this.udp.LastSessionDataPacket;
+                   //int noCarpos = 0;
 
-                    var lapData = sender as PacketLapData;
-                    var sessionData = this.udp.LastSessionDataPacket;
+                   foreach (PlayerListItemData elem in this.participantsList)
+                   {
+                       var current = lapData.Lapdata[elem.ArrayIndex];
+                       float p = current.LapDistance / (float)sessionData.TrackLength * 100.0f;
 
-                    foreach (PlayerListItemData elem in this.participantsList)
-                    {
-                        var current = lapData.Lapdata[elem.ArrayIndex];
-                        float p = current.LapDistance / (float)sessionData.TrackLength * 100.0f;
+                       elem.CurrentLapTime = current.CurrentLapTime;
+                       elem.TrackLengthPercent = p;
+                       elem.CarPosition = current.CarPosition;
+                       elem.SetPitStatues(current.PitStatus, current.PitLaneTimer);
+                       //if (current.Warnings > 0) Debug.WriteLine("HELLÓÓÓ");
+                       elem.WarningNumber = current.Warnings;
+                       elem.PenaltyTime = current.Penalties;
 
-                        elem.CurrentLapTime = current.CurrentLapTime;
-                        elem.TrackLengthPercent = p;
-                        elem.CarPosition = current.CarPosition;
+                       if (current.IsCurrentLapInvalid)
+                       {
+                           elem.TimerForeground = Brushes.Red;
+                           elem.TrackPercentForeground = Brushes.Red;
+                       }
+                       else
+                       {
+                           elem.TimerForeground = Brushes.White;
+                           elem.TrackPercentForeground = Brushes.LimeGreen;
+                       }
 
-                        if (current.IsCurrentLapInvalid) elem.TimerForeground = Brushes.Red;
-                        else elem.TimerForeground = Brushes.White;
+                       if (elem.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
+                       else elem.Visibility = Visibility.Visible;
+                   }
 
-                        if (elem.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
-                        else elem.Visibility = Visibility.Visible;
-                    }
+                   this.listBox_drivers.Items.Filter = this.ListFilter;
+                   this.listBox_drivers.Items.Refresh();
 
-                    this.listBox_drivers.Items.Refresh();
-
-                    this.isWorking_LapData = false;
-                }
-            }, DispatcherPriority.Background);
+                   this.isWorking_LapData = false;
+               }, DispatcherPriority.Background);
+            }
         }
 
 
         private void Upp_SessionPacket(object sender, EventArgs e)
         {
-            this.Dispatcher.BeginInvoke(() =>
+            if (!this.isWorking_SessionData && this.canDoUdp)
             {
-                if (!this.isWorking_SessionData)
+                this.isWorking_SessionData = true;
+                this.Dispatcher.BeginInvoke(() =>
                 {
-                    this.isWorking_SessionData = true;
-
                     var sessionData = sender as PacketSessionData;
                     var lapData = this.udp.LastLapDataPacket;
                     var first = lapData?.Lapdata?.Where(x => x.CarPosition == 1).FirstOrDefault();
@@ -383,8 +433,8 @@ namespace F1TelemetryClient
                     this.weatherController.SetWeatherForecast(sessionData.WeatherForcastSample);
 
                     this.isWorking_SessionData = false;
-                }
-            }, DispatcherPriority.Background);
+                }, DispatcherPriority.Background);
+            }
         }
 
         private void listBox_drivers_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -393,6 +443,12 @@ namespace F1TelemetryClient
             {
                 if (this.listBox_drivers.SelectedIndex > -1)
                 {
+                    foreach (var item in this.participantsList)
+                    {
+                        item.IsSelected = false;
+                    }
+
+                    (this.listBox_drivers.SelectedItem as PlayerListItemData).IsSelected = true;
                     this.LoadWear();
                 }
             }
@@ -405,7 +461,7 @@ namespace F1TelemetryClient
 
         private void PlayerList(int numberOfPlayers)
         {
-            if (this.listBox_drivers.Items.Count == 0)
+            if (this.participantsList.Count == 0)
             {
                 for (int i = 0; i < numberOfPlayers; i++)
                 {
@@ -413,6 +469,8 @@ namespace F1TelemetryClient
                     data.ArrayIndex = i;
                     this.participantsList.Add(data);
                 }
+
+                //this.listBox_drivers.Items.IsLiveFiltering = true;
             }
         }
 
@@ -432,7 +490,7 @@ namespace F1TelemetryClient
                     int i = (this.listBox_drivers.SelectedItem as PlayerListItemData).ArrayIndex;
                     var demage = this.udp.LastCarDemagePacket?.CarDamageData[i];
                     var status = this.udp.LastCarStatusDataPacket?.CarStatusData[i];
-                    var telemtry = this.udp.LastCartelmetryPacket?.CarTelemetryData[i];
+                    var telemtry = this.udp.LastCarTelmetryPacket?.CarTelemetryData[i];
 
                     if (status != null)
                     {
@@ -498,6 +556,9 @@ namespace F1TelemetryClient
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            this.lockTimer.Stop();
+            this.canDoUdp = false;
+
             if (this.ActualWidth < 950)
             {
                 Grid.SetColumn(this.groupbox_wear, 0);
@@ -638,11 +699,25 @@ namespace F1TelemetryClient
                 Grid.SetRow(this.wear_mguk, 2);
                 Grid.SetRow(this.wear_tc, 2);
             }
+
+            this.lockTimer.Start();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             this.udp.Close();
+        }
+
+        private void Window_LocationChanged(object sender, EventArgs e)
+        {
+            this.lockTimer.Stop();
+            this.canDoUdp = false;
+            this.lockTimer.Start();
+        }
+
+        private void listBox_drivers_SourceUpdated(object sender, System.Windows.Data.DataTransferEventArgs e)
+        {
+            Debug.WriteLine("HELLLLÓÓÓÓÓÓÓ");
         }
     }
 }

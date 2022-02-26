@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:F1TelemetryClient"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Initialized="Window_Initialized" SizeChanged="Window_SizeChanged" Closing="Window_Closing">
+        Title="MainWindow" Height="450" Width="800" Initialized="Window_Initialized" SizeChanged="Window_SizeChanged" Closing="Window_Closing" LocationChanged="Window_LocationChanged">
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-            <GradientStop Color="#FFE4E4E4" Offset="0"/>
-            <GradientStop Color="#FFA2A2A2" Offset="1"/>
+            <GradientStop Color="#FFC1C1C1" Offset="0"/>
+            <GradientStop Color="#FF757575" Offset="1"/>
         </LinearGradientBrush>
     </Window.Background>
 
@@ -24,7 +24,13 @@
                     <TextBlock x:Name="textBlock_counterHead" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" TextAlignment="Center"/>
                 </Grid>
             </Border>
-            <ListBox x:Name="listBox_drivers" ItemsSource="{Binding ParticipantsList}" Grid.Row="1" Background="Gray" BorderBrush="{x:Null}" Foreground="{x:Null}" SelectionChanged="listBox_drivers_SelectionChanged" BorderThickness="0,0,0,0" SizeChanged="listBox_drivers_SizeChanged">
+            <ListBox x:Name="listBox_drivers" ItemsSource="{Binding ParticipantsList}" Grid.Row="1" BorderBrush="{x:Null}" Foreground="{x:Null}" SelectionChanged="listBox_drivers_SelectionChanged" BorderThickness="0,0,0,0" SizeChanged="listBox_drivers_SizeChanged" SourceUpdated="listBox_drivers_SourceUpdated">
+                <ListBox.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF4A4A4A"/>
+                        <GradientStop Color="#FF5D5D5D" Offset="1"/>
+                    </LinearGradientBrush>
+                </ListBox.Background>
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="BorderThickness" Value="0"/>
@@ -39,11 +45,11 @@
         <TabControl Margin="280,10,10,10" Padding="0">
             <TabControl.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="Gainsboro" Offset="1"/>
+                    <GradientStop Color="#FF656565" Offset="1"/>
                     <GradientStop Color="White" Offset="0"/>
                 </LinearGradientBrush>
             </TabControl.Background>
-            <TabItem Header="Summary">
+            <TabItem Header="Live status">
                 <ScrollViewer Margin="0" Padding="1">
                     <Grid x:Name="grid_status" Margin="0,0,2,0">
                         <Grid.ColumnDefinitions>
@@ -93,7 +99,7 @@
                                         </Grid.RowDefinitions>
 
                                         <TextBlock TextAlignment="Right" Text="Current tyre compound: " Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
-                                        <Image x:Name="image_tyre" Grid.Column="1" Grid.Row="0" Margin="5,0,0,0" Stretch="UniformToFill" Width="24" Height="24"/>
+                                        <Image x:Name="image_tyre" Grid.Column="1" RenderOptions.BitmapScalingMode="NearestNeighbor" Grid.Row="0" Margin="5,0,0,0" Stretch="UniformToFill" Width="24" Height="24"/>
 
                                         <TextBlock TextAlignment="Right" Text="Tyre age: " Grid.Column="2" Grid.Row="0" Margin="15,0,0,0" VerticalAlignment="Center"/>
                                         <TextBlock x:Name="textBlock_tyreAge" TextAlignment="Left" Text="{Binding LapAges, FallbackValue=-}" Grid.Column="3" Grid.Row="0" Margin="5,0,0,0" VerticalAlignment="Center"/>
@@ -176,8 +182,8 @@
                                             <GradientStop Color="Red" Offset="0"/>
                                             <GradientStop Color="Red" Offset="0.1"/>
                                             <GradientStop Color="#FFFFBB33" Offset="0.2"/>
-                                            <GradientStop Color="Green" Offset="0.75"/>
-                                            <GradientStop Color="Green" Offset="1"/>
+                                            <GradientStop Color="LimeGreen" Offset="0.75"/>
+                                            <GradientStop Color="LimeGreen" Offset="1"/>
                                         </LinearGradientBrush>
                                     </UserControls:DemageAndWearDataControl.ColorMap>
                                 </UserControls:DemageAndWearDataControl>
@@ -187,8 +193,8 @@
                                             <GradientStop Color="Red" Offset="0"/>
                                             <GradientStop Color="Red" Offset="0.1"/>
                                             <GradientStop Color="#FFFFBB33" Offset="0.2"/>
-                                            <GradientStop Color="Green" Offset="0.75"/>
-                                            <GradientStop Color="Green" Offset="1"/>
+                                            <GradientStop Color="LimeGreen" Offset="0.75"/>
+                                            <GradientStop Color="LimeGreen" Offset="1"/>
                                         </LinearGradientBrush>
                                     </UserControls:DemageAndWearDataControl.ColorMap>
                                 </UserControls:DemageAndWearDataControl>
@@ -198,8 +204,8 @@
                                             <GradientStop Color="Red" Offset="0"/>
                                             <GradientStop Color="Red" Offset="0.1"/>
                                             <GradientStop Color="#FFFFBB33" Offset="0.2"/>
-                                            <GradientStop Color="Green" Offset="0.75"/>
-                                            <GradientStop Color="Green" Offset="1"/>
+                                            <GradientStop Color="LimeGreen" Offset="0.75"/>
+                                            <GradientStop Color="LimeGreen" Offset="1"/>
                                         </LinearGradientBrush>
                                     </UserControls:DemageAndWearDataControl.ColorMap>
                                 </UserControls:DemageAndWearDataControl>
@@ -209,8 +215,8 @@
                                             <GradientStop Color="Red" Offset="0"/>
                                             <GradientStop Color="Red" Offset="0.1"/>
                                             <GradientStop Color="#FFFFBB33" Offset="0.2"/>
-                                            <GradientStop Color="Green" Offset="0.75"/>
-                                            <GradientStop Color="Green" Offset="1"/>
+                                            <GradientStop Color="LimeGreen" Offset="0.75"/>
+                                            <GradientStop Color="LimeGreen" Offset="1"/>
                                         </LinearGradientBrush>
                                     </UserControls:DemageAndWearDataControl.ColorMap>
                                 </UserControls:DemageAndWearDataControl>
@@ -220,8 +226,8 @@
                                             <GradientStop Color="Red" Offset="0"/>
                                             <GradientStop Color="Red" Offset="0.1"/>
                                             <GradientStop Color="#FFFFBB33" Offset="0.2"/>
-                                            <GradientStop Color="Green" Offset="0.75"/>
-                                            <GradientStop Color="Green" Offset="1"/>
+                                            <GradientStop Color="LimeGreen" Offset="0.75"/>
+                                            <GradientStop Color="LimeGreen" Offset="1"/>
                                         </LinearGradientBrush>
                                     </UserControls:DemageAndWearDataControl.ColorMap>
                                 </UserControls:DemageAndWearDataControl>
@@ -231,8 +237,8 @@
                                             <GradientStop Color="Red" Offset="0"/>
                                             <GradientStop Color="Red" Offset="0.1"/>
                                             <GradientStop Color="#FFFFBB33" Offset="0.2"/>
-                                            <GradientStop Color="Green" Offset="0.75"/>
-                                            <GradientStop Color="Green" Offset="1"/>
+                                            <GradientStop Color="LimeGreen" Offset="0.75"/>
+                                            <GradientStop Color="LimeGreen" Offset="1"/>
                                         </LinearGradientBrush>
                                     </UserControls:DemageAndWearDataControl.ColorMap>
                                 </UserControls:DemageAndWearDataControl>

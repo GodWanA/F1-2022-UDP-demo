@@ -39,6 +39,20 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
+        private Brush tyreConditionText;
+
+        public Brush TyreConditionText
+        {
+            get { return tyreConditionText; }
+            private set
+            {
+                if (value != tyreConditionText)
+                {
+                    this.tyreConditionText = value;
+                    this.OnPropertyChanged("TyreConditionText");
+                }
+            }
+        }
 
         public double Wear
         {
@@ -53,7 +67,9 @@ namespace F1TelemetryApp.UserControls
                     this.wear = value;
                     this.Condition = 100.0 - this.Wear;
 
-                    this.TyreConditionForeground = new SolidColorBrush(this.ColorMapTyreCondition.GradientStops.GetRelativeColor(this.Condition / 100.0));
+                    this.TyreConditionForeground = new SolidColorBrush(this.ColorMapTyreConditionBackground.GradientStops.GetRelativeColor(this.Condition / 100.0));
+                    this.TyreConditionText = new SolidColorBrush(this.ColorMapTyreConditionText.GradientStops.GetRelativeColor(this.Condition / 100.0));
+
                     //this.textBlock_wear.Text = this.wear.ToString("0.##");
 
                     this.OnPropertyChanged("Wear");
@@ -178,7 +194,8 @@ namespace F1TelemetryApp.UserControls
         }
 
 
-        public LinearGradientBrush ColorMapTyreCondition { get; set; } = null;
+        public LinearGradientBrush ColorMapTyreConditionBackground { get; set; } = null;
+        public LinearGradientBrush ColorMapTyreConditionText { get; set; } = null;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -192,7 +209,7 @@ namespace F1TelemetryApp.UserControls
 
         private void UserControl_Initialized(object sender, EventArgs e)
         {
-            if (this.ColorMapTyreCondition == null)
+            if (this.ColorMapTyreConditionBackground == null)
             {
                 var colors = new GradientStopCollection();
                 // red range
@@ -202,10 +219,26 @@ namespace F1TelemetryApp.UserControls
                 colors.Add(new GradientStop(Color.FromRgb(255, 187, 51), 0.6));
                 colors.Add(new GradientStop(Color.FromRgb(255, 187, 51), 0.66));
                 // green range
-                colors.Add(new GradientStop(Colors.Green, 0.9));
-                colors.Add(new GradientStop(Colors.Green, 1));
+                colors.Add(new GradientStop(Colors.LimeGreen, 0.9));
+                colors.Add(new GradientStop(Colors.LimeGreen, 1));
 
-                this.ColorMapTyreCondition = new LinearGradientBrush(colors);
+                this.ColorMapTyreConditionBackground = new LinearGradientBrush(colors);
+            }
+
+            if (this.ColorMapTyreConditionText == null)
+            {
+                var colors = new GradientStopCollection();
+                // red range
+                colors.Add(new GradientStop(Colors.White, 0.0));
+                colors.Add(new GradientStop(Colors.White, 0.45));
+                // yellow range
+                colors.Add(new GradientStop(Colors.Black, 0.5));
+                colors.Add(new GradientStop(Colors.Black, 1.0));
+                // green range
+                //colors.Add(new GradientStop(Colors.White, 0.9));
+                //colors.Add(new GradientStop(Colors.White, 1));
+
+                this.ColorMapTyreConditionText = new LinearGradientBrush(colors);
             }
         }
 
@@ -236,11 +269,14 @@ namespace F1TelemetryApp.UserControls
                 {
                     // TODO: dispose managed state (managed objects)
                     this.TyreConditionForeground = null;
-                    this.ColorMapTyreCondition = null;
+                    this.TyreConditionText = null;
+                    this.ColorMapTyreConditionBackground = null;
+                    this.ColorMapTyreConditionText = null;
                     this.PropertyChanged = null;
                 }
 
                 this.tyreConditionForeground = null;
+                this.tyreConditionText = null;
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
                 // TODO: set large fields to null
                 disposedValue = true;

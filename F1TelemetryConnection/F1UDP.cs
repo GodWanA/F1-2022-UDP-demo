@@ -38,7 +38,7 @@ namespace F1Telemetry
 
         protected IPEndPoint EndPoint { get; set; }
         protected UdpClient Connection { get; set; }
-
+        public double NumberOfPacketPerSecond { get; set; } = 8;
         /// <summary>
         /// Is connection is still alive
         /// </summary>
@@ -48,12 +48,16 @@ namespace F1Telemetry
         public PacketLapData LastLapDataPacket { get; private set; }
         public PacketParticipantsData LastParticipantsPacket { get; private set; }
         public PacketCarSetupData LastCarSetupPacket { get; private set; }
-        public PacketCarTelemetryData LastCartelmetryPacket { get; private set; }
+        public PacketCarTelemetryData LastCarTelmetryPacket { get; private set; }
         public PacketCarStatusData LastCarStatusDataPacket { get; private set; }
         public PacketFinalClassificationData LastFinalClassificationPacket { get; private set; }
         public PacketLobbyInfoData LastLobbyInfoPacket { get; private set; }
         public PacketSessionHistoryData[] LastSessionHistoryPacket { get; private set; } = new PacketSessionHistoryData[22];
         public PacketCarDamageData LastCarDemagePacket { get; private set; }
+        public DateTime LastTime_CarMotion { get; private set; }
+        public DateTime LastTime_LapData { get; private set; }
+        public DateTime LastTime_Cartelemetry { get; private set; }
+        public DateTime LastTime_CarStatus { get; private set; }
 
         public event EventHandler ConnectionError;
         public event EventHandler DataReadError;
@@ -83,7 +87,7 @@ namespace F1Telemetry
         public event EventHandler EventPacketFlashback;
         public event EventHandler EventPacketButtons;
 
-        private DateTime lastClean;
+        //private DateTime lastClean;
 
         /// <summary>
         /// Create and connects to Codemaster's F1 games UDP service.
@@ -99,7 +103,7 @@ namespace F1Telemetry
             this.EndPoint = new IPEndPoint(IPAddress.Parse(this.IPAdress), this.Port);
 
             this.Connection = new UdpClient(this.EndPoint);
-            this.lastClean = DateTime.Now;
+            //this.lastClean = DateTime.Now;
             //this.Connection.Client.ReceiveTimeout = 3;
             //this.Connection.Client.SendTimeout = 3;
 
@@ -120,6 +124,7 @@ namespace F1Telemetry
                             this.ByteArrayProcess((byte[])(receivedResults.Clone()));
                         });
 
+                        //this.ByteArrayProcess((byte[])(receivedResults.Clone()));
 
 
                         //if (DateTime.Now - this.lastClean > TimeSpan.FromSeconds(0.3))
@@ -216,11 +221,6 @@ namespace F1Telemetry
                     break;
                 case PacketTypes.LapData:
                     this.Lapdata(array, header);
-                    //var now = DateTime.Now;
-                    //if (now - this.lastClean > TimeSpan.FromMilliseconds(100))
-                    //{
-                    //    this.lastClean = now;
-                    //}
                     break;
                 case PacketTypes.Event:
                     this.Event(array, header);
@@ -293,9 +293,6 @@ namespace F1Telemetry
             {
                 var data = new PacketLapData(head, array);
                 this.OnLapDataPacket(data);
-                //using (var data = new PacketLapData(head, array))
-                //{
-                //}
             }
             catch (Exception ex)
             {
@@ -492,7 +489,12 @@ namespace F1Telemetry
         protected virtual void OnCarMotionPacket(PacketMotionData sender)
         {
             this.LastMotionPacket = sender;
-            if (this.CarMotionPacket != null) this.CarMotionPacket(sender, new EventArgs());
+
+            if (this.NumberOfPacketPerSecond == 0 || DateTime.Now - this.LastTime_CarMotion >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond))
+            {
+                if (this.CarMotionPacket != null) this.CarMotionPacket(sender, new EventArgs());
+                this.LastTime_CarMotion = DateTime.Now;
+            }
         }
 
         protected virtual void OnSessionPacket(PacketSessionData sender)
@@ -503,10 +505,12 @@ namespace F1Telemetry
 
         protected virtual void OnLapDataPacket(PacketLapData sender)
         {
-            //this.LastLapDataPacket?.Dispose();
-            //this.LastLapDataPacket = (PacketLapData)sender.Clone();
             this.LastLapDataPacket = sender;
-            if (this.LapDataPacket != null) this.LapDataPacket(sender, new EventArgs());
+            if (this.NumberOfPacketPerSecond == 0 || DateTime.Now - this.LastTime_LapData >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond))
+            {
+                if (this.LapDataPacket != null) this.LapDataPacket(sender, new EventArgs());
+                this.LastTime_LapData = DateTime.Now;
+            }
         }
 
         protected virtual void OnParticipantsPacket(PacketParticipantsData sender)
@@ -523,14 +527,24 @@ namespace F1Telemetry
 
         protected virtual void OnCarTelemetryPacket(PacketCarTelemetryData sender)
         {
-            this.LastCartelmetryPacket = sender;
-            if (this.CarTelemetryPacket != null) this.CarTelemetryPacket(sender, new EventArgs());
+            this.LastCarTelmetryPacket = sender;
+
+            if (this.NumberOfPacketPerSecond == 0 || DateTime.Now - this.LastTime_Cartelemetry >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond))
+            {
+                if (this.CarTelemetryPacket != null) this.CarTelemetryPacket(sender, new EventArgs());
+                this.LastTime_Cartelemetry = DateTime.Now;
+            }
         }
 
         protected virtual void OnCarStatusPacket(PacketCarStatusData sender)
         {
             this.LastCarStatusDataPacket = sender;
-            if (this.CarStatusPacket != null) this.CarStatusPacket(sender, new EventArgs());
+
+            if (this.NumberOfPacketPerSecond == 0 || DateTime.Now - this.LastTime_CarStatus >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond))
+            {
+                if (this.CarStatusPacket != null) this.CarStatusPacket(sender, new EventArgs());
+                this.LastTime_CarStatus = DateTime.Now;
+            }
         }
 
         protected virtual void OnFinalClassificationPacket(PacketFinalClassificationData sender)

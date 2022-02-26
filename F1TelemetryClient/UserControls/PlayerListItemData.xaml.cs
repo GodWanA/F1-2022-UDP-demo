@@ -320,6 +320,94 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
+        private Brush trackPercentForeground;
+
+        public Brush TrackPercentForeground
+        {
+            get { return trackPercentForeground; }
+            set
+            {
+                if (value != this.trackPercentForeground)
+                {
+                    trackPercentForeground = value;
+                    this.OnPropertyChanged("TrackPercentForeground");
+                }
+            }
+        }
+
+        private TimeSpan pitText;
+
+        public TimeSpan PitText
+        {
+            get { return pitText; }
+            set
+            {
+                if (value != this.pitText)
+                {
+                    pitText = value;
+                    this.OnPropertyChanged("PitText");
+                }
+            }
+        }
+
+        private bool isSelected;
+
+        public bool IsSelected
+        {
+            get { return isSelected; }
+            set
+            {
+                if (this.isSelected != value)
+                {
+                    isSelected = value;
+                    if (isSelected)
+                    {
+                        this.grid_header.Background = Brushes.White;
+                        this.border_position.Background = Brushes.Black;
+                        this.label_carPosition.Foreground = Brushes.White;
+                        this.textblock_driver.Foreground = Brushes.Black;
+                    }
+                    else
+                    {
+                        this.grid_header.Background = Brushes.Black;
+                        this.border_position.Background = Brushes.White;
+                        this.label_carPosition.Foreground = Brushes.Black;
+                        this.textblock_driver.Foreground = Brushes.White;
+                    }
+                }
+            }
+        }
+
+        private int warningNumber;
+
+        public int WarningNumber
+        {
+            get { return warningNumber; }
+            set
+            {
+                if (value != this.warningNumber)
+                {
+                    warningNumber = value;
+                    this.OnPropertyChanged("WarningNumber");
+                }
+            }
+        }
+
+        private TimeSpan penaltyTime;
+
+        public TimeSpan PenaltyTime
+        {
+            get { return penaltyTime; }
+            set
+            {
+                if (value != this.penaltyTime)
+                {
+                    penaltyTime = value;
+                    this.OnPropertyChanged("PenaltyTime");
+                }
+            }
+        }
+
 
         private void OnPropertyChanged(string propertyName)
         {
@@ -360,6 +448,8 @@ namespace F1TelemetryApp.UserControls
                     this.IntervalTime = null;
                     this.LeaderIntervalTime = null;
                     this.PropertyChanged = null;
+                    this.TrackPercentForeground = null;
+                    this.TimerForeground = null;
                 }
 
                 this.currentLapTime = null;
@@ -369,6 +459,8 @@ namespace F1TelemetryApp.UserControls
                 this.timerForeground = null;
                 this.intervalTime = null;
                 this.leaderIntervalTime = null;
+                this.trackPercentForeground = null;
+                this.timerForeground = null;
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
                 // TODO: set large fields to null
@@ -390,6 +482,18 @@ namespace F1TelemetryApp.UserControls
             GC.SuppressFinalize(this);
         }
 
+        internal void SetPitStatues(PitStatuses pitStatus, TimeSpan pitLaneTimer)
+        {
+            if (pitStatus == PitStatuses.InPitArea || pitStatus == PitStatuses.Pitting)
+            {
+                this.textblock_pittime.Visibility = System.Windows.Visibility.Visible;
+            }
+            else
+            {
+                this.textblock_pittime.Visibility = System.Windows.Visibility.Hidden;
+            }
 
+            this.PitText = pitLaneTimer;
+        }
     }
 }

@@ -12,8 +12,8 @@ namespace F1TelemetryApp.Classes
             var point = gsc.SingleOrDefault(f => f.Offset == offset);
             if (point != null) return point.Color;
 
-            GradientStop before = gsc.Where(w => w.Offset == gsc.Min(m => m.Offset)).First();
-            GradientStop after = gsc.Where(w => w.Offset == gsc.Max(m => m.Offset)).First();
+            GradientStop before = gsc.Where(w => w.Offset == gsc.Min(m => m.Offset)).FirstOrDefault();
+            GradientStop after = gsc.Where(w => w.Offset == gsc.Max(m => m.Offset)).FirstOrDefault();
 
             foreach (var gs in gsc)
             {
