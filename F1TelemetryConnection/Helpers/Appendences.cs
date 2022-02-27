@@ -599,7 +599,7 @@ namespace F1Telemetry.Helpers
             C1,
         }
 
-        public enum BreakingAssistSettings
+        public enum BreakingAssists
         {
             Unknown = -1,
             off = 0,

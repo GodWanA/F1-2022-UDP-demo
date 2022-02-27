@@ -49,7 +49,7 @@ namespace F1TelemetryApp.UserControls
 
                 bool ok = false;
                 if (!this.IsAllSessionVisible) ok = rawData[i].SeassonType == this.weather_actual.SessionType || Regex.IsMatch(rawData[i].SeassonType.ToString(), "quallifying", RegexOptions.IgnoreCase);
-                else ok = rawData[i].SeassonType != SessionTypes.Unknown;
+                else ok = rawData[i] != null && rawData[i]?.SeassonType != SessionTypes.Unknown;
 
                 if (ok)
                 {
