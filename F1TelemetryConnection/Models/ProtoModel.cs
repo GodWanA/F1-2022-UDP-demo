@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace F1Telemetry.Models
 {
@@ -9,18 +10,12 @@ namespace F1Telemetry.Models
         public ProtoModel() { }
 
         public int Index { get; protected set; }
+        public bool Supported { get; protected set; } = true;
 
         public object Clone()
         {
             return this.MemberwiseClone();
         }
-
-        //public void Dispose()
-        //{
-        //    GC.SuppressFinalize(this);
-        //    GC.WaitForPendingFinalizers();
-        //    GC.Collect();
-        //}
 
         /// <summary>
         /// Select reader by packetformat.
@@ -30,21 +25,65 @@ namespace F1Telemetry.Models
         /// <param name="array">raw data</param>
         protected void PickReader(int format, byte[] array)
         {
-            switch (format)
+            try
             {
-                default:
-                    throw new InvalidOperationException("Unsopported packet format!");
-                case 2021:
-                    this.Reader2021(array);
-                    break;
+                this.Supported = true;
+                switch (format)
+                {
+                    default:
+                        throw new InvalidOperationException("Unsopported packet format!");
+                    case 2018:
+                        this.Reader2018(array);
+                        break;
+                    case 2019:
+                        this.Reader2019(array);
+                        break;
+                    case 2020:
+                        this.Reader2020(array);
+                        break;
+                    case 2021:
+                        this.Reader2021(array);
+                        break;
+                }
             }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                this.Supported = false;
+            }
+        }
+
+        /// <summary>
+        /// Reads 2018 games data formats from specific startindex.
+        /// </summary>
+        /// <param name="array">raw data array</param>
+        protected virtual void Reader2018(byte[] array)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Reads 2019 games data formats from specific startindex.
+        /// </summary>
+        /// <param name="array">raw data array</param>
+        protected virtual void Reader2019(byte[] array)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Reads 2020 games data formats from specific startindex.
+        /// </summary>
+        /// <param name="array">raw data array</param>
+        protected virtual void Reader2020(byte[] array)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
         /// Reads 2021 games data formats from specific startindex.
         /// </summary>
         /// <param name="array">raw data array</param>
-        /// <param name="index">startindex</param>
         protected virtual void Reader2021(byte[] array)
         {
             throw new NotImplementedException();

@@ -15,7 +15,6 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 using static F1Telemetry.Helpers.Appendences;
 
@@ -38,56 +37,186 @@ namespace F1Telemetry
 
         protected IPEndPoint EndPoint { get; set; }
         protected UdpClient Connection { get; set; }
+        /// <summary>
+        /// Maximum number of packet per second. Relevant on packets where intervals settable.<br/>
+        /// Important to reduce cpu usage.<br/>
+        /// 0 equals no limit.
+        /// </summary>
         public double NumberOfPacketPerSecond { get; set; } = 8;
         /// <summary>
         /// Is connection is still alive
         /// </summary>
         public bool IsConnecting { get; private set; }
+        /// <summary>
+        /// Last recived motion packet.
+        /// </summary>
         public PacketMotionData LastMotionPacket { get; private set; }
+        /// <summary>
+        /// Last recived session data packet.
+        /// </summary>
         public PacketSessionData LastSessionDataPacket { get; private set; }
+        /// <summary>
+        /// Last recived lap data packet.
+        /// </summary>
         public PacketLapData LastLapDataPacket { get; private set; }
+        /// <summary>
+        /// Last recived participants packet.
+        /// </summary>
         public PacketParticipantsData LastParticipantsPacket { get; private set; }
+        /// <summary>
+        /// Last recived car setup packet.
+        /// </summary>
         public PacketCarSetupData LastCarSetupPacket { get; private set; }
+        /// <summary>
+        /// Last recieved car telemetry packet.
+        /// </summary>
         public PacketCarTelemetryData LastCarTelmetryPacket { get; private set; }
+        /// <summary>
+        /// Last recieved car status data packet.
+        /// </summary>
         public PacketCarStatusData LastCarStatusDataPacket { get; private set; }
+        /// <summary>
+        /// Last recieved car final classification packet.
+        /// </summary>
         public PacketFinalClassificationData LastFinalClassificationPacket { get; private set; }
+        /// <summary>
+        /// Last recieved lobby info packet.
+        /// </summary>
         public PacketLobbyInfoData LastLobbyInfoPacket { get; private set; }
+        /// <summary>
+        /// Collects and contain all cars last aviable session history packets.
+        /// </summary>
         public PacketSessionHistoryData[] LastSessionHistoryPacket { get; private set; } = new PacketSessionHistoryData[22];
+        /// <summary>
+        /// Last recieved car demage packet.
+        /// </summary>
         public PacketCarDamageData LastCarDemagePacket { get; private set; }
+        /// <summary>
+        /// last time when car motion event delegated.
+        /// </summary>
         public DateTime LastTime_CarMotion { get; private set; }
+        /// <summary>
+        /// last time when lap data event delegated.
+        /// </summary>
         public DateTime LastTime_LapData { get; private set; }
+        /// <summary>
+        /// last time when car telemetry event delegated.
+        /// </summary>
         public DateTime LastTime_Cartelemetry { get; private set; }
+        /// <summary>
+        /// last time when car status event delegated.
+        /// </summary>
         public DateTime LastTime_CarStatus { get; private set; }
 
+        // udp events:
+        /// <summary>
+        /// Occours on UDP connection error. Sender is an Exception object.
+        /// </summary>
         public event EventHandler ConnectionError;
+        /// <summary>
+        /// Occours on Packet read error. Sender is an Exception object.
+        /// </summary>
         public event EventHandler DataReadError;
+        /// <summary>
+        /// Occours after UDP connection closed. Sender is current F1UFP object.
+        /// </summary>
         public event EventHandler ClosedConnection;
+
+        // main packet envets:
+        /// <summary>
+        /// Occours on carmotion packet read. Sender is a PacketMotionData object.
+        /// </summary>
         public event EventHandler CarMotionPacket;
+        /// <summary>
+        /// Occours on session packet read. Sender is a PacketSessionData object.
+        /// </summary>
         public event EventHandler SessionPacket;
+        /// <summary>
+        /// Occours on lap data packet read. Sender is a PacketLapData object.
+        /// </summary>
         public event EventHandler LapDataPacket;
+        /// <summary>
+        /// Occours on lap data packet read. Sender is a PacketParticipantsData object.
+        /// </summary>
         public event EventHandler ParticipantsPacket;
+        /// <summary>
+        /// Occours on lap data packet read. Sender is a PacketCarSetupData object.
+        /// </summary>
         public event EventHandler CarSetupsPacket;
+        /// <summary>
+        /// Occours on lap data packet read. Sender is a PacketCarTelemetryData object.
+        /// </summary>        
         public event EventHandler CarTelemetryPacket;
+        /// <summary>
+        /// Occours on lap data packet read. Sender is a PacketCarStatusData object.
+        /// </summary>
         public event EventHandler CarStatusPacket;
+        /// <summary>
+        /// Occours on lap data packet read. Sender is a PacketFinalClassificationData object.
+        /// </summary>
         public event EventHandler FinalClassificationPacket;
+        /// <summary>
+        /// Occours on lap data packet read. Sender is a PacketLobbyInfoData object.
+        /// </summary>
         public event EventHandler LobbyInfoPacket;
+        /// <summary>
+        /// Occours on lap data packet read. Sender is a PacketSessionHistoryData object.
+        /// </summary>
         public event EventHandler SessionHistoryPacket;
+        /// <summary>
+        /// Occours on lap data packet read. Sender is a PacketFinalClassificationData object.
+        /// </summary>
         public event EventHandler DemagePacket;
 
+        // special event packet events:
+        /// <summary>
+        /// Occours on any undefined event. Sender is a PacketEventData object.
+        /// </summary>
         public event EventHandler EventPacket;
+        /// <summary>
+        /// Occours on any undefined event. Sender is a FastestLap object.
+        /// </summary>
         public event EventHandler EventPacketFastestLap;
+        /// <summary>
+        /// Occours on any undefined event. Sender is a Retirement object.
+        /// </summary>
         public event EventHandler EventPacketRetirement;
+        /// <summary>
+        /// Occours on any undefined event. Sender is a TeamMateInPits object.
+        /// </summary>
         public event EventHandler EventPacketTeamMateInPits;
+        /// <summary>
+        /// Occours on any undefined event. Sender is a RaceWinner object.
+        /// </summary>
         public event EventHandler EventPacketRaceWinner;
+        /// <summary>
+        /// Occours on any undefined event. Sender is a Penalty object.
+        /// </summary>
         public event EventHandler EventPacketPenalty;
+        /// <summary>
+        /// Occours on any undefined event. Sender is a SpeedTrap object.
+        /// </summary>
         public event EventHandler EventPacketSpeedTrap;
+        /// <summary>
+        /// Occours on any undefined event. Sender is a StartLights object.
+        /// </summary>
         public event EventHandler EventPacketStartLights;
+        /// <summary>
+        /// Occours on any undefined event. Sender is a DriveThroughPenaltyServed object.
+        /// </summary>
         public event EventHandler EventPacketDriveThroughPenaltyServed;
+        /// <summary>
+        /// Occours on any undefined event. Sender is a StopGoPenaltyServed object.
+        /// </summary>
         public event EventHandler EventPacketStopGoPenaltyServed;
+        /// <summary>
+        /// Occours on any undefined event. Sender is a Flashback object.
+        /// </summary>
         public event EventHandler EventPacketFlashback;
+        /// <summary>
+        /// Occours on any undefined event. Sender is a Buttons object.
+        /// </summary>
         public event EventHandler EventPacketButtons;
-
-        //private DateTime lastClean;
 
         /// <summary>
         /// Create and connects to Codemaster's F1 games UDP service.
@@ -103,9 +232,6 @@ namespace F1Telemetry
             this.EndPoint = new IPEndPoint(IPAddress.Parse(this.IPAdress), this.Port);
 
             this.Connection = new UdpClient(this.EndPoint);
-            //this.lastClean = DateTime.Now;
-            //this.Connection.Client.ReceiveTimeout = 3;
-            //this.Connection.Client.SendTimeout = 3;
 
             Task.Run(() =>
             {
@@ -113,9 +239,6 @@ namespace F1Telemetry
                 {
                     while (IsConnecting)
                     {
-                        //var receivedResults = await this.Connection.ReceiveAsync();
-                        //Task.Run(() => this.ByteArrayProcess((byte[])(receivedResults.Buffer.Clone())));
-
                         var remoteEndPoint = new IPEndPoint(this.EndPoint.Address, this.EndPoint.Port);
                         var receivedResults = this.Connection.Receive(ref remoteEndPoint);
 
@@ -123,90 +246,24 @@ namespace F1Telemetry
                         {
                             this.ByteArrayProcess((byte[])(receivedResults.Clone()));
                         });
-
-                        //this.ByteArrayProcess((byte[])(receivedResults.Clone()));
-
-
-                        //if (DateTime.Now - this.lastClean > TimeSpan.FromSeconds(0.3))
-                        //{
-                        //    this.Connection.Close();
-                        //    //this.Connection.Dispose();
-                        //    this.Connection = new UdpClient(this.EndPoint);
-                        //    this.lastClean = DateTime.Now;
-                        //}
                     }
                 }
                 catch (Exception ex)
                 {
                     this.OnConnectionError(ex);
+                }
+                finally
+                {
                     this.Connection.Close();
+                    this.OnClosedConnection(this);
                 }
             });
-
-            //var t = new Thread(delegate ()
-            //{
-            //    try
-            //    {
-            //        while (IsConnecting)
-            //        {
-            //            //var receivedResults = await this.Connection.ReceiveAsync();
-            //            //Task.Run(() => this.ByteArrayProcess((byte[])(receivedResults.Buffer.Clone())));
-
-            //            var remoteEndPoint = new IPEndPoint(this.EndPoint.Address, this.EndPoint.Port);
-            //            var receivedResults = this.Connection.Receive(ref remoteEndPoint);
-            //            Task.Run(() => this.ByteArrayProcess((byte[])(receivedResults.Clone())));
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        this.OnConnectionError(ex);
-            //        this.Connection.Close();
-            //    }
-            //});
-            //t.Priority = ThreadPriority.BelowNormal;
-            //t.Start();
-
-            //try
-            //{
-            //    this.Connection.BeginReceive(new AsyncCallback(recv), null);
-            //}
-            //catch (Exception ex)
-            //{
-            //    this.OnConnectionError(ex);
-            //    this.Connection.Close();
-            //}
         }
 
-        private void recv(IAsyncResult res)
-        {
-            IPEndPoint RemoteIpEndPoint = this.EndPoint;
-            try
-            {
-                byte[] array = this.Connection.EndReceive(res, ref RemoteIpEndPoint);
-
-                //Process codes
-                Task.Run(() => this.ByteArrayProcess((byte[])array.Clone()));
-                //this.ByteArrayProcess((byte[])array.Clone());
-            }
-            catch (Exception ex)
-            {
-                this.OnConnectionError(ex);
-                this.IsConnecting = false;
-            }
-
-            if (this.IsConnecting)
-            {
-                //int d = (int)DateTime.Now.Ticks % 10;
-                //if (d != 1) Thread.Sleep(10 - d);
-                this.Connection.BeginReceive(new AsyncCallback(recv), null);
-            }
-            else
-            {
-                this.OnClosedConnection(this);
-                this.Connection.Close();
-            }
-        }
-
+        /// <summary>
+        /// Selects and delver packet to its process method.
+        /// </summary>
+        /// <param name="array">Raw byte array</param>
         private void ByteArrayProcess(byte[] array)
         {
             var header = new PacketHeader(array);
@@ -258,6 +315,7 @@ namespace F1Telemetry
         public void Close()
         {
             this.IsConnecting = false;
+            //this.Connection.Close();
             //this._Thread.Abort();
         }
 
