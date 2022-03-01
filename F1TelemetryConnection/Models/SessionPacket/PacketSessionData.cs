@@ -6,6 +6,11 @@ namespace F1Telemetry.Models.SessionPacket
 {
     public class PacketSessionData : ProtoModel
     {
+        /// <summary>
+        /// Creates a PacketSessionData from raw byte array
+        /// </summary>
+        /// <param name="header">Header packet of the object.</param>
+        /// <param name="array">Raw byte array</param>
         public PacketSessionData(PacketHeader header, byte[] array)
         {
             this.Header = header;
@@ -93,8 +98,6 @@ namespace F1Telemetry.Models.SessionPacket
 
         protected override void Reader2020(byte[] array)
         {
-            byte uint8;
-
             this.Reader2018(array);
             this.ReadWeatherForecast(array, 20);
         }
