@@ -14,8 +14,8 @@
             </Grid.RowDefinitions>
 
             <TextBlock x:Name="textblock_Header" Text="{Binding Header, FallbackValue=Unknown}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Left" TextWrapping="Wrap" Margin="2" Grid.ColumnSpan="2" Grid.Row="0" FontWeight="Bold"/>
-            <ProgressBar x:Name="progressbar_percent" Value="{Binding Percent, FallbackValue=100}" Grid.Column="1" Foreground="{Binding ProgressbarColor, FallbackValue=Green}" Grid.Row="1" Margin="2" Background="#B2A20000" BorderBrush="#FFB40000"/>
-            <TextBlock x:Name="textblock_percent" Text="{Binding Percent, StringFormat={}{0:0.##\\%}, FallbackValue=--}" VerticalAlignment="Center" Foreground="White" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="2"/>
+            <ProgressBar x:Name="progressbar_percent" Value="{Binding Percent, FallbackValue=100}" Grid.Column="1" Foreground="{Binding progressbarText, FallbackValue=Green}" Grid.Row="1" Margin="2" Background="#B2A20000" BorderBrush="#FFB40000"/>
+            <TextBlock x:Name="textblock_percent" Text="{Binding Percent, StringFormat={}{0:0.##\\%}, FallbackValue=--}" VerticalAlignment="Center" Foreground="{Binding ProgressbarForeground, FallbackValue=white}" HorizontalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="2"/>
         </Grid>
     </Border>
 </UserControl>

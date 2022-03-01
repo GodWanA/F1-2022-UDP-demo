@@ -44,30 +44,45 @@ namespace F1TelemetryApp.UserControls
 
                     //this.progressbar_percent.Value = percent;
                     //this.textblock_percent.Text = percent.ToString("0.##");
-                    this.ProgressbarColor = new SolidColorBrush(this.ColorMap.GradientStops.GetRelativeColor(this.percent / 100.0));
+                    this.ProgressbarForeground = new SolidColorBrush(this.ColorMapBackgound.GradientStops.GetRelativeColor(this.percent / 100.0));
+                    this.progressbarText = new SolidColorBrush(this.ColorMapText.GradientStops.GetRelativeColor(this.percent / 100.0));
 
                     this.OnPropertyChanged("Percent");
                 }
             }
         }
 
-        private Brush progressbarColor;
-
-        public Brush ProgressbarColor
+        private Brush progressbarForeground;
+        public Brush ProgressbarForeground
         {
-            get { return progressbarColor; }
+            get { return progressbarForeground; }
             private set
             {
-                if (value != this.progressbarColor)
+                if (value != progressbarForeground)
                 {
-                    progressbarColor = value;
-                    this.OnPropertyChanged("ProgressbarColor");
+                    this.progressbarForeground = value;
+                    this.OnPropertyChanged("ProgressbarForeground");
                 }
             }
         }
 
+        private Brush progressbarText;
 
-        public LinearGradientBrush ColorMap { get; set; } = null;
+        public Brush ProgressbarText
+        {
+            get { return progressbarText; }
+            private set
+            {
+                if (value != progressbarText)
+                {
+                    this.progressbarText = value;
+                    this.OnPropertyChanged("ProgressbarText");
+                }
+            }
+        }
+
+        public LinearGradientBrush ColorMapBackgound { get; set; } = null;
+        public LinearGradientBrush ColorMapText { get; set; } = null;
 
         public DemageAndWearDataControl()
         {
@@ -84,7 +99,6 @@ namespace F1TelemetryApp.UserControls
             {
                 this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
-
         }
 
         protected virtual void Dispose(bool disposing)
@@ -96,6 +110,11 @@ namespace F1TelemetryApp.UserControls
                     // TODO: dispose managed state (managed objects)
                     this.PropertyChanged = null;
                     this.Header = null;
+                    this.PropertyChanged = null;
+                    this.ProgressbarText = null;
+                    this.progressbarForeground = null;
+                    this.ColorMapText = null;
+                    this.ColorMapBackgound = null;
                 }
 
                 this.header = null;
@@ -121,14 +140,25 @@ namespace F1TelemetryApp.UserControls
 
         private void UserControl_Initialized(object sender, EventArgs e)
         {
-            if (this.ColorMap == null)
+            if (this.ColorMapBackgound == null)
             {
                 var colors = new GradientStopCollection();
                 colors.Add(new GradientStop(Color.FromRgb(255, 0, 0), 0));
                 colors.Add(new GradientStop(Color.FromRgb(255, 187, 51), 0.5));
                 colors.Add(new GradientStop(Color.FromRgb(45, 179, 0), 1));
 
-                this.ColorMap = new LinearGradientBrush(colors);
+                this.ColorMapBackgound = new LinearGradientBrush(colors);
+            }
+
+            if (this.ColorMapText == null)
+            {
+                var colors = new GradientStopCollection();
+                colors.Add(new GradientStop(Color.FromRgb(255, 255, 255), 0));
+                colors.Add(new GradientStop(Color.FromRgb(255, 255, 255), 0.5));
+                colors.Add(new GradientStop(Color.FromRgb(0, 0, 0), 0.501));
+                colors.Add(new GradientStop(Color.FromRgb(0, 0, 0), 1));
+
+                this.ColorMapText = new LinearGradientBrush(colors);
             }
         }
     }

@@ -8,12 +8,16 @@
 		<PlatformTarget>x64</PlatformTarget>
 		<UseWindowsForms>True</UseWindowsForms>
 		<PackageId>JeffPlus</PackageId>
-		<Version>0.0.0</Version>
 		<Authors>Csernay Attila</Authors>
 		<Company>Csernay Attila</Company>
 		<Product>Jeff+</Product>
 		<NeutralLanguage>en</NeutralLanguage>
 		<Description>Virtual engineer for Codemasters F1 Games</Description>
+		<AssemblyName>JeffPlus</AssemblyName>
+		<RepositoryUrl>https://github.com/GodWanA/F1-2021-UDP-demo</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageIcon>icon.png</PackageIcon>
+		<ApplicationIcon>icon.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -151,6 +155,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Content Include="icon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="System.Drawing.Common" Version="5.0.2" />
 	</ItemGroup>
 
@@ -261,6 +269,10 @@
 		<Resource Include="Images\Flags\Venezuelan.png" />
 		<Resource Include="Images\Flags\Vietnamese.png" />
 		<Resource Include="Images\Flags\Welsh.png" />
+		<Resource Include="Images\icon.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</Resource>
 		<Resource Include="Images\Masks\natinalityMask.png" />
 		<Resource Include="Images\Masks\natinalityMask2.png" />
 		<Resource Include="Images\Masks\natinalityMask3.png" />
@@ -306,6 +318,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="Images\icon.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 		<None Update="Properties\Settings.settings">
 			<Generator>SettingsSingleFileGenerator</Generator>
 			<LastGenOutput>Settings.Designer.cs</LastGenOutput>

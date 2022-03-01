@@ -3,9 +3,6 @@ namespace F1Telemetry.Models.LapDataPacket
 {
     public class PacketLapData : ProtoModel
     {
-        public PacketHeader Header { get; private set; }
-        public LapData[] Lapdata { get; private set; }
-
         public PacketLapData(PacketHeader header, byte[] array)
         {
             this.Header = header;
@@ -13,18 +10,34 @@ namespace F1Telemetry.Models.LapDataPacket
             this.PickReader(this.Header.PacketFormat, array);
         }
 
-        protected override void Reader2021(byte[] array)
+        private void ReaderCommon(byte[] array, int arraySize)
         {
-            int index = this.Index;
-
-            this.Lapdata = new LapData[22];
+            this.Lapdata = new LapData[arraySize];
             for (int i = 0; i < this.Lapdata.Length; i++)
             {
-                this.Lapdata[i] = new LapData(this.Header.PacketFormat, index, array);
-                index = this.Lapdata[i].Index;
+                this.Lapdata[i] = new LapData(this.Header.PacketFormat, this.Index, array);
+                this.Index = this.Lapdata[i].Index;
             }
+        }
 
-            this.Index = index;
+        protected override void Reader2018(byte[] array)
+        {
+            this.ReaderCommon(array, 20);
+        }
+
+        protected override void Reader2019(byte[] array)
+        {
+            this.ReaderCommon(array, 20);
+        }
+
+        protected override void Reader2020(byte[] array)
+        {
+            this.ReaderCommon(array, 22);
+        }
+
+        protected override void Reader2021(byte[] array)
+        {
+            this.ReaderCommon(array, 22);
         }
 
         protected override void Dispose(bool disposing)
@@ -39,5 +52,21 @@ namespace F1Telemetry.Models.LapDataPacket
 
             base.Dispose(disposing);
         }
+
+        /// <summary>
+        /// Packet's header<br/>
+        /// All game has to support.
+        /// </summary>
+        public PacketHeader Header { get; private set; }
+        /// <summary>
+        /// All cars' current lapdata.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
+        public LapData[] Lapdata { get; private set; }
+
     }
 }

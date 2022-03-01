@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:F1TelemetryApp.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="155" d:DesignWidth="800">
+             d:DesignHeight="200" d:DesignWidth="800">
     <GroupBox Header="Wheather Forecast" Padding="0">
         <Border Background="Black" CornerRadius="5" Padding="2,2,2,0" Margin="2,2,2,0">
             <Grid Margin="5,5,5,0" Height="auto" VerticalAlignment="Bottom">
@@ -29,10 +29,17 @@
                     <TextBlock Foreground="White" Grid.Row="1" Text="Track:" Margin="1" FontSize="10"  HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                     <TextBlock Foreground="White" Grid.Row="2" Text="" Margin="0" FontSize="8" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                 </Grid>
-                <local:WheatherNode Grid.Column="1" x:Name="weather_actual"/>
+                <local:WheatherNode Grid.Column="1" x:Name="weather_actual" Margin="0,24,0,0"/>
                 <Rectangle Grid.Column="2" Width="2" Fill="White" Margin="2" RadiusX="1" RadiusY="1"/>
                 <ScrollViewer x:Name="scrollviewer_nodes" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Visible" Grid.Column="3" Grid.RowSpan="2" Padding="0" Margin="0">
-                    <StackPanel x:Name="stackpanel_nodes" Orientation="Horizontal" MinHeight="100"/>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel x:Name="stackpanel_names" Orientation="Horizontal" Grid.Row="0"/>
+                        <StackPanel x:Name="stackpanel_nodes" Orientation="Horizontal" MinHeight="100" Grid.Row="1"/>
+                    </Grid>
                 </ScrollViewer>
             </Grid>
         </Border>

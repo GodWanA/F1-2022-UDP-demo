@@ -5,6 +5,8 @@ using System.Windows.Controls;
 using static F1Telemetry.Helpers.Appendences;
 using System.Windows;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Windows.Media;
 
 namespace F1TelemetryApp.UserControls
 {
@@ -39,6 +41,7 @@ namespace F1TelemetryApp.UserControls
                     });
                 }
             }
+            this.stackpanel_names.Children.Clear();
 
             var items = this.stackpanel_nodes.Children.Cast<WheatherNode>();
 
@@ -73,7 +76,21 @@ namespace F1TelemetryApp.UserControls
                     item.SessionType = SessionTypes.Unknown;
                 }
             }
-            //this.rectangle_marker.Margin = new Thickness(d, 1, 1, 0);
+
+            var groups = items.Where(x => x.SessionType != SessionTypes.Unknown).GroupBy(x => x.SessionType);
+            foreach (var group in groups)
+            {
+                double d = group.Sum(x => x.ActualWidth);
+                var t = new TextBlock();
+                //t.Height = 24;
+                t.Margin = new Thickness(2);
+                t.Width = d;
+                t.Foreground = Brushes.White;
+                t.TextAlignment = TextAlignment.Center;
+                t.Text = group.Select(x => x.SessionType).FirstOrDefault().ToString();
+                this.stackpanel_names.Children.Add(t);
+            }
+
         }
 
         public bool IsAllSessionVisible { get; set; } = true;

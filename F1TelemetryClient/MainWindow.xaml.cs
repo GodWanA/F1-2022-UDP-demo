@@ -6,6 +6,7 @@ using F1Telemetry.Models.SessionHistoryPacket;
 using F1Telemetry.Models.SessionPacket;
 using F1TelemetryApp.Classes;
 using F1TelemetryApp.UserControls;
+using F1TelemetryApp.Windows;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -381,7 +382,7 @@ namespace F1TelemetryClient
                        elem.CurrentLapTime = current.CurrentLapTime;
                        elem.TrackLengthPercent = p;
                        elem.CarPosition = current.CarPosition;
-                       elem.SetPitStatues(current.PitStatus, current.PitLaneTimer);
+                       elem.SetPitStatues(current.PitStatus, current.PitStopTimer);
                        //if (current.Warnings > 0) Debug.WriteLine("HELLÓÓÓ");
                        elem.WarningNumber = current.Warnings;
                        elem.PenaltyTime = current.Penalties;
@@ -718,6 +719,18 @@ namespace F1TelemetryClient
         private void listBox_drivers_SourceUpdated(object sender, System.Windows.Data.DataTransferEventArgs e)
         {
             Debug.WriteLine("HELLLLÓÓÓÓÓÓÓ");
+        }
+
+        private void menuitem_exit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void menitem_about_Click(object sender, RoutedEventArgs e)
+        {
+            var ablak = new AboutWindow();
+            ablak.Owner = this;
+            ablak.ShowDialog();
         }
     }
 }

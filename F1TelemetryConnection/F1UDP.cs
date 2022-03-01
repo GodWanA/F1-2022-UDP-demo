@@ -218,6 +218,8 @@ namespace F1Telemetry
         /// </summary>
         public event EventHandler EventPacketButtons;
 
+        public static string DLLVersion { get; private set; } = "2021";
+
         /// <summary>
         /// Create and connects to Codemaster's F1 games UDP service.
         /// </summary>
@@ -315,8 +317,6 @@ namespace F1Telemetry
         public void Close()
         {
             this.IsConnecting = false;
-            //this.Connection.Close();
-            //this._Thread.Abort();
         }
 
         private void CarMotion(byte[] array, PacketHeader head)
