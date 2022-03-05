@@ -88,7 +88,6 @@ namespace F1Telemetry.Models.ParticipantsPacket
         ///     - 2021<br/>
         /// </summary>
         public string Name { get; private set; }
-        public Nationalities Nationality { get; private set; }
         /// <summary>
         /// The player's UDP setting, (restricted|public).<br/>
         /// Supports:<br/>
@@ -130,16 +129,16 @@ namespace F1Telemetry.Models.ParticipantsPacket
 
         protected override void Reader2019(byte[] array)
         {
-            this.Reader2018(array);
-        }
-
-        protected override void Reader2020(byte[] array)
-        {
             byte uint8;
 
             this.Reader2018(array);
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.YouTelemetry = (TelemetrySettings)uint8;
+        }
+
+        protected override void Reader2020(byte[] array)
+        {
+            this.Reader2019(array);
         }
 
         protected override void Reader2021(byte[] array)

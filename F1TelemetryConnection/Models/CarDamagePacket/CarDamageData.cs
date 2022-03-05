@@ -1,5 +1,7 @@
 ﻿using F1Telemetry.Helpers;
+using F1Telemetry.Models.CarStatusPacket;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace F1Telemetry.Models.CarDamagePacket
 {
@@ -9,6 +11,19 @@ namespace F1Telemetry.Models.CarDamagePacket
         {
             this.Index = index;
             this.PickReader(format, array);
+        }
+
+        public CarDamageData(Dictionary<string, float> tyreWear, Dictionary<string, byte> tyreDemage, byte frontLeftWingDemage, byte frontRightWingDemage, byte rearWingDemage, byte engineDemage, byte gearboxDemage, byte exhaustDemage, bool drsFault)
+        {
+            this.TyreWear = tyreWear;
+            this.TyreDemage = tyreDemage;
+            this.FrontLeftWingDemage = frontLeftWingDemage;
+            this.FrontRightWingDemage = frontRightWingDemage;
+            this.RearWingDemage = rearWingDemage;
+            this.EngineDemage = engineDemage;
+            this.GearBoxDemage = gearboxDemage;
+            this.ExhasutDemage = exhaustDemage;
+            this.IsDRSFault = drsFault;
         }
 
         public Dictionary<string, float> TyreWear { get; private set; }
@@ -22,6 +37,7 @@ namespace F1Telemetry.Models.CarDamagePacket
         public byte SidepodDemage { get; private set; }
         public bool IsDRSFault { get; private set; }
         public byte GearBoxDemage { get; private set; }
+        public byte ExhasutDemage { get; private set; }
         public byte EngineDemage { get; private set; }
         public byte GearBoxWear { get; private set; }
         public byte EngineESWear { get; private set; }

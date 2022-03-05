@@ -1,8 +1,12 @@
 ﻿
+using F1Telemetry.Models.CarStatusPacket;
+
 namespace F1Telemetry.Models.CarDamagePacket
 {
     public class PacketCarDamageData : ProtoModel
     {
+        public PacketCarDamageData() { }
+
         public PacketCarDamageData(PacketHeader header, byte[] array)
         {
             this.Header = header;
@@ -40,6 +44,16 @@ namespace F1Telemetry.Models.CarDamagePacket
             }
 
             base.Dispose(disposing);
+        }
+
+        internal void LoadRawDatas(PacketHeader head, CarStatusData[] source)
+        {
+            this.Header = head;
+            this.CarDamageData = new CarDamageData[source.Length];
+            for (int i = 0; i < this.CarDamageData.Length; i++)
+            {
+                CarDamageData[i] = source[i].BuildCardemageData();
+            }
         }
     }
 }

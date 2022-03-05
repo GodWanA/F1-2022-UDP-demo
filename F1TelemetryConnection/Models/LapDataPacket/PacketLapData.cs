@@ -3,6 +3,11 @@ namespace F1Telemetry.Models.LapDataPacket
 {
     public class PacketLapData : ProtoModel
     {
+        /// <summary>
+        /// Creates a PacketLapData object from raw byte array.
+        /// </summary>
+        /// <param name="header">Header of the packet</param>
+        /// <param name="array">Raw byte array</param>
         public PacketLapData(PacketHeader header, byte[] array)
         {
             this.Header = header;

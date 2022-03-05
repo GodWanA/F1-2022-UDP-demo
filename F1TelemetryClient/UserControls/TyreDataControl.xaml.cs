@@ -65,14 +65,14 @@ namespace F1TelemetryApp.UserControls
                 if (value != this.wear)
                 {
                     this.wear = value;
-                    this.Condition = 100.0 - this.Wear;
+                    this.OnPropertyChanged("Wear");
+                }
 
+                if (this.IsLoaded)
+                {
+                    this.Condition = 100.0 - this.Wear;
                     this.TyreConditionForeground = new SolidColorBrush(this.ColorMapTyreConditionBackground.GradientStops.GetRelativeColor(this.Condition / 100.0));
                     this.TyreConditionText = new SolidColorBrush(this.ColorMapTyreConditionText.GradientStops.GetRelativeColor(this.Condition / 100.0));
-
-                    //this.textBlock_wear.Text = this.wear.ToString("0.##");
-
-                    this.OnPropertyChanged("Wear");
                 }
             }
         }
@@ -88,8 +88,6 @@ namespace F1TelemetryApp.UserControls
                 if (value != this.demage)
                 {
                     this.demage = value;
-                    //this.textBlock_demage.Text = this.demage.ToString("0.##");
-
                     this.OnPropertyChanged("Demage");
                 }
             }
@@ -106,8 +104,6 @@ namespace F1TelemetryApp.UserControls
                 if (value != this.condition)
                 {
                     this.condition = value;
-                    this.progreassBar_Condition.Value = this.condition;
-                    //this.textBlock_condition.Text = this.condition.ToString("0.##");
                     this.OnPropertyChanged("Condition");
                 }
             }
@@ -240,6 +236,8 @@ namespace F1TelemetryApp.UserControls
 
                 this.ColorMapTyreConditionText = new LinearGradientBrush(colors);
             }
+
+            this.Wear = 0;
         }
 
         private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)

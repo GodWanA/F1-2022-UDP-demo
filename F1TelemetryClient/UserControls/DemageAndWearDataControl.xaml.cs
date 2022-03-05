@@ -41,13 +41,13 @@ namespace F1TelemetryApp.UserControls
                 if (value != this.percent)
                 {
                     percent = value;
-
-                    //this.progressbar_percent.Value = percent;
-                    //this.textblock_percent.Text = percent.ToString("0.##");
-                    this.ProgressbarForeground = new SolidColorBrush(this.ColorMapBackgound.GradientStops.GetRelativeColor(this.percent / 100.0));
-                    this.progressbarText = new SolidColorBrush(this.ColorMapText.GradientStops.GetRelativeColor(this.percent / 100.0));
-
                     this.OnPropertyChanged("Percent");
+                }
+
+                if (this.IsLoaded)
+                {
+                    this.ProgressbarForeground = new SolidColorBrush(this.ColorMapBackgound.GradientStops.GetRelativeColor(this.percent / 100.0));
+                    this.ProgressbarText = new SolidColorBrush(this.ColorMapText.GradientStops.GetRelativeColor(this.percent / 100.0));
                 }
             }
         }
@@ -160,6 +160,8 @@ namespace F1TelemetryApp.UserControls
 
                 this.ColorMapText = new LinearGradientBrush(colors);
             }
+
+            this.Percent = 100;
         }
     }
 }

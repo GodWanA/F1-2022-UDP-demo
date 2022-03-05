@@ -335,9 +335,9 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private TimeSpan pitText;
+        private string pitText;
 
-        public TimeSpan PitText
+        public string PitText
         {
             get { return pitText; }
             set
@@ -493,7 +493,8 @@ namespace F1TelemetryApp.UserControls
                 this.textblock_pittime.Visibility = System.Windows.Visibility.Hidden;
             }
 
-            this.PitText = pitLaneTimer;
+            if (pitLaneTimer != TimeSpan.Zero) this.PitText = pitLaneTimer.ToString(@"s\:ff");
+            else this.PitText = "PIT";
         }
     }
 }

@@ -22,6 +22,19 @@ namespace F1Telemetry.Models.EventPacket
         }
 
         /// <summary>
+        /// Creates an emulated Buttons object from other packets.
+        /// </summary>
+        /// <param name="header">Header of parent packet</param>
+        /// <param name="pressedButtons">List of currently pressed buttons on controller.</param>
+        public Buttons(PacketHeader header, List<ButtonFlags> pressedButtons)
+        {
+            this.Header = header;
+            this.PressedButtons = pressedButtons;
+            this.EventCode = "BUTN";
+            this.ButtonStatus = EventTypes.ButtonStatus;
+        }
+
+        /// <summary>
         /// List of currently pressed buttons.<br/>
         /// Supported:<br/>
         ///     - 2018 (emulated)<br/>
@@ -30,18 +43,16 @@ namespace F1Telemetry.Models.EventPacket
         ///     - 2021<br/>
         /// </summary>
         public List<ButtonFlags> PressedButtons { get; private set; }
+        public EventTypes ButtonStatus { get; }
 
         protected override void Reader2021(byte[] array)
         {
-            int index = this.Index;
             uint val;
 
             //uint32 m_buttonStatus;    // Bit flags specifying which buttons are being pressed
             //                          // currently - see appendices
-            index += ByteReader.ToUInt32(array, index, out val);
+            this.Index += ByteReader.ToUInt32(array, this.Index, out val);
             this.PressedButtons = Appendences.KeyChecker(val);
-
-            this.Index = index;
         }
 
         protected override void Dispose(bool disposing)

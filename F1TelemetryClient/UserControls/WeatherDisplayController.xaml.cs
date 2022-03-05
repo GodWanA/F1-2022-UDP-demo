@@ -33,7 +33,7 @@ namespace F1TelemetryApp.UserControls
         {
             if (stackpanel_nodes.Children.Count == 0)
             {
-                for (int i = 0; i < rawData.Length; i++)
+                for (int i = 0; i < rawData?.Length; i++)
                 {
                     this.stackpanel_nodes.Children.Add(new WheatherNode
                     {
@@ -41,56 +41,59 @@ namespace F1TelemetryApp.UserControls
                     });
                 }
             }
+
             this.stackpanel_names.Children.Clear();
 
-            var items = this.stackpanel_nodes.Children.Cast<WheatherNode>();
-
-            for (int i = 0; i < items.Count(); i++)
+            if (rawData != null)
             {
-                var item = (WheatherNode)this.stackpanel_nodes.Children[i];
-                if (i == 0) this.weather_actual.RainPercentage = rawData[i].RainPercentage;
+                var items = this.stackpanel_nodes.Children.Cast<WheatherNode>();
 
-                bool ok = false;
-                if (!this.IsAllSessionVisible) ok = rawData[i].SeassonType == this.weather_actual.SessionType || Regex.IsMatch(rawData[i].SeassonType.ToString(), "quallifying", RegexOptions.IgnoreCase);
-                else ok = rawData[i] != null && rawData[i]?.SeassonType != SessionTypes.Unknown;
-
-                if (ok)
+                for (int i = 0; i < items.Count(); i++)
                 {
-                    item.Visibility = Visibility.Visible;
-                    item.AirTemperature = rawData[i].AirTemperature;
-                    item.TrackTemperature = rawData[i].TrackTemperature;
-                    item.RainPercentage = rawData[i].RainPercentage;
-                    item.Weather = rawData[i].Weather;
-                    item.OffsetTime = rawData[i].TimeOffset;
-                    item.SessionType = rawData[i].SeassonType;
+                    var item = (WheatherNode)this.stackpanel_nodes.Children[i];
+                    if (i == 0) this.weather_actual.RainPercentage = rawData[i].RainPercentage;
 
-                    if (i != 0 && rawData[i].TimeOffset == TimeSpan.Zero) item.NewBlockMarker = true;
-                    else item.NewBlockMarker = false;
+                    bool ok = false;
+                    if (!this.IsAllSessionVisible) ok = rawData[i].SeassonType == this.weather_actual.SessionType || Regex.IsMatch(rawData[i].SeassonType.ToString(), "quallifying", RegexOptions.IgnoreCase);
+                    else ok = rawData[i] != null && rawData[i]?.SeassonType != SessionTypes.Unknown;
 
-                    if (rawData[i].SeassonType == this.weather_actual.SessionType) item.IsCurrentSession = true;
-                    else item.IsCurrentSession = false;
+                    if (ok)
+                    {
+                        item.Visibility = Visibility.Visible;
+                        item.AirTemperature = rawData[i].AirTemperature;
+                        item.TrackTemperature = rawData[i].TrackTemperature;
+                        item.RainPercentage = rawData[i].RainPercentage;
+                        item.Weather = rawData[i].Weather;
+                        item.OffsetTime = rawData[i].TimeOffset;
+                        item.SessionType = rawData[i].SeassonType;
+
+                        if (i != 0 && rawData[i].TimeOffset == TimeSpan.Zero) item.NewBlockMarker = true;
+                        else item.NewBlockMarker = false;
+
+                        if (rawData[i].SeassonType == this.weather_actual.SessionType) item.IsCurrentSession = true;
+                        else item.IsCurrentSession = false;
+                    }
+                    else
+                    {
+                        item.Visibility = Visibility.Collapsed;
+                        item.SessionType = SessionTypes.Unknown;
+                    }
                 }
-                else
+
+                var groups = items.Where(x => x.SessionType != SessionTypes.Unknown).GroupBy(x => x.SessionType);
+                foreach (var group in groups)
                 {
-                    item.Visibility = Visibility.Collapsed;
-                    item.SessionType = SessionTypes.Unknown;
+                    double d = group.Sum(x => x.ActualWidth);
+                    var t = new TextBlock();
+                    //t.Height = 24;
+                    t.Margin = new Thickness(2);
+                    t.Width = d;
+                    t.Foreground = Brushes.White;
+                    t.TextAlignment = TextAlignment.Center;
+                    t.Text = group.Select(x => x.SessionType).FirstOrDefault().ToString();
+                    this.stackpanel_names.Children.Add(t);
                 }
             }
-
-            var groups = items.Where(x => x.SessionType != SessionTypes.Unknown).GroupBy(x => x.SessionType);
-            foreach (var group in groups)
-            {
-                double d = group.Sum(x => x.ActualWidth);
-                var t = new TextBlock();
-                //t.Height = 24;
-                t.Margin = new Thickness(2);
-                t.Width = d;
-                t.Foreground = Brushes.White;
-                t.TextAlignment = TextAlignment.Center;
-                t.Text = group.Select(x => x.SessionType).FirstOrDefault().ToString();
-                this.stackpanel_names.Children.Add(t);
-            }
-
         }
 
         public bool IsAllSessionVisible { get; set; } = true;

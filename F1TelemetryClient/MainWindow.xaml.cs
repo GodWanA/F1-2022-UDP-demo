@@ -25,7 +25,7 @@ namespace F1TelemetryClient
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private F1UDP udp;
         private DispatcherTimer lockTimer = new DispatcherTimer();
@@ -228,47 +228,41 @@ namespace F1TelemetryClient
                 {
                     case SessionTypes.Race:
                     case SessionTypes.Race2:
+                        int lap = curHistory.NumberOfLaps;
+                        int sector = 0;
+
+                        if (lap > 0)
                         {
-                            int lap = curHistory.NumberOfLaps;
-                            int sector = 0;
-
-                            if (lap > 0)
-                            {
-                                if (curHistory.LapHistoryData[lap - 1].Sector1Time != TimeSpan.Zero) sector = 1;
-                                else if (curHistory.LapHistoryData[lap - 1].Sector2Time != TimeSpan.Zero) sector = 2;
-                                else if (curHistory.LapHistoryData[lap - 1].Sector3Time != TimeSpan.Zero) sector = 3;
-                            }
-
-                            var deltaTime = curHistory.GetTimeSum(lap, sector) - prevHistory.GetTimeSum(lap, sector);
-
-                            var deltaLaps = (int)MathF.Round(lapDatas.Lapdata[prevHistory.CarIndex].TotalLapDistance - lapDatas.Lapdata[curHistory.CarIndex].TotalLapDistance) / sessionData.TrackLength;
-
-                            if (deltaTime <= TimeSpan.FromSeconds(1)) fontColor = Brushes.Orange;
-                            else if (deltaTime <= TimeSpan.FromSeconds(2)) fontColor = Brushes.Yellow;
-
-                            if (deltaTime >= TimeSpan.Zero) sb.Append("+");
-                            else sb.Append("-");
-
-                            if (deltaLaps > 0) sb.Append((int)deltaTime.TotalSeconds + deltaTime.ToString(@"\.f") + "(+" + deltaLaps + " L)");
-                            else sb.Append((int)deltaTime.TotalSeconds + deltaTime.ToString(@"\.fff"));
+                            if (curHistory.LapHistoryData[lap - 1].Sector1Time != TimeSpan.Zero) sector = 1;
+                            else if (curHistory.LapHistoryData[lap - 1].Sector2Time != TimeSpan.Zero) sector = 2;
+                            else if (curHistory.LapHistoryData[lap - 1].Sector3Time != TimeSpan.Zero) sector = 3;
                         }
+
+                        var deltaTime = curHistory.GetTimeSum(lap, sector) - prevHistory.GetTimeSum(lap, sector);
+
+                        var deltaLaps = (int)MathF.Round(lapDatas.Lapdata[prevHistory.CarIndex].TotalLapDistance - lapDatas.Lapdata[curHistory.CarIndex].TotalLapDistance) / sessionData.TrackLength;
+
+                        if (deltaTime <= TimeSpan.FromSeconds(1)) fontColor = Brushes.Orange;
+                        else if (deltaTime <= TimeSpan.FromSeconds(2)) fontColor = Brushes.Yellow;
+
+                        if (deltaTime >= TimeSpan.Zero) sb.Append("+");
+
+                        if (deltaLaps > 0) sb.Append((int)deltaTime.TotalSeconds + deltaTime.ToString(@"\.f") + "(+" + deltaLaps + " L)");
+                        else sb.Append((int)deltaTime.TotalSeconds + deltaTime.ToString(@"\.fff"));
                         break;
                     default:
+                        if (curHistory.BestLapTimeLapNumber > 0 && prevHistory.BestLapTimeLapNumber > 0)
                         {
-                            if (curHistory.BestLapTimeLapNumber > 0 && prevHistory.BestLapTimeLapNumber > 0)
+                            var curLaptime = curHistory.LapHistoryData[curHistory.BestLapTimeLapNumber - 1].LapTime;
+                            var prevLaptime = prevHistory.LapHistoryData[prevHistory.BestLapTimeLapNumber - 1].LapTime;
+
+                            if (curLaptime != TimeSpan.Zero && prevLaptime != TimeSpan.Zero)
                             {
-                                var curLaptime = curHistory.LapHistoryData[curHistory.BestLapTimeLapNumber - 1].LapTime;
-                                var prevLaptime = prevHistory.LapHistoryData[prevHistory.BestLapTimeLapNumber - 1].LapTime;
+                                deltaTime = curLaptime - prevLaptime;
 
-                                if (curLaptime != TimeSpan.Zero && prevLaptime != TimeSpan.Zero)
-                                {
-                                    var deltaTime = curLaptime - prevLaptime;
+                                if (deltaTime >= TimeSpan.Zero) sb.Append("+");
 
-                                    if (deltaTime >= TimeSpan.Zero) sb.Append("+");
-                                    else sb.Append("-");
-
-                                    sb.Append((int)deltaTime.TotalSeconds + deltaTime.ToString(@"\.fff"));
-                                }
+                                sb.Append((int)deltaTime.TotalSeconds + deltaTime.ToString(@"\.fff"));
                             }
                         }
                         break;
@@ -462,16 +456,16 @@ namespace F1TelemetryClient
 
         private void PlayerList(int numberOfPlayers)
         {
-            if (this.participantsList.Count == 0)
+            if (this.participantsList.Count != numberOfPlayers)
             {
+                this.participantsList.Clear();
+
                 for (int i = 0; i < numberOfPlayers; i++)
                 {
                     var data = new PlayerListItemData();
                     data.ArrayIndex = i;
                     this.participantsList.Add(data);
                 }
-
-                //this.listBox_drivers.Items.IsLiveFiltering = true;
             }
         }
 
@@ -507,9 +501,9 @@ namespace F1TelemetryClient
                         this.tyredata_rr.TyreInnerTemperature = telemtry.TyresInnerTemperature["RearRight"];
 
                         this.tyredata_fl.TyreSurfaceTemperature = telemtry.TyresSurfaceTemperature["FrontLeft"];
-                        this.tyredata_fr.TyreSurfaceTemperature = telemtry.TyresInnerTemperature["FrontRight"];
-                        this.tyredata_rl.TyreSurfaceTemperature = telemtry.TyresInnerTemperature["RearLeft"];
-                        this.tyredata_rr.TyreSurfaceTemperature = telemtry.TyresInnerTemperature["RearRight"];
+                        this.tyredata_fr.TyreSurfaceTemperature = telemtry.TyresSurfaceTemperature["FrontRight"];
+                        this.tyredata_rl.TyreSurfaceTemperature = telemtry.TyresSurfaceTemperature["RearLeft"];
+                        this.tyredata_rr.TyreSurfaceTemperature = telemtry.TyresSurfaceTemperature["RearRight"];
 
                         this.tyredata_fl.Pressure = telemtry.TyresPressure["FrontLeft"];
                         this.tyredata_fr.Pressure = telemtry.TyresPressure["FrontRight"];
@@ -542,6 +536,7 @@ namespace F1TelemetryClient
                         this.demage_gb.Percent = 100.0 - demage.GearBoxDemage;
                         this.demage_rw.Percent = 100.0 - demage.RearWingDemage;
                         this.demage_sp.Percent = 100.0 - demage.SidepodDemage;
+                        this.demage_ex.Percent = 100.0 - demage.ExhasutDemage;
 
                         this.wear_ce.Percent = 100.0 - demage.EngineCEWear;
                         this.wear_es.Percent = 100.0 - demage.EngineESWear;

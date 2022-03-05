@@ -18,7 +18,7 @@ namespace F1Telemetry.Models.SessionPacket
             this.PickReader(format, array);
         }
 
-        private void readCommon(byte[] array)
+        private void ReaderCommon(byte[] array)
         {
             byte valb;
             //uint8 m_sessionType;              // 0 = unknown, 1 = P1, 2 = P2, 3 = P3, 4 = Short P, 5 = Q1
@@ -39,10 +39,9 @@ namespace F1Telemetry.Models.SessionPacket
 
         protected override void Reader2020(byte[] array)
         {
-            byte valb;
             sbyte valsb;
 
-            this.readCommon(array);
+            this.ReaderCommon(array);
 
             //int8 m_trackTemperature;         // Track temp. in degrees Celsius
             this.Index += ByteReader.ToInt8(array, this.Index, out valsb);
@@ -50,9 +49,6 @@ namespace F1Telemetry.Models.SessionPacket
             //int8 m_airTemperature;           // Air temp. in degrees celsius
             this.Index += ByteReader.ToInt8(array, this.Index, out valsb);
             this.AirTemperature = valsb;
-            //uint8 m_rainPercentage;           // Rain percentage (0-100)
-            this.Index += ByteReader.ToUInt8(array, this.Index, out valb);
-            this.RainPercentage = (int)valb;
         }
 
         protected override void Reader2021(byte[] array)
@@ -60,7 +56,7 @@ namespace F1Telemetry.Models.SessionPacket
             byte valb;
             sbyte valsb;
 
-            this.readCommon(array);
+            this.ReaderCommon(array);
 
             //int8 m_trackTemperature;         // Track temp. in degrees Celsius
             this.Index += ByteReader.ToInt8(array, this.Index, out valsb);

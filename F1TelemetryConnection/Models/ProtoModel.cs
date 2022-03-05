@@ -10,7 +10,7 @@ namespace F1Telemetry.Models
         public ProtoModel() { }
 
         public int Index { get; protected set; }
-        public bool Supported { get; protected set; } = true;
+        //public bool Supported { get; protected set; } = true;
 
         public object Clone()
         {
@@ -25,32 +25,32 @@ namespace F1Telemetry.Models
         /// <param name="array">raw data</param>
         protected void PickReader(int format, byte[] array)
         {
-            try
+            //try
+            //{
+            //this.Supported = true;
+            switch (format)
             {
-                this.Supported = true;
-                switch (format)
-                {
-                    default:
-                        throw new InvalidOperationException("Unsopported packet format!");
-                    case 2018:
-                        this.Reader2018(array);
-                        break;
-                    case 2019:
-                        this.Reader2019(array);
-                        break;
-                    case 2020:
-                        this.Reader2020(array);
-                        break;
-                    case 2021:
-                        this.Reader2021(array);
-                        break;
-                }
+                default:
+                    throw new InvalidOperationException("Unsopported packet format!");
+                case 2018:
+                    this.Reader2018(array);
+                    break;
+                case 2019:
+                    this.Reader2019(array);
+                    break;
+                case 2020:
+                    this.Reader2020(array);
+                    break;
+                case 2021:
+                    this.Reader2021(array);
+                    break;
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-                this.Supported = false;
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    Debug.WriteLine(ex);
+            //    this.Supported = false;
+            //}
         }
 
         /// <summary>

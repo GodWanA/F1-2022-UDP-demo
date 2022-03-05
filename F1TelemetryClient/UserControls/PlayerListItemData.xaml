@@ -67,7 +67,7 @@
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
             <TextBlock x:Name="textblock_laptime" Grid.Column="0" Foreground="{Binding TimerForeground, FallbackValue=White}" Text="{Binding CurrentLapTime, StringFormat=m\\:ss\\.fff, FallbackValue=--:--.---}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0" FontFamily="{StaticResource Formula1 Display}"/>
-            <TextBlock x:Name="textblock_pittime" Grid.Column="1" Foreground="LimeGreen" Text="{Binding PitText, StringFormat=s\\.ff, FallbackValue=--.--}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0" FontFamily="{StaticResource Formula1 Display}"/>
+            <TextBlock x:Name="textblock_pittime" Grid.Column="1" Foreground="LimeGreen" Text="{Binding PitText, FallbackValue=PIT}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0" FontFamily="{StaticResource Formula1 Display}"/>
             <TextBlock x:Name="textblock_interval" Grid.Column="2" Foreground="{Binding TextColor, FallbackValue=white}" Text="{Binding IntervalTime, FallbackValue=interval}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0" FontFamily="{StaticResource Formula1 Display}"/>
             <TextBlock x:Name="textblock_leaderInterval" Grid.Column="3" Foreground="White" Text="{Binding LeaderIntervalTime, FallbackValue=leader}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0,0,2,0" FontFamily="{StaticResource Formula1 Display}"/>
             <TextBlock x:Name="textblock_warnings" Grid.Column="4" Foreground="Orange" Text="{Binding WarningNumber, StringFormat=\\x0 , FallbackValue=x0}" VerticalAlignment="Center" HorizontalAlignment="Center"/>

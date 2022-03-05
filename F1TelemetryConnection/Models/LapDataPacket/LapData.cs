@@ -6,6 +6,12 @@ namespace F1Telemetry.Models.LapDataPacket
 {
     public class LapData : ProtoModel
     {
+        /// <summary>
+        /// Creates a LapData object from raw byte array.
+        /// </summary>
+        /// <param name="format">Packet format</param>
+        /// <param name="index">Start index of packet</param>
+        /// <param name="array">Raw byte array</param>
         public LapData(int format, int index, byte[] array)
         {
             this.Index = index;
