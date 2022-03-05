@@ -34,6 +34,11 @@ namespace F1Telemetry.Helpers
             return 1;
         }
 
+        internal static int ToUInt8(byte[] array, int index, out object uint8)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Gets the value of bytearray at prefered index.
         /// </summary>
@@ -256,6 +261,22 @@ namespace F1Telemetry.Helpers
                 ret += ByteReader.ToUInt16(array, index + ret, out tmp);
                 dictionary.Add("FrontLeft", tmp);
                 ret += ByteReader.ToUInt16(array, index + ret, out tmp);
+                dictionary.Add("FrontRight", tmp);
+
+                return ret;
+            }
+
+            internal static int fromFloatOld(byte[] array, int index, out Dictionary<string, float> dictionary)
+            {
+                float tmp;
+                dictionary = new Dictionary<string, float>();
+                int ret = 0;
+
+                ret += ByteReader.ToFloat(array, index + ret, out tmp);
+                dictionary.Add("RearLeft", tmp);
+                dictionary.Add("RearRight", tmp);
+                ret += ByteReader.ToFloat(array, index + ret, out tmp);
+                dictionary.Add("FrontLeft", tmp);
                 dictionary.Add("FrontRight", tmp);
 
                 return ret;

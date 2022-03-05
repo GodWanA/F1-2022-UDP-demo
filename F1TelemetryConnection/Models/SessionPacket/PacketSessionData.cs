@@ -7,7 +7,7 @@ namespace F1Telemetry.Models.SessionPacket
     public class PacketSessionData : ProtoModel
     {
         /// <summary>
-        /// Creates a PacketSessionData from raw byte array
+        /// Creates a PacketSessionData from raw byte array.
         /// </summary>
         /// <param name="header">Header packet of the object.</param>
         /// <param name="array">Raw byte array</param>

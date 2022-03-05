@@ -5,6 +5,11 @@ namespace F1Telemetry.Models.EventPacket
 {
     public class Flashback : PacketEventData
     {
+        /// <summary>
+        /// Creates a Flashback object from raw byte array.
+        /// </summary>
+        /// <param name="e">Parent event data</param>
+        /// <param name="array">Raw byte array</param>
         public Flashback(PacketEventData e, byte[] array)
         {
             this.Header = e.Header;
@@ -15,7 +20,17 @@ namespace F1Telemetry.Models.EventPacket
             this.PickReader(this.Header.PacketFormat, array);
         }
 
+        /// <summary>
+        /// Frame identifier flashed back to.<br/>
+        /// Supported:<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public uint FlashbackFraneIdentifier { get; private set; }
+        /// <summary>
+        /// Session time flashed back to.<br/>
+        /// Supported:<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public TimeSpan FlashbackSessionTime { get; private set; }
 
         protected override void Reader2021(byte[] array)

@@ -4,6 +4,11 @@ namespace F1Telemetry.Models.EventPacket
 {
     public class StopGoPenaltyServed : PacketEventData
     {
+        /// <summary>
+        /// Creates a StopGoPenaltyServed object from raw byte array.
+        /// </summary>
+        /// <param name="e">Parent event data</param>
+        /// <param name="array">Raw byte array</param>
         public StopGoPenaltyServed(PacketEventData e, byte[] array)
         {
             this.Header = e.Header;
@@ -14,6 +19,11 @@ namespace F1Telemetry.Models.EventPacket
             this.PickReader(this.Header.PacketFormat, array);
         }
 
+        /// <summary>
+        /// Vehicle index of the vehicle serving stop go.<br/>
+        /// Supported:<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public byte VehicleIndex { get; private set; }
 
         protected override void Reader2021(byte[] array)

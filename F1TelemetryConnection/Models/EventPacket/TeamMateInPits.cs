@@ -1,10 +1,14 @@
 ﻿using F1Telemetry.Helpers;
-using System;
 
 namespace F1Telemetry.Models.EventPacket
 {
     public class TeamMateInPits : PacketEventData
     {
+        /// <summary>
+        /// Creates a TeamMateInPits object from raw byte array.
+        /// </summary>
+        /// <param name="e">Parent event data</param>
+        /// <param name="array">Raw byte array</param>
         public TeamMateInPits(PacketEventData e, byte[] array)
         {
             this.Header = e.Header;
@@ -15,6 +19,13 @@ namespace F1Telemetry.Models.EventPacket
             this.PickReader(this.Header.PacketFormat, array);
         }
 
+        /// <summary>
+        /// Car index in other pacekts.<br/>
+        /// Supported:<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public byte VehicleIndex { get; private set; }
 
         protected override void Reader2021(byte[] array)

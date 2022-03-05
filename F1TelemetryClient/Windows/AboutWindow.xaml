@@ -5,40 +5,47 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:F1TelemetryApp.Windows"
         mc:Ignorable="d"
-        Title="About" Height="200" Width="200" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="About" Height="150" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FFC1C1C1" Offset="0"/>
             <GradientStop Color="#FF757575" Offset="1"/>
         </LinearGradientBrush>
     </Window.Background>
-    <StackPanel Margin="2">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Developer:" Grid.Column="0" Margin="2" TextAlignment="Right"/>
-            <TextBlock Text="Attila Csernay" Grid.Column="1" Margin="2"/>
+    <Grid Margin="2">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Source="/Images/icon.png"  VerticalAlignment="Top"/>
+        <Grid Grid.Row="0" Grid.Column="1">
+            <TextBlock Text="Jeff+ - The Virtual Race Engineer" TextAlignment="Center" FontWeight="Bold" FontSize="14"/>
         </Grid>
+        <StackPanel Margin="2" Grid.Column="1" Grid.Row="1" Background="#33FFFFFF">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Developer:" Grid.Column="0" Margin="2" TextAlignment="Right"/>
+                <TextBlock Text="Attila Csernay" Grid.Column="1" Margin="2"/>
+            </Grid>
 
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Client version:" Grid.Column="0" Margin="2" TextAlignment="Right"/>
-            <TextBlock x:Name="textblock_gameVersion" Grid.Column="1" Margin="2"/>
-        </Grid>
+            <Separator  Margin="2"/>
 
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="DLL version:" Grid.Column="0" Margin="2" TextAlignment="Right"/>
-            <TextBlock x:Name="textblock_DLLversion" Grid.Column="1" Margin="2"/>
-        </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Client version:" Grid.Column="0" Margin="2" TextAlignment="Right"/>
+                <TextBlock x:Name="textblock_gameVersion" Grid.Column="1" Margin="2"/>
+            </Grid>
 
-    </StackPanel>
+        </StackPanel>
+    </Grid>
 </Window>

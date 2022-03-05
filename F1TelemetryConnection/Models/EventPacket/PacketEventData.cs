@@ -5,7 +5,16 @@ namespace F1Telemetry.Models.EventPacket
 {
     public class PacketEventData : ProtoModel
     {
+        /// <summary>
+        /// Creates empty PacketEventData from raw byte array.
+        /// </summary>
         public PacketEventData() { }
+
+        /// <summary>
+        /// Creates a PacketEventData from raw byte array.
+        /// </summary>
+        /// <param name="header">Header packet of the object.</param>
+        /// <param name="array">Raw byte array</param>
         public PacketEventData(PacketHeader header, byte[] array)
         {
             this.Header = header;
@@ -13,16 +22,11 @@ namespace F1Telemetry.Models.EventPacket
             this.PickReader(this.Header.PacketFormat, array);
         }
 
-        public PacketHeader Header { get; protected set; }
-        public string EventCode { get; protected set; }
-        public EventTypes EventType { get; protected set; }
-
-        protected override void Reader2021(byte[] array)
+        protected override void Reader2018(byte[] array)
         {
-            int index = this.Index;
             string vals;
 
-            index += ByteReader.toStringFromUint8(array, index, 4, out vals);
+            this.Index += ByteReader.toStringFromUint8(array, this.Index, 4, out vals);
             this.EventCode = vals;
 
             switch (this.EventCode.ToLower())
@@ -79,8 +83,21 @@ namespace F1Telemetry.Models.EventPacket
                     this.EventType = EventTypes.ButtonStatus;
                     break;
             }
+        }
 
-            this.Index = index;
+        protected override void Reader2019(byte[] array)
+        {
+            this.Reader2018(array);
+        }
+
+        protected override void Reader2020(byte[] array)
+        {
+            this.Reader2018(array);
+        }
+
+        protected override void Reader2021(byte[] array)
+        {
+            this.Reader2018(array);
         }
 
         protected override void Dispose(bool disposing)
@@ -93,5 +110,28 @@ namespace F1Telemetry.Models.EventPacket
 
             base.Dispose(disposing);
         }
+
+        /// <summary>
+        /// Packet's header<br/>
+        /// All game has to support.
+        /// </summary>
+        public PacketHeader Header { get; protected set; }
+        /// <summary>
+        /// Event code as text.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
+        public string EventCode { get; protected set; }
+        /// Event code as enum.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
+        public EventTypes EventType { get; protected set; }
     }
 }

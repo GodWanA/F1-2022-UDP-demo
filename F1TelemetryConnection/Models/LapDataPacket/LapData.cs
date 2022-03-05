@@ -167,7 +167,7 @@ namespace F1Telemetry.Models.LapDataPacket
             //uint8 m_driverStatus;              // Status of driver - 0 = in garage, 1 = flying lap
             //                                   // 2 = in lap, 3 = out lap, 4 = on track
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.GridPosition = uint8;
+            this.DriverStatus = (DriverSatuses)uint8;
             //uint8 m_resultStatus;              // Result status - 0 = invalid, 1 = inactive, 2 = active
             //                                   // 3 = finished, 4 = disqualified, 5 = not classified
             //                                   // 6 = retired
@@ -220,7 +220,7 @@ namespace F1Telemetry.Models.LapDataPacket
             this.NumberOfPitStops = valb;
             //uint8 m_sector;                  // 0 = sector1, 1 = sector2, 2 = sector3
             this.Index += ByteReader.ToUInt8(array, this.Index, out valb);
-            this.NumberOfPitStops = valb;
+            this.Sector = (Sectors)valb;
             //uint8 m_currentLapInvalid;       // Current lap invalid - 0 = valid, 1 = invalid
             this.Index += ByteReader.ToBoolFromUint8(array, this.Index, out valbo);
             this.IsCurrentLapInvalid = valbo;
@@ -328,32 +328,200 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2021<br/>
         /// </summary>
         public PitStatuses PitStatus { get; private set; }
+        /// <summary>
+        /// Indicates current pit status.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public DriverSatuses DriverStatus { get; private set; }
+        /// <summary>
+        /// Indicates current driver status.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public ResultSatuses ResultStatus { get; private set; }
+        /// <summary>
+        /// Indicates current driver status.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public float LapDistance { get; private set; }
+        /// <summary>
+        /// Indicates current driver status.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public float TotalLapDistance { get; private set; }
+        /// <summary>
+        /// Current prosition.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public byte CarPosition { get; private set; }
+        /// <summary>
+        /// Current lap number.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public byte CurrentLapNum { get; private set; }
+        /// <summary>
+        /// Number of pit stops.<br/>
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public byte NumberOfPitStops { get; private set; }
+        /// <summary>
+        /// Indicates current lap is valid.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public bool IsCurrentLapInvalid { get; private set; }
+        /// <summary>
+        /// Number of warnings.<br/>
+        /// Supports:<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public byte Warnings { get; private set; }
+        /// <summary>
+        /// Number of unserved drive through penalties.<br/>
+        /// Supports:<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public byte NumberOfUnservedDriveThroughPenalties { get; private set; }
+        /// <summary>
+        /// Number of unserved stop-go penalties.<br/>
+        /// Supports:<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public byte NumberOfUnservedStopGoPenalties { get; private set; }
+        /// <summary>
+        /// Grid position.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public byte GridPosition { get; private set; }
+        /// <summary>
+        /// Indicates Pit Lane timer is active.<br/>
+        /// Supports:<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public bool IsPitLaneTimerActive { get; private set; }
+        /// <summary>
+        /// Indicates driver going to serve penalty at next pit stop.<br/>
+        /// Supports:<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public bool IsPitStopServePenalty { get; private set; }
+        /// <summary>
+        /// Best lap time.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        /// </summary>
         public TimeSpan BestLapTime { get; private set; }
+        /// <summary>
+        /// Safety Car delta time.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public TimeSpan SafetyCarDelta { get; private set; }
+        /// <summary>
+        /// Current sector.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
         public Sectors Sector { get; private set; }
+        /// <summary>
+        /// Lap number of best lap time.<br/>
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        /// </summary>
         public byte BestLapNumber { get; private set; }
+        /// <summary>
+        /// Best sector 1 time.<br/>
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        /// </summary>
         public TimeSpan BestLapSector1Time { get; private set; }
+        /// <summary>
+        /// Best sector 2 time.<br/>
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        /// </summary>
         public TimeSpan BestLapSector2Time { get; private set; }
+        /// <summary>
+        /// Best sector 3 time.<br/>
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        /// </summary>
         public TimeSpan BestLapSector3Time { get; private set; }
+        /// <summary>
+        /// Best overall sector 1 time.<br/>
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        /// </summary>
         public TimeSpan BestOverallLapSector1Time { get; private set; }
+        /// <summary>
+        /// Lap number of best overall sector 1 time.<br/>
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        /// </summary>
         public byte BestOverallSector1LapNumber { get; private set; }
+        /// <summary>
+        /// Best overall sector 2 time.<br/>
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        /// </summary>
         public TimeSpan BestOverallLapSector2Time { get; private set; }
+        /// <summary>
+        /// Lap number of best overall sector 2 time.<br/>
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        /// </summary>
         public byte BestOverallSector2LapNumber { get; private set; }
+        /// <summary>
+        /// Best overall sector 3 time.<br/>
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        /// </summary>
         public TimeSpan BestOverallLapSector3Time { get; private set; }
+        /// <summary>
+        /// Lap number of best overall sector 3 time.<br/>
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        /// </summary>
         public byte BestOverallSector3LapNumber { get; private set; }
     }
 }
