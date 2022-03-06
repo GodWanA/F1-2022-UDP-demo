@@ -15,26 +15,26 @@ namespace F1Telemetry.Models.FinalClassificationPacket
         public byte NumberOfCars { get; private set; }
         public FinalClassificationData[] ClassificationData { get; private set; }
 
-        protected override void Reader2021(byte[] array)
+        protected override void Reader2020(byte[] array)
         {
-            int index = this.Index;
-            byte valb;
+            byte uint8;
 
             //PacketHeader m_header;                      // Header
             //uint8 m_numCars;          // Number of cars in the final classification
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.NumberOfCars = valb;
-
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.NumberOfCars = uint8;
             //FinalClassificationData m_classificationData[22];
             this.ClassificationData = new FinalClassificationData[22];
             for (int i = 0; i < this.ClassificationData.Length; i++)
             {
-                this.ClassificationData[i] = new FinalClassificationData(index, this.Header.PacketFormat, array);
-                index = this.ClassificationData[i].Index;
+                this.ClassificationData[i] = new FinalClassificationData(this.Index, this.Header.PacketFormat, array);
+                this.Index = this.ClassificationData[i].Index;
             }
+        }
 
-
-            this.Index = index;
+        protected override void Reader2021(byte[] array)
+        {
+            this.Reader2020(array);
         }
 
         protected override void Dispose(bool disposing)

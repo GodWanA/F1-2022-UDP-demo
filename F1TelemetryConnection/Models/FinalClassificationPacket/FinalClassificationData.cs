@@ -26,69 +26,59 @@ namespace F1Telemetry.Models.FinalClassificationPacket
         public TyreCompounds[] TyreStintsActual { get; private set; }
         public TyreCompounds[] TyreStintsVisual { get; private set; }
 
-        protected override void Reader2021(byte[] array)
+        protected override void Reader2020(byte[] array)
         {
-            int index = this.Index;
-            byte valb;
-            uint valui;
-            double vald;
-            TyreCompounds[] valtc;
+            byte uint8;
+            uint uint32;
+            double d;
+            TyreCompounds[] tc;
 
             //uint8 m_position;              // Finishing position
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.Position = valb;
-
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.Position = uint8;
             //uint8 m_numLaps;               // Number of laps completed
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.NumberOfLaps = valb;
-
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.NumberOfLaps = uint8;
             //uint8 m_gridPosition;          // Grid position of the car
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.GridPosition = valb;
-
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.GridPosition = uint8;
             //uint8 m_points;                // Number of points scored
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.Points = valb;
-
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.Points = uint8;
             //uint8 m_numPitStops;           // Number of pit stops made
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.NumberOfPitStops = valb;
-
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.NumberOfPitStops = uint8;
             //uint8 m_resultStatus;          // Result status - 0 = invalid, 1 = inactive, 2 = active
             //                               // 3 = finished, 4 = didnotfinish, 5 = disqualified
             //                               // 6 = not classified, 7 = retired
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.ResultStatus = (ResultSatuses)valb;
-
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.ResultStatus = (ResultSatuses)uint8;
             //uint32 m_bestLapTimeInMS;       // Best lap time of the session in milliseconds
-            index += ByteReader.ToUInt32(array, index, out valui);
-            this.BestLapTime = TimeSpan.FromMilliseconds(valui);
-
+            this.Index += ByteReader.ToUInt32(array, this.Index, out uint32);
+            this.BestLapTime = TimeSpan.FromMilliseconds(uint32);
             //double m_totalRaceTime;         // Total race time in seconds without penalties
-            index += ByteReader.ToDouble(array, index, out vald);
-            this.TotalRaceTime = TimeSpan.FromSeconds(vald);
-
+            this.Index += ByteReader.ToDouble(array, this.Index, out d);
+            this.TotalRaceTime = TimeSpan.FromSeconds(d);
             //uint8 m_penaltiesTime;         // Total penalties accumulated in seconds
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.PenaltiesTime = TimeSpan.FromSeconds(valb);
-
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.PenaltiesTime = TimeSpan.FromSeconds(uint8);
             //uint8 m_numPenalties;          // Number of penalties applied to this driver
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.NumberOfPenalties = valb;
-
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.NumberOfPenalties = uint8;
             //uint8 m_numTyreStints;         // Number of tyres stints up to maximum
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.NumberOfTyreStints = valb;
-
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.NumberOfTyreStints = uint8;
             //uint8 m_tyreStintsActual[8];   // Actual tyres used by this driver
-            index += ByteReader.TyreArray(array, index, out valtc, 8);
-            this.TyreStintsActual = valtc;
-
+            this.Index += ByteReader.TyreArray(array, this.Index, out tc, 8);
+            this.TyreStintsActual = tc;
             //uint8 m_tyreStintsVisual[8];   // Visual tyres used by this driver
-            index += ByteReader.TyreArray(array, index, out valtc, 8);
-            this.TyreStintsVisual = valtc;
+            this.Index += ByteReader.TyreArray(array, this.Index, out tc, 8);
+            this.TyreStintsVisual = tc;
+        }
 
-            this.Index = index;
+        protected override void Reader2021(byte[] array)
+        {
+            this.Reader2020(array);
         }
 
         protected override void Dispose(bool disposing)
