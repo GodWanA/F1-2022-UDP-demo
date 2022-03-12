@@ -1,6 +1,5 @@
 ﻿using F1Telemetry.Helpers;
 using F1Telemetry.Models.CarDamagePacket;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using static F1Telemetry.Helpers.Appendences;
@@ -18,6 +17,8 @@ namespace F1Telemetry.Models.CarStatusPacket
         private byte gearboxDemage;
         private byte exhaustDemage;
         private bool drsFault;
+
+        private static float ERSCapacity2021 = 4000000f;
 
         public CarStatusData(int index, int format, byte[] array)
         {
@@ -42,10 +43,14 @@ namespace F1Telemetry.Models.CarStatusPacket
         public byte TyresAgeLaps { get; private set; }
         public Flags VehicleFIAFlag { get; private set; }
         public float ERSStoreEnergy { get; private set; }
+        public float ERSStoreEnergyPercent { get; private set; }
         public ERSModes ERSDeployMode { get; private set; }
         public float ERSHarvestedThisLapMGUK { get; private set; }
+        public float ERSHarvestedThisLapMGUKPercent { get; private set; }
         public float ERSHarvestedThisLapMGUH { get; private set; }
+        public float ERSHarvestedThisLapMGUHPercent { get; private set; }
         public float ERSDeployedThisLap { get; private set; }
+        public float ERSDeployedThisLapPercent { get; private set; }
         public bool IsNetworkPaused { get; private set; }
         public TyreCompounds VisualTyreCompound { get; private set; }
 
@@ -129,6 +134,7 @@ namespace F1Telemetry.Models.CarStatusPacket
             //float m_ersStoreEnergy;           // ERS energy store in Joules
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSStoreEnergy = f;
+            this.ERSStoreEnergyPercent = CarStatusData.CalculateERSPercent(f);
             //uint8 m_ersDeployMode;            // ERS deployment mode, 0 = none, 1 = low, 2 = medium
             //                                  // 3 = high, 4 = overtake, 5 = hotlap
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
@@ -136,12 +142,15 @@ namespace F1Telemetry.Models.CarStatusPacket
             //float m_ersHarvestedThisLapMGUK;  // ERS energy harvested this lap by MGU-K
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUK = f;
+            this.ERSHarvestedThisLapMGUKPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersHarvestedThisLapMGUH;  // ERS energy harvested this lap by MGU-H
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUH = f;
+            this.ERSHarvestedThisLapMGUHPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersDeployedThisLap;       // ERS energy deployed this lap
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSDeployedThisLap = f;
+            this.ERSDeployedThisLapPercent = CarStatusData.CalculateERSPercent(f);
         }
 
         protected override void Reader2019(byte[] array)
@@ -230,6 +239,7 @@ namespace F1Telemetry.Models.CarStatusPacket
             //float m_ersStoreEnergy;           // ERS energy store in Joules
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSStoreEnergy = f;
+            this.ERSStoreEnergyPercent = CarStatusData.CalculateERSPercent(f);
             //uint8 m_ersDeployMode;            // ERS deployment mode, 0 = none, 1 = low, 2 = medium
             //                                  // 3 = high, 4 = overtake, 5 = hotlap
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
@@ -237,12 +247,15 @@ namespace F1Telemetry.Models.CarStatusPacket
             //float m_ersHarvestedThisLapMGUK;  // ERS energy harvested this lap by MGU-K
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUK = f;
+            this.ERSHarvestedThisLapMGUKPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersHarvestedThisLapMGUH;  // ERS energy harvested this lap by MGU-H
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUH = f;
+            this.ERSHarvestedThisLapMGUHPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersDeployedThisLap;       // ERS energy deployed this lap
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSDeployedThisLap = f;
+            this.ERSDeployedThisLapPercent = CarStatusData.CalculateERSPercent(f);
         }
 
         protected override void Reader2020(byte[] array)
@@ -343,19 +356,23 @@ namespace F1Telemetry.Models.CarStatusPacket
             //float m_ersStoreEnergy;           // ERS energy store in Joules
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSStoreEnergy = f;
+            this.ERSStoreEnergyPercent = CarStatusData.CalculateERSPercent(f);
             //uint8 m_ersDeployMode;            // ERS deployment mode, 0 = none, 1 = medium
             //                                  // 2 = overtake, 3 = hotlap
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.ERSDeployMode = (ERSModes)uint8;
+            this.SetERS2020(uint8);
             //float m_ersHarvestedThisLapMGUK;  // ERS energy harvested this lap by MGU-K
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUK = f;
+            this.ERSHarvestedThisLapMGUKPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersHarvestedThisLapMGUH;  // ERS energy harvested this lap by MGU-H
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUH = f;
+            this.ERSHarvestedThisLapMGUHPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersDeployedThisLap;       // ERS energy deployed this lap
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSDeployedThisLap = f;
+            this.ERSDeployedThisLapPercent = CarStatusData.CalculateERSPercent(f);
         }
 
         protected override void Reader2021(byte[] array)
@@ -430,22 +447,51 @@ namespace F1Telemetry.Models.CarStatusPacket
             //float m_ersStoreEnergy;           // ERS energy store in Joules
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSStoreEnergy = f;
+            this.ERSStoreEnergyPercent = CarStatusData.CalculateERSPercent(f);
             //uint8 m_ersDeployMode;            // ERS deployment mode, 0 = none, 1 = medium
             //                                  // 2 = hotlap, 3 = overtake
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.ERSDeployMode = (ERSModes)uint8;
+            this.SetERS2020(uint8);
             //float m_ersHarvestedThisLapMGUK;  // ERS energy harvested this lap by MGU-K
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUK = f;
+            this.ERSHarvestedThisLapMGUKPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersHarvestedThisLapMGUH;  // ERS energy harvested this lap by MGU-H
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUH = f;
+            this.ERSHarvestedThisLapMGUHPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersDeployedThisLap;       // ERS energy deployed this lap
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSDeployedThisLap = f;
+            this.ERSDeployedThisLapPercent = CarStatusData.CalculateERSPercent(f);
             //uint8 m_networkPaused;            // Whether the car is paused in a network game
             this.Index += ByteReader.ToBoolFromUint8(array, this.Index, out b);
             this.IsNetworkPaused = b;
+        }
+
+        private void SetERS2020(byte val)
+        {
+            switch (val)
+            {
+                case 0:
+                    this.ERSDeployMode = ERSModes.None;
+                    break;
+                case 1:
+                    this.ERSDeployMode = ERSModes.Medium;
+                    break;
+                case 2:
+                    this.ERSDeployMode = ERSModes.Hotlap;
+                    break;
+                case 3:
+                    this.ERSDeployMode = ERSModes.Overtake;
+                    break;
+            }
+        }
+
+        private static float CalculateERSPercent(float value, float capacity = float.NaN)
+        {
+            if (float.IsNaN(capacity)) capacity = CarStatusData.ERSCapacity2021;
+            return value / capacity * 100f;
         }
 
         internal CarDamageData BuildCardemageData()

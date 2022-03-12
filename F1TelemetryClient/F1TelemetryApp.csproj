@@ -7,17 +7,21 @@
 		<StartupObject></StartupObject>
 		<PlatformTarget>x64</PlatformTarget>
 		<UseWindowsForms>True</UseWindowsForms>
-		<PackageId>JeffPlus</PackageId>
+		<PackageId>Jeff+</PackageId>
 		<Authors>Csernay Attila</Authors>
 		<Company>Csernay Attila</Company>
 		<Product>Jeff+</Product>
 		<NeutralLanguage>en</NeutralLanguage>
-		<Description>Virtual engineer for Codemasters F1 Games</Description>
-		<AssemblyName>JeffPlus</AssemblyName>
+		<Description>Telemetry and Virtual engineer for Codemasters F1 Games</Description>
+		<AssemblyName>Jeff+ Telemetry</AssemblyName>
 		<RepositoryUrl>https://github.com/GodWanA/F1-2021-UDP-demo</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageIcon>icon.png</PackageIcon>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
+		<AssemblyVersion>2021.0.*</AssemblyVersion>
+		<FileVersion>2021.0.*</FileVersion>
+		<Deterministic>false</Deterministic>
+		<PackageTags>Telemetry, UDP, F1, Racing, Codemasters, Csernay,</PackageTags>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -30,6 +34,10 @@
 		<None Remove="Fonts\Formula1-Bold.ttf" />
 		<None Remove="Fonts\Formula1-Regular.ttf" />
 		<None Remove="Fonts\Formula1-Wide.ttf" />
+		<None Remove="Images\DriverInfo\DownArrow.png" />
+		<None Remove="Images\DriverInfo\IsRobot.png" />
+		<None Remove="Images\DriverInfo\NotRobot.png" />
+		<None Remove="Images\DriverInfo\UpArrow.png" />
 		<None Remove="Images\Flags\American.png" />
 		<None Remove="Images\Flags\Argentinean.png" />
 		<None Remove="Images\Flags\Australian.png" />
@@ -179,6 +187,10 @@
 		<Resource Include="Fonts\Formula1-Wide.ttf">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Resource>
+		<Resource Include="Images\DriverInfo\DownArrow.png" />
+		<Resource Include="Images\DriverInfo\IsRobot.png" />
+		<Resource Include="Images\DriverInfo\NotRobot.png" />
+		<Resource Include="Images\DriverInfo\UpArrow.png" />
 		<Resource Include="Images\Flags\American.png">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Resource>

@@ -554,9 +554,9 @@ namespace F1Telemetry.Helpers
             InvalidOrUnknown = -1,
             None = 0,
             Green = 1,
-            blue = 2,
-            yellow = 3,
-            red = 4,
+            Blue = 2,
+            Yellow = 3,
+            Red = 4,
         }
 
         public enum ResultSatuses

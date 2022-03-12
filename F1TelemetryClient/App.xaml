@@ -9,10 +9,12 @@
         <Style TargetType="Label">
             <Setter Property="TextElement.FontFamily" Value="{StaticResource Formula1 Display}"/>
             <Setter Property="TextElement.FontSize" Value="11 px"/>
+            <Setter Property="RenderOptions.BitmapScalingMode" Value="LowQuality"/>
         </Style>
         <Style TargetType="TextBlock">
             <Setter Property="TextElement.FontFamily" Value="{StaticResource Formula1 Display}"/>
             <Setter Property="TextElement.FontSize" Value="11 px"/>
+            <Setter Property="RenderOptions.BitmapScalingMode" Value="LowQuality"/>
         </Style>
         <BorderGapMaskConverter x:Key="BorderGapMaskConverter"/>
         <Style TargetType="GroupBox">
@@ -141,6 +143,10 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <Style TargetType="Image">
+            <Setter Property="RenderOptions.BitmapScalingMode" Value="LowQuality"/>
         </Style>
 
     </Application.Resources>

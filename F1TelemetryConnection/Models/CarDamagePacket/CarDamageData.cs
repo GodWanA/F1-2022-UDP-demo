@@ -1,7 +1,5 @@
 ﻿using F1Telemetry.Helpers;
-using F1Telemetry.Models.CarStatusPacket;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace F1Telemetry.Models.CarDamagePacket
 {
@@ -49,85 +47,82 @@ namespace F1Telemetry.Models.CarDamagePacket
 
         protected override void Reader2021(byte[] array)
         {
-            int index = this.Index;
             Dictionary<string, float> df;
-            Dictionary<string, byte> db;
-            byte valb;
-            bool valbo;
+            Dictionary<string, byte> d8;
+            byte uint8;
+            bool b;
 
             //float m_tyresWear[4];                     // Tyre wear (percentage)
-            index += ByteReader.ToWheelData.FromFloat(array, index, out df);
+            this.Index += ByteReader.ToWheelData.FromFloat(array, this.Index, out df);
             this.TyreWear = df;
 
             //uint8 m_tyresDamage[4];                   // Tyre damage (percentage)
-            index += ByteReader.ToWheelData.FromUint8(array, index, out db);
-            this.TyreDemage = db;
+            this.Index += ByteReader.ToWheelData.FromUint8(array, this.Index, out d8);
+            this.TyreDemage = d8;
 
             //uint8 m_brakesDamage[4];                  // Brakes damage (percentage)
-            index += ByteReader.ToWheelData.FromUint8(array, index, out db);
-            this.BrakesDemage = db;
+            this.Index += ByteReader.ToWheelData.FromUint8(array, this.Index, out d8);
+            this.BrakesDemage = d8;
 
             //uint8 m_frontLeftWingDamage;              // Front left wing damage (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.FrontLeftWingDemage = valb;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.FrontLeftWingDemage = uint8;
 
             //uint8 m_frontRightWingDamage;             // Front right wing damage (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.FrontRightWingDemage = valb;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.FrontRightWingDemage = uint8;
 
             //uint8 m_rearWingDamage;                   // Rear wing damage (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.RearWingDemage = valb;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.RearWingDemage = uint8;
 
             //uint8 m_floorDamage;                      // Floor damage (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.FloorDemage = valb;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.FloorDemage = uint8;
 
             //uint8 m_diffuserDamage;                   // Diffuser damage (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.DiffurerDemage = valb;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.DiffurerDemage = uint8;
 
             //uint8 m_sidepodDamage;                    // Sidepod damage (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.SidepodDemage = valb;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.SidepodDemage = uint8;
 
             //uint8 m_drsFault;                         // Indicator for DRS fault, 0 = OK, 1 = fault
-            index += ByteReader.ToBoolFromUint8(array, index, out valbo);
-            this.IsDRSFault = valbo;
+            this.Index += ByteReader.ToBoolFromUint8(array, this.Index, out b);
+            this.IsDRSFault = b;
 
             //uint8 m_gearBoxDamage;                    // Gear box damage (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.GearBoxDemage = valb;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.GearBoxDemage = uint8;
 
             //uint8 m_engineDamage;                     // Engine damage (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.EngineDemage = valb;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.EngineDemage = uint8;
 
             //uint8 m_engineMGUHWear;                   // Engine wear MGU-H (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.EngineMGUHWear = valb;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.EngineMGUHWear = uint8;
 
             //uint8 m_engineESWear;                     // Engine wear ES (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.EngineESWear = valb;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.EngineESWear = uint8;
 
             //uint8 m_engineCEWear;                     // Engine wear CE (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.EngineCEWear = valb;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.EngineCEWear = uint8;
 
             //uint8 m_engineICEWear;                    // Engine wear ICE (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.EngineICEWear = valb;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.EngineICEWear = uint8;
 
             //uint8 m_engineMGUKWear;                   // Engine wear MGU-K (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.EngineMGUKWear = valb;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.EngineMGUKWear = uint8;
 
             //uint8 m_engineTCWear;                     // Engine wear TC (percentage)
-            index += ByteReader.ToUInt8(array, index, out valb);
-            this.EngineTCWear = valb;
-
-            this.Index = index;
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.EngineTCWear = uint8;
         }
 
         protected override void Dispose(bool disposing)

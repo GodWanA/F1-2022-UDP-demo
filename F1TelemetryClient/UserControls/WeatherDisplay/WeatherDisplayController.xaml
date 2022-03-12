@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="800">
     <GroupBox Header="Wheather Forecast" Padding="0">
-        <Border Background="Black" CornerRadius="5" Padding="2,2,2,0" Margin="2,2,2,0">
+        <Border Background="Black" CornerRadius="5" Padding="2,2,2,0" Margin="2">
             <Grid Margin="5,5,5,0" Height="auto" VerticalAlignment="Bottom">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
@@ -17,9 +17,11 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
+                    <RowDefinition Height="16"/>
+                    <RowDefinition Height="auto"/>
                     <RowDefinition Height="17"/>
                 </Grid.RowDefinitions>
-                <Grid VerticalAlignment="Bottom" Grid.Row="0">
+                <Grid VerticalAlignment="Bottom" Grid.Row="2">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
@@ -29,18 +31,25 @@
                     <TextBlock Foreground="White" Grid.Row="1" Text="Track:" Margin="1" FontSize="10"  HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                     <TextBlock Foreground="White" Grid.Row="2" Text="" Margin="0" FontSize="8" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                 </Grid>
-                <local:WheatherNode Grid.Column="1" x:Name="weather_actual" Margin="0,24,0,0"/>
-                <Rectangle Grid.Column="2" Width="2" Fill="White" Margin="2" RadiusX="1" RadiusY="1"/>
-                <ScrollViewer x:Name="scrollviewer_nodes" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Visible" Grid.Column="3" Grid.RowSpan="2" Padding="0" Margin="0">
+                <local:WeatherNode Grid.Column="1" Grid.Row="2" x:Name="weather_actual" Height="100" Margin="0"/>
+                <Rectangle Grid.Column="2" Grid.Row="1" Grid.RowSpan="2" Width="2" Fill="White" Margin="2" RadiusX="1" RadiusY="1"/>
+                <ScrollViewer x:Name="scrollviewer_nodes" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Visible" Grid.Column="3" Grid.Row="1" Grid.RowSpan="3" Padding="0" Margin="0">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="16"/>
+                            <RowDefinition Height="1*"/>
                         </Grid.RowDefinitions>
-                        <StackPanel x:Name="stackpanel_names" Orientation="Horizontal" Grid.Row="0"/>
+                        <StackPanel x:Name="stackpanel_names" Orientation="Horizontal" Grid.Row="0" Margin="0">
+                            <StackPanel.Resources>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Margin" Value="0"/>
+                                </Style>
+                            </StackPanel.Resources>
+                        </StackPanel>
                         <StackPanel x:Name="stackpanel_nodes" Orientation="Horizontal" MinHeight="100" Grid.Row="1"/>
                     </Grid>
                 </ScrollViewer>
+                <TextBlock TextWrapping="Wrap" Text="Actual" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Grid>
         </Border>
     </GroupBox>

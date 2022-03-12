@@ -8,6 +8,7 @@ using F1TelemetryApp.Classes;
 using F1TelemetryApp.UserControls;
 using F1TelemetryApp.Windows;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -27,36 +28,9 @@ namespace F1TelemetryClient
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private F1UDP udp;
+
         private DispatcherTimer lockTimer = new DispatcherTimer();
         private DispatcherTimer cleanTimer = new DispatcherTimer();
-
-        private TyreCompounds actualTyreCpompund;
-        public TyreCompounds ActualTyreCpompund
-        {
-            get { return actualTyreCpompund; }
-            set
-            {
-                if (value != actualTyreCpompund)
-                {
-                    actualTyreCpompund = value;
-                    this.image_tyre.Source = u.TyreCompoundToImage(this.actualTyreCpompund);
-                }
-            }
-        }
-
-        private int lapAges;
-        public int LapAges
-        {
-            get { return lapAges; }
-            set
-            {
-                lapAges = value;
-                //this.textBlock_tyreAge.Text = this.lapAges.ToString();
-                this.OnPropertyChanged("LapAges");
-            }
-        }
-
         private ObservableCollection<PlayerListItemData> participantsList;
 
         public ObservableCollection<PlayerListItemData> ParticipantsList
@@ -83,6 +57,7 @@ namespace F1TelemetryClient
         private bool isWorking_CarTelemetryData = false;
         private bool isLoadingWear = false;
         private bool canDoUdp = true;
+        private Flags lastFlag = Flags.InvalidOrUnknown;
 
         public MainWindow()
         {
@@ -93,15 +68,15 @@ namespace F1TelemetryClient
 
         private void Window_Initialized(object sender, EventArgs e)
         {
-            this.udp = new F1UDP("127.0.0.1", 20777);
+            u.Connention = new F1UDP("127.0.0.1", 20777);
             //this.udp = new F1UDP("192.168.0.112", 20777);
-            this.udp.SessionPacket += this.Upp_SessionPacket;
-            this.udp.LapDataPacket += this.Udp_LapDataPacket;
-            this.udp.ParticipantsPacket += this.Udp_ParticipantsPacket;
-            this.udp.DemagePacket += this.Udp_DemagePacket;
-            this.udp.CarStatusPacket += Udp_CarStatusPacket;
-            this.udp.CarTelemetryPacket += Udp_CarTelemetryPacket;
-            this.udp.SessionHistoryPacket += Udp_SessionHistoryPacket;
+            u.Connention.SessionPacket += this.Upp_SessionPacket;
+            u.Connention.LapDataPacket += this.Udp_LapDataPacket;
+            u.Connention.ParticipantsPacket += this.Udp_ParticipantsPacket;
+            u.Connention.DemagePacket += this.Udp_DemagePacket;
+            u.Connention.CarStatusPacket += Udp_CarStatusPacket;
+            u.Connention.CarTelemetryPacket += Udp_CarTelemetryPacket;
+            u.Connention.SessionHistoryPacket += Udp_SessionHistoryPacket;
 
             this.listBox_drivers.Items.SortDescriptions.Add(new SortDescription("CarPosition", ListSortDirection.Ascending));
 
@@ -156,9 +131,8 @@ namespace F1TelemetryClient
                 {
                     var curHistory = sender as PacketSessionHistoryData;
 
-                    var arrayHistory = this.udp.LastSessionHistoryPacket;
-                    var sessionData = this.udp.LastSessionDataPacket;
-                    var lapData = this.udp.LastLapDataPacket;
+                    var arrayHistory = u.Connention.LastSessionHistoryPacket;
+                    var lapData = u.Connention.LastLapDataPacket;
 
                     var itemSource = this.listBox_drivers.ItemsSource?.Cast<PlayerListItemData>();
                     var curItem = itemSource?.Where(x => x.ArrayIndex == curHistory.CarIndex).FirstOrDefault();
@@ -172,7 +146,7 @@ namespace F1TelemetryClient
                             curItem.LeaderIntervalTime = "leader";
                             curItem.TextColor = fontColor;
                         }
-                        else
+                        else if (!curItem.IsOut)
                         {
                             curItem.IntervalTime = "";
                             curItem.LeaderIntervalTime = "";
@@ -182,7 +156,7 @@ namespace F1TelemetryClient
                             if (prevItem != null)
                             {
                                 var prevHistory = arrayHistory.Where(x => x?.CarIndex == prevItem.ArrayIndex).FirstOrDefault();
-                                string s = this.CalculateDelta(arrayHistory, lapData, sessionData, curHistory, prevHistory, out fontColor);
+                                string s = u.CalculateDelta(lapData, curHistory, prevHistory, out fontColor);
                                 if (s != null && s != "") curItem.IntervalTime = s;
                                 curItem.TextColor = fontColor;
                                 prevItem = null;
@@ -193,83 +167,21 @@ namespace F1TelemetryClient
                             if (firstItem != null)
                             {
                                 var firstHistory = arrayHistory.Where(x => x?.CarIndex == firstItem.ArrayIndex).FirstOrDefault();
-                                string s = this.CalculateDelta(arrayHistory, lapData, sessionData, curHistory, firstHistory, out fontColor);
+                                string s = u.CalculateDelta(lapData, curHistory, firstHistory, out fontColor);
                                 if (s != null && s != "") curItem.LeaderIntervalTime = s;
                                 firstItem = null;
                                 firstHistory = null;
                             }
                         }
+                        else
+                        {
+                            curItem.IntervalTime = "";
+                            curItem.setStateText();
+                            curItem.TextColor = Brushes.White;
+                        }
                     }
                 }, DispatcherPriority.Background);
             }
-        }
-
-        private string CalculateDelta(
-            PacketSessionHistoryData[] arrayHistory,
-            PacketLapData lapDatas,
-            PacketSessionData sessionData,
-            PacketSessionHistoryData curHistory,
-            PacketSessionHistoryData prevHistory,
-            out Brush fontColor
-        )
-        {
-            StringBuilder sb = new StringBuilder();
-            fontColor = Brushes.White;
-
-            if (
-                arrayHistory != null &&
-                lapDatas != null &&
-                sessionData != null &&
-                curHistory != null &&
-                prevHistory != null
-            )
-            {
-                switch (sessionData.SessionType)
-                {
-                    case SessionTypes.Race:
-                    case SessionTypes.Race2:
-                        int lap = curHistory.NumberOfLaps;
-                        int sector = 0;
-
-                        if (lap > 0)
-                        {
-                            if (curHistory.LapHistoryData[lap - 1].Sector1Time != TimeSpan.Zero) sector = 1;
-                            else if (curHistory.LapHistoryData[lap - 1].Sector2Time != TimeSpan.Zero) sector = 2;
-                            else if (curHistory.LapHistoryData[lap - 1].Sector3Time != TimeSpan.Zero) sector = 3;
-                        }
-
-                        var deltaTime = curHistory.GetTimeSum(lap, sector) - prevHistory.GetTimeSum(lap, sector);
-
-                        var deltaLaps = (int)MathF.Round(lapDatas.Lapdata[prevHistory.CarIndex].TotalLapDistance - lapDatas.Lapdata[curHistory.CarIndex].TotalLapDistance) / sessionData.TrackLength;
-
-                        if (deltaTime <= TimeSpan.FromSeconds(1)) fontColor = Brushes.Orange;
-                        else if (deltaTime <= TimeSpan.FromSeconds(2)) fontColor = Brushes.Yellow;
-
-                        if (deltaTime >= TimeSpan.Zero) sb.Append("+");
-
-                        if (deltaLaps > 0) sb.Append((int)deltaTime.TotalSeconds + deltaTime.ToString(@"\.f") + "(+" + deltaLaps + " L)");
-                        else sb.Append((int)deltaTime.TotalSeconds + deltaTime.ToString(@"\.fff"));
-                        break;
-                    default:
-                        if (curHistory.BestLapTimeLapNumber > 0 && prevHistory.BestLapTimeLapNumber > 0)
-                        {
-                            var curLaptime = curHistory.LapHistoryData[curHistory.BestLapTimeLapNumber - 1].LapTime;
-                            var prevLaptime = prevHistory.LapHistoryData[prevHistory.BestLapTimeLapNumber - 1].LapTime;
-
-                            if (curLaptime != TimeSpan.Zero && prevLaptime != TimeSpan.Zero)
-                            {
-                                deltaTime = curLaptime - prevLaptime;
-
-                                if (deltaTime >= TimeSpan.Zero) sb.Append("+");
-
-                                sb.Append((int)deltaTime.TotalSeconds + deltaTime.ToString(@"\.fff"));
-                            }
-                        }
-                        break;
-                }
-            }
-
-            return sb.ToString();
         }
 
         private void Udp_CarTelemetryPacket(object sender, EventArgs e)
@@ -300,6 +212,9 @@ namespace F1TelemetryClient
                         var current = status.CarStatusData[item.ArrayIndex];
                         item.TyreCompund = current.VisualTyreCompound;
                     }
+
+                    var flags = status.CarStatusData.Select(x => x.VehicleFIAFlag);
+                    this.SetSessionInfoColor(flags);
 
                     this.isWorking_CarStatusData = false;
                 }, DispatcherPriority.Background);
@@ -365,7 +280,7 @@ namespace F1TelemetryClient
                 this.Dispatcher.BeginInvoke(() =>
                {
                    var lapData = sender as PacketLapData;
-                   var sessionData = this.udp.LastSessionDataPacket;
+                   var sessionData = u.Connention.LastSessionDataPacket;
                    //int noCarpos = 0;
 
                    foreach (PlayerListItemData elem in this.participantsList)
@@ -376,10 +291,11 @@ namespace F1TelemetryClient
                        elem.CurrentLapTime = current.CurrentLapTime;
                        elem.TrackLengthPercent = p;
                        elem.CarPosition = current.CarPosition;
-                       elem.SetPitStatues(current.PitStatus, current.PitStopTimer);
                        //if (current.Warnings > 0) Debug.WriteLine("HELLÓÓÓ");
                        elem.WarningNumber = current.Warnings;
                        elem.PenaltyTime = current.Penalties;
+                       elem.ResultStatus = current.ResultStatus;
+                       elem.SetPitStatues(current.PitStatus, current.PitStopTimer);
 
                        if (current.IsCurrentLapInvalid)
                        {
@@ -394,6 +310,12 @@ namespace F1TelemetryClient
 
                        if (elem.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
                        else elem.Visibility = Visibility.Visible;
+                   }
+
+                   if (this.listBox_drivers.SelectedItem != null)
+                   {
+                       var selected = this.listBox_drivers.SelectedItem as PlayerListItemData;
+                       this.drivercontainer.UpdateLapdata(lapData.Lapdata[selected.ArrayIndex], sessionData.TrackLength);
                    }
 
                    this.listBox_drivers.Items.Filter = this.ListFilter;
@@ -413,7 +335,7 @@ namespace F1TelemetryClient
                 this.Dispatcher.BeginInvoke(() =>
                 {
                     var sessionData = sender as PacketSessionData;
-                    var lapData = this.udp.LastLapDataPacket;
+                    var lapData = u.Connention.LastLapDataPacket;
                     var first = lapData?.Lapdata?.Where(x => x.CarPosition == 1).FirstOrDefault();
 
                     StringBuilder sb = new StringBuilder();
@@ -428,7 +350,36 @@ namespace F1TelemetryClient
                     this.weatherController.SetWeatherForecast(sessionData.WeatherForcastSample);
 
                     this.isWorking_SessionData = false;
+
+                    var flags = sessionData.MarshalZones.Select(x => x.ZoneFlag);
+                    this.SetSessionInfoColor(flags);
+
                 }, DispatcherPriority.Background);
+            }
+        }
+
+        private void SetSessionInfoColor(IEnumerable<Flags> flags)
+        {
+            var flag = flags.Where(x => x == Flags.Red || x == Flags.Yellow).FirstOrDefault();
+
+            if (this.lastFlag != flag)
+            {
+                this.lastFlag = flag;
+                switch (flag)
+                {
+                    default:
+                        this.border_sessioninfo.Background = Brushes.Black;
+                        this.textBlock_counterHead.Foreground = Brushes.White;
+                        break;
+                    case Flags.Yellow:
+                        this.border_sessioninfo.Background = u.FlagColors[Flags.Yellow];
+                        this.textBlock_counterHead.Foreground = Brushes.Black;
+                        break;
+                    case Flags.Red:
+                        this.border_sessioninfo.Background = u.FlagColors[Flags.Red];
+                        this.textBlock_counterHead.Foreground = Brushes.White;
+                        break;
+                }
             }
         }
 
@@ -447,11 +398,6 @@ namespace F1TelemetryClient
                     this.LoadWear();
                 }
             }
-        }
-
-        private void listBox_drivers_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-
         }
 
         private void PlayerList(int numberOfPlayers)
@@ -474,7 +420,6 @@ namespace F1TelemetryClient
             if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-
         private void LoadWear()
         {
             if (!this.isLoadingWear)
@@ -483,51 +428,21 @@ namespace F1TelemetryClient
                 if (this.listBox_drivers.SelectedIndex != -1)
                 {
                     int i = (this.listBox_drivers.SelectedItem as PlayerListItemData).ArrayIndex;
-                    var demage = this.udp.LastCarDemagePacket?.CarDamageData[i];
-                    var status = this.udp.LastCarStatusDataPacket?.CarStatusData[i];
-                    var telemtry = this.udp.LastCarTelmetryPacket?.CarTelemetryData[i];
+                    var demage = u.Connention.LastCarDemagePacket?.CarDamageData[i];
+                    var status = u.Connention.LastCarStatusDataPacket?.CarStatusData[i];
+                    var telemetry = u.Connention.LastCarTelmetryPacket?.CarTelemetryData[i];
+                    var history = u.Connention.LastSessionHistoryPacket[i];
+                    var lapdata = u.Connention.LastLapDataPacket.Lapdata[i];
+                    var participants = u.Connention.LastParticipantsPacket;
+                    var trackLength = u.Connention.LastSessionDataPacket.TrackLength;
+                    var gforce = u.Connention.LastMotionPacket.CarMotionData[i].GForce;
 
-                    if (status != null)
-                    {
-                        this.ActualTyreCpompund = status.VisualTyreCompound;
-                        this.LapAges = (int)status.TyresAgeLaps;
-                    }
-
-                    if (telemtry != null)
-                    {
-                        this.tyredata_fl.TyreInnerTemperature = telemtry.TyresInnerTemperature["FrontLeft"];
-                        this.tyredata_fr.TyreInnerTemperature = telemtry.TyresInnerTemperature["FrontRight"];
-                        this.tyredata_rl.TyreInnerTemperature = telemtry.TyresInnerTemperature["RearLeft"];
-                        this.tyredata_rr.TyreInnerTemperature = telemtry.TyresInnerTemperature["RearRight"];
-
-                        this.tyredata_fl.TyreSurfaceTemperature = telemtry.TyresSurfaceTemperature["FrontLeft"];
-                        this.tyredata_fr.TyreSurfaceTemperature = telemtry.TyresSurfaceTemperature["FrontRight"];
-                        this.tyredata_rl.TyreSurfaceTemperature = telemtry.TyresSurfaceTemperature["RearLeft"];
-                        this.tyredata_rr.TyreSurfaceTemperature = telemtry.TyresSurfaceTemperature["RearRight"];
-
-                        this.tyredata_fl.Pressure = telemtry.TyresPressure["FrontLeft"];
-                        this.tyredata_fr.Pressure = telemtry.TyresPressure["FrontRight"];
-                        this.tyredata_rl.Pressure = telemtry.TyresPressure["RearLeft"];
-                        this.tyredata_rr.Pressure = telemtry.TyresPressure["RearRight"];
-
-                        this.tyredata_fl.BrakesTemperature = telemtry.BrakesTemperature["FrontLeft"];
-                        this.tyredata_fr.BrakesTemperature = telemtry.BrakesTemperature["FrontRight"];
-                        this.tyredata_rl.BrakesTemperature = telemtry.BrakesTemperature["RearLeft"];
-                        this.tyredata_rr.BrakesTemperature = telemtry.BrakesTemperature["RearRight"];
-                    }
+                    this.tyrecontainer.UpdateDatas(demage, status, telemetry);
+                    this.drivercontainer.UpdateLapdata(lapdata, trackLength);
+                    this.drivercontainer.UpdateDatas(status, telemetry, history, participants, gforce, i);
 
                     if (demage != null)
                     {
-                        this.tyredata_fl.Wear = demage.TyreWear["FrontLeft"];
-                        this.tyredata_fr.Wear = demage.TyreWear["FrontRight"];
-                        this.tyredata_rl.Wear = demage.TyreWear["RearLeft"];
-                        this.tyredata_rr.Wear = demage.TyreWear["RearRight"];
-
-                        this.tyredata_fl.Demage = demage.TyreDemage["FrontLeft"];
-                        this.tyredata_fr.Demage = demage.TyreDemage["FrontRight"];
-                        this.tyredata_rl.Demage = demage.TyreDemage["RearLeft"];
-                        this.tyredata_rr.Demage = demage.TyreDemage["RearRight"];
-
                         this.demage_fwLeft.Percent = 100.0 - demage.FrontLeftWingDemage;
                         this.demage_fwRight.Percent = 100.0 - demage.FrontRightWingDemage;
                         this.demage_fl.Percent = 100.0 - demage.FloorDemage;
@@ -555,153 +470,155 @@ namespace F1TelemetryClient
             this.lockTimer.Stop();
             this.canDoUdp = false;
 
-            if (this.ActualWidth < 950)
-            {
-                Grid.SetColumn(this.groupbox_wear, 0);
-                Grid.SetColumn(this.groupbox_demage, 0);
-                Grid.SetColumn(this.groupbox_motor, 0);
+            // New UserControl under construction, so i disable reordering.
 
-                Grid.SetColumnSpan(this.groupbox_wear, 12);
-                Grid.SetColumnSpan(this.groupbox_demage, 12);
-                Grid.SetColumnSpan(this.groupbox_motor, 12);
+            //if (this.ActualWidth < 950)
+            //{
+            //    Grid.SetColumn(this.tyrecontainer, 0);
+            //    Grid.SetColumn(this.groupbox_demage, 0);
+            //    Grid.SetColumn(this.groupbox_motor, 0);
 
-                Grid.SetRow(this.groupbox_wear, 0);
-                Grid.SetRow(this.groupbox_demage, 1);
-                Grid.SetRow(this.groupbox_motor, 2);
+            //    Grid.SetColumnSpan(this.tyrecontainer, 12);
+            //    Grid.SetColumnSpan(this.groupbox_demage, 12);
+            //    Grid.SetColumnSpan(this.groupbox_motor, 12);
 
-                Grid.SetColumn(this.wear_ce, 0);
-                Grid.SetColumn(this.wear_es, 3);
-                Grid.SetColumn(this.wear_ice, 0);
-                Grid.SetColumn(this.wear_mguh, 3);
-                Grid.SetColumn(this.wear_mguk, 0);
-                Grid.SetColumn(this.wear_tc, 3);
+            //    Grid.SetRow(this.tyrecontainer, 0);
+            //    Grid.SetRow(this.groupbox_demage, 1);
+            //    Grid.SetRow(this.groupbox_motor, 2);
 
-                Grid.SetColumnSpan(this.wear_ce, 3);
-                Grid.SetColumnSpan(this.wear_es, 3);
-                Grid.SetColumnSpan(this.wear_ice, 3);
-                Grid.SetColumnSpan(this.wear_mguh, 3);
-                Grid.SetColumnSpan(this.wear_mguk, 3);
-                Grid.SetColumnSpan(this.wear_tc, 3);
+            //    Grid.SetColumn(this.wear_ce, 0);
+            //    Grid.SetColumn(this.wear_es, 3);
+            //    Grid.SetColumn(this.wear_ice, 0);
+            //    Grid.SetColumn(this.wear_mguh, 3);
+            //    Grid.SetColumn(this.wear_mguk, 0);
+            //    Grid.SetColumn(this.wear_tc, 3);
 
-                Grid.SetRow(this.wear_ce, 0);
-                Grid.SetRow(this.wear_es, 0);
-                Grid.SetRow(this.wear_ice, 1);
-                Grid.SetRow(this.wear_mguh, 1);
-                Grid.SetRow(this.wear_mguk, 2);
-                Grid.SetRow(this.wear_tc, 2);
-            }
-            else if (this.ActualWidth < 1400)
-            {
-                Grid.SetColumn(this.groupbox_wear, 0);
-                Grid.SetColumn(this.groupbox_demage, 8);
-                Grid.SetColumn(this.groupbox_motor, 0);
+            //    Grid.SetColumnSpan(this.wear_ce, 3);
+            //    Grid.SetColumnSpan(this.wear_es, 3);
+            //    Grid.SetColumnSpan(this.wear_ice, 3);
+            //    Grid.SetColumnSpan(this.wear_mguh, 3);
+            //    Grid.SetColumnSpan(this.wear_mguk, 3);
+            //    Grid.SetColumnSpan(this.wear_tc, 3);
 
-                Grid.SetColumnSpan(this.groupbox_wear, 8);
-                Grid.SetColumnSpan(this.groupbox_demage, 4);
-                Grid.SetColumnSpan(this.groupbox_motor, 12);
+            //    Grid.SetRow(this.wear_ce, 0);
+            //    Grid.SetRow(this.wear_es, 0);
+            //    Grid.SetRow(this.wear_ice, 1);
+            //    Grid.SetRow(this.wear_mguh, 1);
+            //    Grid.SetRow(this.wear_mguk, 2);
+            //    Grid.SetRow(this.wear_tc, 2);
+            //}
+            //else if (this.ActualWidth < 1400)
+            //{
+            //    Grid.SetColumn(this.tyrecontainer, 0);
+            //    Grid.SetColumn(this.groupbox_demage, 8);
+            //    Grid.SetColumn(this.groupbox_motor, 0);
 
-                Grid.SetRow(this.groupbox_wear, 0);
-                Grid.SetRow(this.groupbox_demage, 0);
-                Grid.SetRow(this.groupbox_motor, 1);
+            //    Grid.SetColumnSpan(this.tyrecontainer, 8);
+            //    Grid.SetColumnSpan(this.groupbox_demage, 4);
+            //    Grid.SetColumnSpan(this.groupbox_motor, 12);
 
-                Grid.SetColumn(this.wear_ce, 0);
-                Grid.SetColumn(this.wear_es, 1);
-                Grid.SetColumn(this.wear_ice, 2);
-                Grid.SetColumn(this.wear_mguh, 3);
-                Grid.SetColumn(this.wear_mguk, 4);
-                Grid.SetColumn(this.wear_tc, 5);
+            //    Grid.SetRow(this.tyrecontainer, 0);
+            //    Grid.SetRow(this.groupbox_demage, 0);
+            //    Grid.SetRow(this.groupbox_motor, 1);
 
-                Grid.SetColumnSpan(this.wear_ce, 1);
-                Grid.SetColumnSpan(this.wear_es, 1);
-                Grid.SetColumnSpan(this.wear_ice, 1);
-                Grid.SetColumnSpan(this.wear_mguh, 1);
-                Grid.SetColumnSpan(this.wear_mguk, 1);
-                Grid.SetColumnSpan(this.wear_tc, 1);
+            //    Grid.SetColumn(this.wear_ce, 0);
+            //    Grid.SetColumn(this.wear_es, 1);
+            //    Grid.SetColumn(this.wear_ice, 2);
+            //    Grid.SetColumn(this.wear_mguh, 3);
+            //    Grid.SetColumn(this.wear_mguk, 4);
+            //    Grid.SetColumn(this.wear_tc, 5);
 
-                Grid.SetRow(this.wear_ce, 0);
-                Grid.SetRow(this.wear_es, 0);
-                Grid.SetRow(this.wear_ice, 0);
-                Grid.SetRow(this.wear_mguh, 0);
-                Grid.SetRow(this.wear_mguk, 0);
-                Grid.SetRow(this.wear_tc, 0);
-            }
-            else if (this.ActualWidth < 1800)
-            {
-                Grid.SetColumn(this.groupbox_wear, 0);
-                Grid.SetColumn(this.groupbox_demage, 6);
-                Grid.SetColumn(this.groupbox_motor, 0);
+            //    Grid.SetColumnSpan(this.wear_ce, 1);
+            //    Grid.SetColumnSpan(this.wear_es, 1);
+            //    Grid.SetColumnSpan(this.wear_ice, 1);
+            //    Grid.SetColumnSpan(this.wear_mguh, 1);
+            //    Grid.SetColumnSpan(this.wear_mguk, 1);
+            //    Grid.SetColumnSpan(this.wear_tc, 1);
 
-                Grid.SetColumnSpan(this.groupbox_wear, 6);
-                Grid.SetColumnSpan(this.groupbox_demage, 6);
-                Grid.SetColumnSpan(this.groupbox_motor, 12);
+            //    Grid.SetRow(this.wear_ce, 0);
+            //    Grid.SetRow(this.wear_es, 0);
+            //    Grid.SetRow(this.wear_ice, 0);
+            //    Grid.SetRow(this.wear_mguh, 0);
+            //    Grid.SetRow(this.wear_mguk, 0);
+            //    Grid.SetRow(this.wear_tc, 0);
+            //}
+            //else if (this.ActualWidth < 1800)
+            //{
+            //    Grid.SetColumn(this.tyrecontainer, 0);
+            //    Grid.SetColumn(this.groupbox_demage, 6);
+            //    Grid.SetColumn(this.groupbox_motor, 0);
 
-                Grid.SetRow(this.groupbox_wear, 0);
-                Grid.SetRow(this.groupbox_demage, 0);
-                Grid.SetRow(this.groupbox_motor, 1);
+            //    Grid.SetColumnSpan(this.tyrecontainer, 6);
+            //    Grid.SetColumnSpan(this.groupbox_demage, 6);
+            //    Grid.SetColumnSpan(this.groupbox_motor, 12);
 
-                Grid.SetColumn(this.wear_ce, 0);
-                Grid.SetColumn(this.wear_es, 1);
-                Grid.SetColumn(this.wear_ice, 2);
-                Grid.SetColumn(this.wear_mguh, 3);
-                Grid.SetColumn(this.wear_mguk, 4);
-                Grid.SetColumn(this.wear_tc, 5);
+            //    Grid.SetRow(this.tyrecontainer, 0);
+            //    Grid.SetRow(this.groupbox_demage, 0);
+            //    Grid.SetRow(this.groupbox_motor, 1);
 
-                Grid.SetColumnSpan(this.wear_ce, 1);
-                Grid.SetColumnSpan(this.wear_es, 1);
-                Grid.SetColumnSpan(this.wear_ice, 1);
-                Grid.SetColumnSpan(this.wear_mguh, 1);
-                Grid.SetColumnSpan(this.wear_mguk, 1);
-                Grid.SetColumnSpan(this.wear_tc, 1);
+            //    Grid.SetColumn(this.wear_ce, 0);
+            //    Grid.SetColumn(this.wear_es, 1);
+            //    Grid.SetColumn(this.wear_ice, 2);
+            //    Grid.SetColumn(this.wear_mguh, 3);
+            //    Grid.SetColumn(this.wear_mguk, 4);
+            //    Grid.SetColumn(this.wear_tc, 5);
 
-                Grid.SetRow(this.wear_ce, 0);
-                Grid.SetRow(this.wear_es, 0);
-                Grid.SetRow(this.wear_ice, 0);
-                Grid.SetRow(this.wear_mguh, 0);
-                Grid.SetRow(this.wear_mguk, 0);
-                Grid.SetRow(this.wear_tc, 0);
-            }
-            else
-            {
-                Grid.SetColumn(this.groupbox_wear, 0);
-                Grid.SetColumn(this.groupbox_demage, 5);
-                Grid.SetColumn(this.groupbox_motor, 9);
+            //    Grid.SetColumnSpan(this.wear_ce, 1);
+            //    Grid.SetColumnSpan(this.wear_es, 1);
+            //    Grid.SetColumnSpan(this.wear_ice, 1);
+            //    Grid.SetColumnSpan(this.wear_mguh, 1);
+            //    Grid.SetColumnSpan(this.wear_mguk, 1);
+            //    Grid.SetColumnSpan(this.wear_tc, 1);
 
-                Grid.SetColumnSpan(this.groupbox_wear, 5);
-                Grid.SetColumnSpan(this.groupbox_demage, 4);
-                Grid.SetColumnSpan(this.groupbox_motor, 3);
+            //    Grid.SetRow(this.wear_ce, 0);
+            //    Grid.SetRow(this.wear_es, 0);
+            //    Grid.SetRow(this.wear_ice, 0);
+            //    Grid.SetRow(this.wear_mguh, 0);
+            //    Grid.SetRow(this.wear_mguk, 0);
+            //    Grid.SetRow(this.wear_tc, 0);
+            //}
+            //else
+            //{
+            //    Grid.SetColumn(this.tyrecontainer, 0);
+            //    Grid.SetColumn(this.groupbox_demage, 5);
+            //    Grid.SetColumn(this.groupbox_motor, 9);
 
-                Grid.SetRow(this.groupbox_wear, 0);
-                Grid.SetRow(this.groupbox_demage, 0);
-                Grid.SetRow(this.groupbox_motor, 0);
+            //    Grid.SetColumnSpan(this.tyrecontainer, 5);
+            //    Grid.SetColumnSpan(this.groupbox_demage, 4);
+            //    Grid.SetColumnSpan(this.groupbox_motor, 3);
 
-                Grid.SetColumn(this.wear_ce, 0);
-                Grid.SetColumn(this.wear_es, 3);
-                Grid.SetColumn(this.wear_ice, 0);
-                Grid.SetColumn(this.wear_mguh, 3);
-                Grid.SetColumn(this.wear_mguk, 0);
-                Grid.SetColumn(this.wear_tc, 3);
+            //    Grid.SetRow(this.tyrecontainer, 0);
+            //    Grid.SetRow(this.groupbox_demage, 0);
+            //    Grid.SetRow(this.groupbox_motor, 0);
 
-                Grid.SetColumnSpan(this.wear_ce, 3);
-                Grid.SetColumnSpan(this.wear_es, 3);
-                Grid.SetColumnSpan(this.wear_ice, 3);
-                Grid.SetColumnSpan(this.wear_mguh, 3);
-                Grid.SetColumnSpan(this.wear_mguk, 3);
-                Grid.SetColumnSpan(this.wear_tc, 3);
+            //    Grid.SetColumn(this.wear_ce, 0);
+            //    Grid.SetColumn(this.wear_es, 3);
+            //    Grid.SetColumn(this.wear_ice, 0);
+            //    Grid.SetColumn(this.wear_mguh, 3);
+            //    Grid.SetColumn(this.wear_mguk, 0);
+            //    Grid.SetColumn(this.wear_tc, 3);
 
-                Grid.SetRow(this.wear_ce, 0);
-                Grid.SetRow(this.wear_es, 0);
-                Grid.SetRow(this.wear_ice, 1);
-                Grid.SetRow(this.wear_mguh, 1);
-                Grid.SetRow(this.wear_mguk, 2);
-                Grid.SetRow(this.wear_tc, 2);
-            }
+            //    Grid.SetColumnSpan(this.wear_ce, 3);
+            //    Grid.SetColumnSpan(this.wear_es, 3);
+            //    Grid.SetColumnSpan(this.wear_ice, 3);
+            //    Grid.SetColumnSpan(this.wear_mguh, 3);
+            //    Grid.SetColumnSpan(this.wear_mguk, 3);
+            //    Grid.SetColumnSpan(this.wear_tc, 3);
+
+            //    Grid.SetRow(this.wear_ce, 0);
+            //    Grid.SetRow(this.wear_es, 0);
+            //    Grid.SetRow(this.wear_ice, 1);
+            //    Grid.SetRow(this.wear_mguh, 1);
+            //    Grid.SetRow(this.wear_mguk, 2);
+            //    Grid.SetRow(this.wear_tc, 2);
+            //}
 
             this.lockTimer.Start();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            this.udp.Close();
+            u.Connention.Close();
         }
 
         private void Window_LocationChanged(object sender, EventArgs e)

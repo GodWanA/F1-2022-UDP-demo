@@ -54,7 +54,7 @@ namespace F1Telemetry.Models.MotionPacket
             //float m_gForceVertical;           // Vertical G-Force component
             index += ByteReader.ToFloat(array, index, out fz);
 
-            this.GForce = new Vector3(fy, fx, fz);
+            this.GForce = new Vector3(fx, fy, fz);
 
             //float m_yaw;                      // Yaw angle in radians
             index += ByteReader.ToFloat(array, index, out fy);

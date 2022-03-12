@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -23,7 +24,26 @@ namespace F1TelemetryApp.Windows
         public AboutWindow()
         {
             InitializeComponent();
-            this.textblock_gameVersion.Text = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            this.textblock_gameVersion.Text = Assembly.GetCallingAssembly().GetName().Version.ToString();
+        }
+
+        private void Window_Initialized(object sender, EventArgs e)
+        {
+        }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            var link = sender as Hyperlink;
+            Process.Start(new ProcessStartInfo { FileName = link.NavigateUri.AbsoluteUri });
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            var url = e.Uri.ToString();
+            Process.Start(new ProcessStartInfo(url)
+            {
+                UseShellExecute = true
+            });
         }
     }
 }

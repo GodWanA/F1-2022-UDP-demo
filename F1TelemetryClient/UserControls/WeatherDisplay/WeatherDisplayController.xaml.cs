@@ -35,9 +35,10 @@ namespace F1TelemetryApp.UserControls
             {
                 for (int i = 0; i < rawData?.Length; i++)
                 {
-                    this.stackpanel_nodes.Children.Add(new WheatherNode
+                    this.stackpanel_nodes.Children.Add(new WeatherNode
                     {
                         Visibility = Visibility.Collapsed,
+                        Margin = new Thickness(0),
                     });
                 }
             }
@@ -46,11 +47,11 @@ namespace F1TelemetryApp.UserControls
 
             if (rawData != null)
             {
-                var items = this.stackpanel_nodes.Children.Cast<WheatherNode>();
+                var items = this.stackpanel_nodes.Children.Cast<WeatherNode>();
 
                 for (int i = 0; i < items.Count(); i++)
                 {
-                    var item = (WheatherNode)this.stackpanel_nodes.Children[i];
+                    var item = (WeatherNode)this.stackpanel_nodes.Children[i];
                     if (i == 0) this.weather_actual.RainPercentage = rawData[i].RainPercentage;
 
                     bool ok = false;
@@ -85,11 +86,14 @@ namespace F1TelemetryApp.UserControls
                 {
                     double d = group.Sum(x => x.ActualWidth);
                     var t = new TextBlock();
-                    //t.Height = 24;
-                    t.Margin = new Thickness(2);
+                    t.Margin = new Thickness(0);
                     t.Width = d;
+                    //t.Height = 24;
+                    //t.FontSize = 11;
                     t.Foreground = Brushes.White;
+                    //t.Background = Brushes.Red;
                     t.TextAlignment = TextAlignment.Center;
+                    t.VerticalAlignment = VerticalAlignment.Center;
                     t.Text = group.Select(x => x.SessionType).FirstOrDefault().ToString();
                     this.stackpanel_names.Children.Add(t);
                 }

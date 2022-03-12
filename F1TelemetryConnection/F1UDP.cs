@@ -452,6 +452,8 @@ namespace F1Telemetry
             {
                 var data = new PacketCarTelemetryData(head, array);
                 this.OnCarTelemetryPacket(data);
+
+                if (head.PacketFormat <= 2020) this.OnEventPacketButtons(data.BuildButtonEvent());
             }
             catch (Exception ex)
             {
@@ -465,6 +467,8 @@ namespace F1Telemetry
             {
                 var data = new PacketCarStatusData(head, array);
                 this.OnCarStatusPacket(data);
+
+                if (head.PacketFormat <= 2020) this.OnCarDemagePacket(data.BuildCarDemagePacket());
             }
             catch (Exception ex)
             {

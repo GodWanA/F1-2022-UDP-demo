@@ -156,9 +156,8 @@ namespace F1TelemetryApp.UserControls
             {
                 if (this._nationality != value)
                 {
-                    if (value == (Nationalities)255) value = Nationalities.Unknown;
                     this._nationality = value;
-                    this.image_nation.Source = new BitmapImage(new Uri("pack://application:,,,/Images/Flags/" + this._nationality + ".png"));
+                    this.image_nation.Source = u.NationalityImage(this._nationality);
                     //this.OnPropertyChanged("Nationality");
                 }
             }
@@ -194,52 +193,7 @@ namespace F1TelemetryApp.UserControls
                 if (this.TeamID != value)
                 {
                     this._teamID = value;
-                    switch (this._teamID)
-                    {
-                        default:
-                            this.TeamColor = new SolidColorBrush(Color.FromRgb(255, 0, 255));
-                            break;
-                        case Teams.Mercedes:
-                        case Teams.Mercedes2020:
-                            this.TeamColor = new SolidColorBrush(Color.FromRgb(0, 210, 90));
-                            break;
-                        case Teams.Ferrari:
-                        case Teams.Ferrari2020:
-                            this.TeamColor = new SolidColorBrush(Color.FromRgb(220, 0, 0));
-                            break;
-                        case Teams.RedBullRacing:
-                        case Teams.RedBull2020:
-                            this.TeamColor = new SolidColorBrush(Color.FromRgb(6, 0, 239));
-                            break;
-                        case Teams.Alpine:
-                        case Teams.Renault2020:
-                            this.TeamColor = new SolidColorBrush(Color.FromRgb(0, 144, 255));
-                            break;
-                        case Teams.Haas:
-                        case Teams.Haas2020:
-                            this.TeamColor = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-                            break;
-                        case Teams.AstonMartin:
-                        case Teams.RacingPoint2020:
-                            this.TeamColor = new SolidColorBrush(Color.FromRgb(0, 111, 98));
-                            break;
-                        case Teams.AlphaTauri:
-                        case Teams.AlphaTauri2020:
-                            this.TeamColor = new SolidColorBrush(Color.FromRgb(43, 69, 98));
-                            break;
-                        case Teams.McLaren:
-                        case Teams.McLaren2020:
-                            this.TeamColor = new SolidColorBrush(Color.FromRgb(255, 135, 0));
-                            break;
-                        case Teams.AlfaRomeo:
-                        case Teams.AlfaRomeo2020:
-                            this.TeamColor = new SolidColorBrush(Color.FromRgb(144, 0, 0));
-                            break;
-                        case Teams.Williams:
-                        case Teams.Williams2020:
-                            this.TeamColor = new SolidColorBrush(Color.FromRgb(0, 90, 255));
-                            break;
-                    }
+                    this.TeamColor = u.PickTeamColor(this.TeamID);
 
                     //this.OnPropertyChanged("TeamID");
                 }
@@ -362,17 +316,11 @@ namespace F1TelemetryApp.UserControls
                     isSelected = value;
                     if (isSelected)
                     {
-                        this.grid_header.Background = Brushes.White;
-                        this.border_position.Background = Brushes.Black;
-                        this.label_carPosition.Foreground = Brushes.White;
-                        this.textblock_driver.Foreground = Brushes.Black;
+                        this.grid_header.Background = new SolidColorBrush(Color.FromRgb(160, 160, 160));
                     }
                     else
                     {
                         this.grid_header.Background = Brushes.Black;
-                        this.border_position.Background = Brushes.White;
-                        this.label_carPosition.Foreground = Brushes.Black;
-                        this.textblock_driver.Foreground = Brushes.White;
                     }
                 }
             }
@@ -408,6 +356,37 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
+        private ResultSatuses resultSatuses;
+
+        public ResultSatuses ResultStatus
+        {
+            get { return resultSatuses; }
+            set
+            {
+                if (value != this.resultSatuses)
+                {
+                    resultSatuses = value;
+
+                    switch (resultSatuses)
+                    {
+                        case ResultSatuses.Disqualified:
+                        case ResultSatuses.NotClassiFied:
+                        case ResultSatuses.DidNotFinish:
+                        case ResultSatuses.Retired:
+                            this.border_position.Opacity = 0.5;
+                            this.IsOut = true;
+                            break;
+                        default:
+                            this.border_position.Opacity = 1;
+                            this.IsOut = false;
+                            break;
+                    }
+                    //this.OnPropertyChanged("ResultStatus");
+                }
+            }
+        }
+
+        internal bool IsOut { get; private set; }
 
         private void OnPropertyChanged(string propertyName)
         {
@@ -495,6 +474,25 @@ namespace F1TelemetryApp.UserControls
 
             if (pitLaneTimer != TimeSpan.Zero) this.PitText = pitLaneTimer.ToString(@"s\:ff");
             else this.PitText = "PIT";
+        }
+
+        internal void setStateText()
+        {
+            switch (this.resultSatuses)
+            {
+                case ResultSatuses.Disqualified:
+                    this.LeaderIntervalTime = "DSQ";
+                    break;
+                case ResultSatuses.DidNotFinish:
+                    this.LeaderIntervalTime = "DNF";
+                    break;
+                case ResultSatuses.NotClassiFied:
+                    this.LeaderIntervalTime = "NCF";
+                    break;
+                case ResultSatuses.Retired:
+                    this.LeaderIntervalTime = "Out";
+                    break;
+            }
         }
     }
 }

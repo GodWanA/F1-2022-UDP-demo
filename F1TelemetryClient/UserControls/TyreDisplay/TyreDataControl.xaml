@@ -25,6 +25,7 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
@@ -37,6 +38,7 @@
                 <TextBlock Text="Tyre pressure:" TextAlignment="Right" Foreground="White" Grid.Row="4" FontSize="10" TextTrimming="CharacterEllipsis"/>
                 <TextBlock Text="Tyre wear:" TextAlignment="Right" Foreground="White" Grid.Row="5" FontSize="10" TextTrimming="CharacterEllipsis"/>
                 <TextBlock Text="Tyre demage:" TextAlignment="Right" Foreground="White" Grid.Row="6" FontSize="10" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="Brake demage:" TextAlignment="Right" Foreground="White" Grid.Row="7" FontSize="10" TextTrimming="CharacterEllipsis"/>
 
                 <TextBlock x:Name="textBlock_inner" Text="{Binding TyreInnerTemperature, StringFormat={}{0:0.##}, FallbackValue=--}" TextAlignment="Right" Foreground="White"  Margin="5,0,0,0" Grid.Column="1" Grid.Row="0" FontSize="10"/>
                 <TextBlock x:Name="textBlock_surface" Text="{Binding TyreSurfaceTemperature, StringFormat={}{0:0.##}, FallbackValue=--}" TextAlignment="Right" Foreground="White"  Margin="5,0,0,0" Grid.Column="1" Grid.Row="1" FontSize="10"/>
@@ -44,6 +46,7 @@
                 <TextBlock x:Name="textBlock_pressure" Text="{Binding Pressure, StringFormat={}{0:0.00}, FallbackValue=--}" TextAlignment="Right" Foreground="White"  Margin="5,0,0,0" Grid.Column="1" Grid.Row="4" FontSize="10"/>
                 <TextBlock x:Name="textBlock_wear" Text="{Binding Wear, StringFormat={}{0:0.00}, FallbackValue=--}" TextAlignment="Right" Foreground="White"  Margin="5,0,0,0" Grid.Column="1" Grid.Row="5" FontSize="10"/>
                 <TextBlock x:Name="textBlock_demage" Text="{Binding Demage, StringFormat={}{0:0.00}, FallbackValue=--}" TextAlignment="Right" Foreground="White"  Margin="5,0,0,0" Grid.Column="1" Grid.Row="6" FontSize="10"/>
+                <TextBlock x:Name="textBlock_brakedemage" Text="{Binding BrakeDemage, StringFormat={}{0:0.00}, FallbackValue=--}" TextAlignment="Right" Foreground="White"  Margin="5,0,0,0" Grid.Column="1" Grid.Row="7" FontSize="10"/>
 
                 <TextBlock Text="°C" Foreground="White" Margin="5,0,0,0" Grid.Row="0" Grid.Column="2" FontSize="10"/>
                 <TextBlock Text="°C" Foreground="White" Margin="5,0,0,0" Grid.Row="1" Grid.Column="2" FontSize="10"/>
@@ -51,6 +54,7 @@
                 <TextBlock Text="PSI" Foreground="White" Margin="5,0,0,0" Grid.Row="4" Grid.Column="2" FontSize="10"/>
                 <TextBlock Text="%" Foreground="White" Margin="5,0,0,0" Grid.Row="5" Grid.Column="2" FontSize="10"/>
                 <TextBlock Text="%" Foreground="White" Margin="5,0,0,0" Grid.Row="6" Grid.Column="2" FontSize="10"/>
+                <TextBlock Text="%" Foreground="White" Margin="5,0,0,0" Grid.Row="7" Grid.Column="2" FontSize="10"/>
             </Grid>
             <Grid Margin="2" Grid.Column="1" Grid.Row="1" x:Name="grid_progress">
                 <ProgressBar x:Name="progreassBar_Condition" Value="{Binding Condition, FallbackValue=100}" Foreground="{Binding TyreConditionForeground, FallbackValue=Green}" Orientation="Vertical" Grid.Row="1" Background="#B2A20000" BorderBrush="#FFB40000"/>

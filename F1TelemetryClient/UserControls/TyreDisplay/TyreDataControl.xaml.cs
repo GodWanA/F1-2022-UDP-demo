@@ -93,6 +93,22 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
+        public double BrakeDemage
+        {
+            get
+            {
+                return this.brakeDemage;
+            }
+            set
+            {
+                if (value != this.brakeDemage)
+                {
+                    this.brakeDemage = value;
+                    this.OnPropertyChanged("BrakeDemage");
+                }
+            }
+        }
+
         public double Condition
         {
             get
@@ -176,6 +192,7 @@ namespace F1TelemetryApp.UserControls
 
         private Side progressbarSide;
         private bool disposedValue;
+        private double brakeDemage;
 
         public Side ProgressbarSide
         {

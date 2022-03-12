@@ -23,13 +23,13 @@
         </Grid.RowDefinitions>
         <Image Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Source="/Images/icon.png"  VerticalAlignment="Top"/>
         <Grid Grid.Row="0" Grid.Column="1">
-            <TextBlock Text="Jeff+ - The Virtual Race Engineer" TextAlignment="Center" FontWeight="Bold" FontSize="14"/>
+            <TextBlock Text="Jeff+ Telemetry App" TextAlignment="Center" FontWeight="Bold" FontSize="14"/>
         </Grid>
         <StackPanel Margin="2" Grid.Column="1" Grid.Row="1" Background="#33FFFFFF">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Developer:" Grid.Column="0" Margin="2" TextAlignment="Right"/>
                 <TextBlock Text="Attila Csernay" Grid.Column="1" Margin="2"/>
@@ -39,11 +39,24 @@
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Client version:" Grid.Column="0" Margin="2" TextAlignment="Right"/>
                 <TextBlock x:Name="textblock_gameVersion" Grid.Column="1" Margin="2"/>
+            </Grid>
+
+            <Separator  Margin="2"/>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Contact:" Grid.Column="0" Margin="2" TextAlignment="Right"/>
+                <TextBlock Grid.Column="1" Margin="2">
+                    <Hyperlink NavigateUri="mailto:godwana07@gmail.com" RequestNavigate="Hyperlink_RequestNavigate">godwana07@gmail.com</Hyperlink>
+                </TextBlock>
             </Grid>
 
         </StackPanel>

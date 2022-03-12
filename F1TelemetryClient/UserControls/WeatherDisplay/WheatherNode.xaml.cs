@@ -11,9 +11,9 @@ namespace F1TelemetryApp.UserControls
     /// <summary>
     /// Interaction logic for WheatherNode.xaml
     /// </summary>
-    public partial class WheatherNode : UserControl, INotifyPropertyChanged, IDisposable
+    public partial class WeatherNode : UserControl, INotifyPropertyChanged, IDisposable
     {
-        public WheatherNode()
+        public WeatherNode()
         {
             InitializeComponent();
             this.DataContext = this;

@@ -1,5 +1,6 @@
 ﻿using F1Telemetry.Helpers;
 using System;
+using System.Text.RegularExpressions;
 using static F1Telemetry.Helpers.Appendences;
 
 namespace F1Telemetry.Models.ParticipantsPacket
@@ -95,6 +96,16 @@ namespace F1Telemetry.Models.ParticipantsPacket
         ///     - 2021<br/>
         /// </summary>
         public TelemetrySettings YouTelemetry { get; private set; }
+        /// <summary>
+        /// Short name of participant in UTF-8 format – null terminated<br/>
+        /// Will be truncated with … (U+2026) if too long<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
+        public string ShortName { get; private set; }
 
         protected override void Reader2018(byte[] array)
         {
@@ -125,6 +136,7 @@ namespace F1Telemetry.Models.ParticipantsPacket
             //                               // Will be truncated with … (U+2026) if too long
             this.Index += ByteReader.toStringFromUint8(array, this.Index, 48, out s);
             this.Name = s;
+            this.CreateShortName(this.DriverID);
         }
 
         protected override void Reader2019(byte[] array)
@@ -175,6 +187,8 @@ namespace F1Telemetry.Models.ParticipantsPacket
             //uint8 m_yourTelemetry;          // The player's UDP setting, 0 = restricted, 1 = public
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.YouTelemetry = (TelemetrySettings)uint8;
+
+            this.CreateShortName(this.DriverID);
         }
 
         private void SetNationality(byte uint8)
@@ -194,6 +208,20 @@ namespace F1Telemetry.Models.ParticipantsPacket
             if (uint8 <= Enum.GetValues(Teams.Unknown.GetType()).Length - 2) this.TeamID = (Teams)uint8;
             else if (uint8 == (int)Teams.MyTeam) this.TeamID = Teams.MyTeam;
             else this.TeamID = Teams.Unknown;
+        }
+
+        private void CreateShortName(Drivers drivers)
+        {
+            string name = drivers.ToString();
+
+            switch (name)
+            {
+                default:
+                    var elements = Regex.Split(name, "(?=[A-Z])", RegexOptions.IgnorePatternWhitespace);
+                    this.ShortName = elements[elements.Length - 1].Substring(0, 3).ToUpper();
+                    break;
+
+            }
         }
 
         protected override void Dispose(bool disposing)
