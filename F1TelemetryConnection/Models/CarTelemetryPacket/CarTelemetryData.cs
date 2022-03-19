@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using static F1Telemetry.Helpers.Appendences;
 
 namespace F1Telemetry.Models.CarTelemetryPacket
@@ -74,6 +75,15 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2021<br/>
         /// </summary>
         public Gears Gear { get; private set; }
+        /// <summary>
+        /// Gear selected.<br/>
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
+        public string GearString { get; private set; }
         /// <summary>
         /// Engine RPM.<br/>
         /// Supports:<br/>
@@ -188,7 +198,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
             this.Clutch = uint8 / 100.0f;
             //int8 m_gear;                       // Gear selected (1-8, N=0, R=-1)
             this.Index += ByteReader.ToInt8(array, this.Index, out int8);
-            this.Gear = (Gears)int8;
+            this.SetGear(int8);
             //uint16 m_engineRPM;                  // Engine RPM
             this.Index += ByteReader.ToUInt16(array, this.Index, out uint16);
             this.EngineRPM = uint16;
@@ -351,7 +361,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
             this.Clutch = uint8 / 100.0f;
             //int8 m_gear;                     // Gear selected (1-8, N=0, R=-1)
             this.Index += ByteReader.ToInt8(array, this.Index, out int8);
-            this.Gear = (Gears)int8;
+            this.SetGear(int8);
             //uint16 m_engineRPM;                // Engine RPM
             this.Index += ByteReader.ToUInt16(array, this.Index, out uint16);
             this.EngineRPM = uint16;
@@ -381,6 +391,12 @@ namespace F1Telemetry.Models.CarTelemetryPacket
             this.SurfaceType.Add("FrontLeft", (SurfaceTypes)uint8);
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.SurfaceType.Add("FrontRight", (SurfaceTypes)uint8);
+        }
+
+        private void SetGear(sbyte int8)
+        {
+            this.Gear = (Gears)int8;
+            this.GearString = Regex.Replace(this.Gear.ToString(), "gear_", "", RegexOptions.IgnoreCase);
         }
 
         protected override void Dispose(bool disposing)

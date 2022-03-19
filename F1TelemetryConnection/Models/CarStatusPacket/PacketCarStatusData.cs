@@ -76,7 +76,7 @@ namespace F1Telemetry.Models.CarStatusPacket
             {
                 this.Header.Dispose();
 
-                for (int i = 0; i < this.CarStatusData.Length; i++) this.CarStatusData[i].Dispose();
+                for (int i = 0; i < this.CarStatusData?.Length; i++) this.CarStatusData[i]?.Dispose();
                 this.CarStatusData = null;
             }
 

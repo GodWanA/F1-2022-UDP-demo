@@ -38,6 +38,7 @@
 		<None Remove="Images\DriverInfo\IsRobot.png" />
 		<None Remove="Images\DriverInfo\NotRobot.png" />
 		<None Remove="Images\DriverInfo\UpArrow.png" />
+		<None Remove="Images\DriverInfo\wheel.png" />
 		<None Remove="Images\Flags\American.png" />
 		<None Remove="Images\Flags\Argentinean.png" />
 		<None Remove="Images\Flags\Australian.png" />
@@ -191,6 +192,7 @@
 		<Resource Include="Images\DriverInfo\IsRobot.png" />
 		<Resource Include="Images\DriverInfo\NotRobot.png" />
 		<Resource Include="Images\DriverInfo\UpArrow.png" />
+		<Resource Include="Images\DriverInfo\wheel.png" />
 		<Resource Include="Images\Flags\American.png">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Resource>

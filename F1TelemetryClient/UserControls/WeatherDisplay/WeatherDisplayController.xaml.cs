@@ -68,6 +68,9 @@ namespace F1TelemetryApp.UserControls
                         item.OffsetTime = rawData[i].TimeOffset;
                         item.SessionType = rawData[i].SeassonType;
 
+                        item.Height = this.weather_actual.ActualHeight;
+                        item.Width = this.weather_actual.ActualWidth;
+
                         if (i != 0 && rawData[i].TimeOffset == TimeSpan.Zero) item.NewBlockMarker = true;
                         else item.NewBlockMarker = false;
 
@@ -88,7 +91,7 @@ namespace F1TelemetryApp.UserControls
                     var t = new TextBlock();
                     t.Margin = new Thickness(0);
                     t.Width = d;
-                    //t.Height = 24;
+                    t.Height = 16;
                     //t.FontSize = 11;
                     t.Foreground = Brushes.White;
                     //t.Background = Brushes.Red;

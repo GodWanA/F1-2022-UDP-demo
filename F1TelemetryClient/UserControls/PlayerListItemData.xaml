@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:F1TelemetryApp.UserControls"
              mc:Ignorable="d" 
-             d:DesignWidth="300" Height="auto" RenderOptions.BitmapScalingMode="LowQuality">
+             d:DesignWidth="300" Height="auto" RenderOptions.BitmapScalingMode="LowQuality" Initialized="UserControl_Initialized">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="24"/>
@@ -70,7 +70,7 @@
             <TextBlock x:Name="textblock_pittime" Grid.Column="1" Foreground="LimeGreen" Text="{Binding PitText, FallbackValue=PIT}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0" FontFamily="{StaticResource Formula1 Display}"/>
             <TextBlock x:Name="textblock_interval" Grid.Column="2" Foreground="{Binding TextColor, FallbackValue=white}" Text="{Binding IntervalTime, FallbackValue=interval}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0" FontFamily="{StaticResource Formula1 Display}"/>
             <TextBlock x:Name="textblock_leaderInterval" Grid.Column="3" Foreground="White" Text="{Binding LeaderIntervalTime, FallbackValue=leader}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0,0,2,0" FontFamily="{StaticResource Formula1 Display}"/>
-            <TextBlock x:Name="textblock_warnings" Grid.Column="4" Foreground="Orange" Text="{Binding WarningNumber, StringFormat=\\x0 , FallbackValue=x0}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <TextBlock x:Name="textblock_warnings" Grid.Column="4" Foreground="Orange" Text="{Binding WarningNumber, StringFormat={}{0:\\x0;\\x0;''}, FallbackValue=x0}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             <TextBlock x:Name="textblock_penaltys" Grid.Column="5" Foreground="Red" Text="{Binding PenaltyTime, StringFormat=\\+s, FallbackValue=+0}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Grid>
         <Grid Grid.Row="2" Background="#3F000000">

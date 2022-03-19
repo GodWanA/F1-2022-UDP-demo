@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:F1TelemetryApp.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Initialized="UserControl_Initialized">
+             d:DesignHeight="450" d:DesignWidth="1300" Initialized="UserControl_Initialized">
     <Grid>
         <GroupBox Header="Driver info" Margin="2">
             <Grid>
@@ -37,46 +37,20 @@
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Text="Speed:" Grid.Row="0" Grid.Column="0" Margin="2,1" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" TextAlignment="Right"/>
-                                <TextBlock Text="RPM:" Grid.Row="1" Grid.Column="0" Margin="2,1" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" TextAlignment="Right"/>
-                                <TextBlock Text="Gear:" Grid.Row="2" Grid.Column="0" Margin="2,1" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" TextAlignment="Right"/>
                                 <TextBlock Text="Pit limiter:" Grid.Row="6" Grid.Column="0" Margin="2,1" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" TextAlignment="Right"/>
                                 <TextBlock Text="DRS:" Grid.Row="7" Grid.Column="0" Margin="2,1" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" TextAlignment="Right"/>
                             </Grid>
                         </Border>
                     </Grid>
-                    <Grid Grid.Column="2">
-                        <Border Grid.Column="0" CornerRadius="5" Background="Black" Margin="2" Padding="5">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="auto"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="Rev light:" Grid.Row="9" Grid.Column="0" Margin="2,1" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" TextAlignment="Right"/>
-                            </Grid>
-                        </Border>
-                    </Grid>
+                    <Grid Grid.Column="2"/>
                     <Grid Grid.Column="3"/>
                 </Grid>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="auto"/>
                         <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
                     <Border Background="#7F000000" CornerRadius="5" Margin="2,2,2,2">
                         <Grid>
@@ -107,16 +81,13 @@
                                     </Grid.RowDefinitions>
 
                                     <Border Background="White" CornerRadius="0,0,3,0" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Height="28" Width="28" Margin="2">
-                                        <TextBlock Text="{Binding CarPosition,FallbackValue=—}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" FontSize="14"/>
+                                        <TextBlock Text="{Binding CarPosition,FallbackValue=—}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" FontSize="14" FontWeight="Bold"/>
                                     </Border>
                                     <Rectangle Grid.Column="1" Width="5" Margin="0,2" Grid.RowSpan="2" Fill="{Binding TeamColor,FallbackValue=purple}"/>
                                     <TextBlock Text="{Binding DriverName, FallbackValue='Driver Name'}" Grid.Column="2" Margin="2,0" FontSize="12" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding RaceNumber, FallbackValue='——'}" Grid.Column="3" Foreground="{Binding TeamColor,FallbackValue=purple}" Margin="2,0" FontSize="12" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding TeamName,FallbackValue='Team'}" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="1" Margin="2,0" FontSize="9" VerticalAlignment="Center"/>
-                                    <Grid Grid.Column="6" Grid.RowSpan="2" Width="56" HorizontalAlignment="Right">
-                                        <Grid.OpacityMask>
-                                            <ImageBrush ImageSource="/Images/Masks/natinalityMask.png" Stretch="Fill" TileMode="None"/>
-                                        </Grid.OpacityMask>
+                                    <Grid x:Name="grid_nationality" Grid.Column="6" Grid.RowSpan="2" Width="56" HorizontalAlignment="Right">
                                         <Image x:Name="image_nationality" Source="/Images/Flags/Unknown.png" Stretch="UniformToFill" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
                                         <Image Source="/Images/Nationality/coverimage.png"/>
                                     </Grid>
@@ -142,7 +113,7 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Text="{Binding CurrentLapTime, StringFormat=m\\:ss\\.fff, FallbackValue='-:--.---'}" Grid.Column="0" Grid.Row="0" Margin="2" VerticalAlignment="Center" ToolTip="Current laptime"/>
-                                    <TextBlock Text="{Binding CurrentStatus, FallbackValue=Unknown}" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4" TextAlignment="Center" VerticalAlignment="Center" Margin="2" ToolTip="Drivers current status"/>
+                                    <TextBlock Text="{Binding CurrentStatus, FallbackValue=Unknown}" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4" TextAlignment="Left" VerticalAlignment="Center" Margin="2" ToolTip="Drivers current status"/>
 
                                     <Image x:Name="image_isAi" Grid.Column="1" Grid.Row="1" Width="16" Margin="2" Source="/Images/DriverInfo/NotRobot.png"/>
                                     <TextBlock x:Name="textblick_abs" Text="ABS" Foreground="{Binding ColorABS, FallbackValue=gray}" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="1" Margin="2" FontSize="8"/>
@@ -157,49 +128,55 @@
                                     <TextBlock Text="{Binding NextDriver, FallbackValue='Next Driver'}" Margin="2" Grid.Column="6" Grid.Row="1" TextAlignment="Right" VerticalAlignment="Center" ToolTip="Driver behind"/>
                                     <TextBlock x:Name="textblock_prev" Text="{Binding PrevDelta, FallbackValue='- --.---'}" Grid.Column="7" Grid.Row="0" Margin="2" VerticalAlignment="Center"/>
                                     <TextBlock x:Name="textblock_next" Text="{Binding NextDelta, FallbackValue='+ --.---'}" Grid.Column="7" Grid.Row="1" Margin="2" VerticalAlignment="Center"/>
-                                    <ProgressBar Value="{Binding LapPercent, FallbackValue=50}" Grid.Column="0" Grid.ColumnSpan="10" Grid.Row="3" Height="2" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                                    <ProgressBar Value="{Binding LapPercent, FallbackValue=50}" Grid.Column="0" Grid.ColumnSpan="10" Grid.Row="3" Height="3" BorderBrush="{x:Null}" Background="{x:Null}"/>
                                 </Grid>
                             </Border>
-                            <Separator Grid.Row="2" Margin="2"/>
-                            <Border Grid.Row="3" Margin="2">
+
+                            <Border Grid.Row="5">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"/>
                                         <ColumnDefinition Width="1*"/>
                                         <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="64"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Brake bias:" Grid.Column="0" TextAlignment="Right" Margin="2"/>
-                                    <TextBlock Text="{Binding BrakeBias, StringFormat={}{0:0.##\\%}, FallbackValue=50%}" Grid.Column="1" Margin="3,2,1,2"/>
-                                </Grid>
-                            </Border>
-                            <Separator Grid.Row="4" Margin="2"/>
-                            <Border Grid.Row="5" Padding="2">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"/>
                                         <ColumnDefinition Width="2*"/>
                                         <ColumnDefinition Width="64"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto" MinHeight="4"/>
+                                        <RowDefinition Height="auto" MinHeight="4"/>
+                                        <RowDefinition Height="auto" MinHeight="4"/>
+                                        <RowDefinition Height="auto" MinHeight="4"/>
+                                        <RowDefinition Height="auto" MinHeight="4"/>
+                                        <RowDefinition Height="auto" MinHeight="4"/>
+                                        <RowDefinition Height="auto" MinHeight="4"/>
                                     </Grid.RowDefinitions>
-                                    <TextBlock Text="Time penalties:" TextAlignment="Right" Grid.Column="0" Grid.Row="0" Margin="2"/>
-                                    <TextBlock Text="{ Binding TimePenaltis, StringFormat=\\+s, FallbackValue='+0 sec' }" Grid.Column="1" Grid.Row="0" Margin="2"/>
+                                    <Separator Grid.Row="0" Margin="2" Grid.ColumnSpan="5"/>
 
-                                    <TextBlock Text="Drive through:" TextAlignment="Right" Grid.Column="0" Grid.Row="1" Margin="2"/>
-                                    <TextBlock Text="{ Binding DriveThrough, StringFormat=\\x0, FallbackValue='x0'}" Grid.Column="1" Grid.Row="1" Margin="2"/>
+                                    <TextBlock Text="Brake bias:" Grid.Column="0" TextAlignment="Right" Grid.Row="1" Margin="2"/>
+                                    <TextBlock Text="{Binding BrakeBias, StringFormat={}{0:0.##\\%}, FallbackValue=50%}" Grid.Row="1" Grid.Column="1" Margin="3,2,1,2"/>
 
-                                    <TextBlock Text="Stop'n'Go:" TextAlignment="Right" Grid.Column="0" Grid.Row="2" Margin="2"/>
-                                    <TextBlock Text="{ Binding StopGo, StringFormat=\\x0, FallbackValue='x0'}" Grid.Column="1" Grid.Row="2" Margin="2"/>
+                                    <TextBlock Text="Number of pit stops:" Grid.Column="2" TextAlignment="Right" Grid.Row="1" Margin="2"/>
+                                    <TextBlock Text="{Binding NumberOfPits, StringFormat={}{0:0.##}, FallbackValue=0}" Grid.Row="1" Grid.Column="3" Margin="3,2,1,2"/>
 
-                                    <TextBlock Text="Warnings:" TextAlignment="Right" Grid.Column="0" Grid.Row="3" Margin="2"/>
-                                    <TextBlock Text="{ Binding Warning, StringFormat=\\x0, FallbackValue='x0'}" Grid.Column="1" Grid.Row="3" Margin="2"/>
+                                    <TextBlock Text="Tyres history:" Grid.Column="2" TextAlignment="Right" Grid.Row="2" Margin="2"/>
+                                    <StackPanel x:Name="stackpanel_tyrehistory" Orientation="Horizontal" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2"/>
 
-                                    <Rectangle x:Name="rectangle_flag" Fill="Transparent" RadiusX="2" RadiusY="2" Grid.Row="1" Grid.RowSpan="4" Grid.Column="4" Margin="2"/>
-                                    <TextBlock Text="Flag:" Grid.Column="3" Grid.Row="0" Margin="2" TextAlignment="Center" Foreground="White"/>
+                                    <Separator Grid.Row="3" Margin="2" Grid.ColumnSpan="5"/>
+
+                                    <TextBlock Text="Time penalties:" TextAlignment="Right" Grid.Column="0" Grid.Row="5" Margin="2"/>
+                                    <TextBlock Text="{ Binding TimePenaltis, StringFormat=\\+s, FallbackValue='+0 sec' }" Grid.Column="1" Grid.Row="5" Margin="2"/>
+
+                                    <TextBlock Text="Drive through:" TextAlignment="Right" Grid.Column="0" Grid.Row="6" Margin="2"/>
+                                    <TextBlock Text="{ Binding DriveThrough, StringFormat=\\x0, FallbackValue='x0'}" Grid.Column="1" Grid.Row="6" Margin="2"/>
+
+                                    <TextBlock Text="Stop'n'Go:" TextAlignment="Right" Grid.Column="2" Grid.Row="5" Margin="2"/>
+                                    <TextBlock Text="{ Binding StopGo, StringFormat=\\x0, FallbackValue='x0'}" Grid.Column="3" Grid.Row="5" Margin="2"/>
+
+                                    <TextBlock Text="Warnings:" TextAlignment="Right" Grid.Column="2" Grid.Row="6" Margin="2"/>
+                                    <TextBlock Text="{ Binding Warning, StringFormat=\\x0, FallbackValue='x0'}" Grid.Column="3" Grid.Row="6" Margin="2"/>
+
+                                    <Rectangle x:Name="rectangle_flag" Fill="Transparent" RadiusX="2" RadiusY="2" Height="32" Grid.Row="6" Grid.RowSpan="4" Grid.Column="4" Margin="2"/>
+                                    <TextBlock Text="Flag:" Grid.Column="4" Grid.Row="5" Margin="2" TextAlignment="Center" Foreground="White"/>
                                 </Grid>
                             </Border>
                         </Grid>
@@ -207,13 +184,12 @@
                     <Border Background="Black" Grid.Column="1" CornerRadius="5" Padding="5" Margin="2,2,2,2">
                         <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="40"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto" />
@@ -238,16 +214,16 @@
                             <Rectangle Width="2" Margin="4,2" RadiusX="1" RadiusY="1" Fill="White" Grid.Column="1" Grid.Row="0" Grid.RowSpan="10"/>
 
                             <TextBlock Text="ERS" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Center" Grid.ColumnSpan="4" />
-                            <ProgressBar  Value="{Binding ERSEnergy, FallbackValue=50}" Margin="7,0" Grid.Column="2" Grid.Row="1" Orientation="Vertical" Background="#FF333332" BorderBrush="#FF525252" Foreground="#FFFFD200" ToolTip="Current ERS stored"/>
+                            <ProgressBar  Value="{Binding ERSEnergy, FallbackValue=50}" Margin="10,0" Grid.Column="2" Grid.Row="1" Orientation="Vertical" Background="#FF333332" BorderBrush="#FF525252" Foreground="#FFFFD200" ToolTip="Current ERS stored"/>
                             <TextBlock Text="{Binding ERSEnergy, StringFormat={}{0:0.0\\%}, FallbackValue=50.0%}" Margin="2" Grid.Column="2" Grid.Row="2" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8"/>
 
-                            <ProgressBar Value="{Binding ERSDeployable, FallbackValue=50}" Margin="7,0,7,0" Grid.Column="3" Grid.Row="1" Orientation="Vertical" Background="#FF333232" BorderBrush="#FF525252" Foreground="White" ToolTip="Aviable ERS on this lap"/>
+                            <ProgressBar Value="{Binding ERSDeployable, FallbackValue=50}" Margin="10,0" Grid.Column="3" Grid.Row="1" Orientation="Vertical" Background="#FF333232" BorderBrush="#FF525252" Foreground="White" ToolTip="Aviable ERS on this lap"/>
                             <TextBlock Text="{Binding ERSDeployable, StringFormat={}{0:0.0\\%}, FallbackValue=50.0%}" Margin="2" Grid.Column="3" Grid.Row="2" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8"/>
 
-                            <ProgressBar Value="{Binding ERSMGUK, FallbackValue=50}" Margin="7,0,7,0" Grid.Column="4" Grid.Row="1" Orientation="Vertical" Background="#FF323333" BorderBrush="#FF525252" Foreground="#FF00E2FF" ToolTip="Harvested by MGU-K"/>
+                            <ProgressBar Value="{Binding ERSMGUK, FallbackValue=50}" Margin="10,0" Grid.Column="4" Grid.Row="1" Orientation="Vertical" Background="#FF323333" BorderBrush="#FF525252" Foreground="#FF00E2FF" ToolTip="Harvested by MGU-K"/>
                             <TextBlock Text="{Binding ERSMGUK, StringFormat={}{0:0.0\\%}, FallbackValue=50.0%}" Margin="2" Grid.Column="4" Grid.Row="2" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8"/>
 
-                            <ProgressBar Value="{Binding ERSMGUH, FallbackValue=50}" Margin="7,0,7,0" Grid.Column="5" Grid.Row="1" Orientation="Vertical" Background="#FF333232" BorderBrush="#FF525252" Foreground="#FF009CFF" ToolTip="Harvested by MGU-H"/>
+                            <ProgressBar Value="{Binding ERSMGUH, FallbackValue=50}" Margin="10,0" Grid.Column="5" Grid.Row="1" Orientation="Vertical" Background="#FF333232" BorderBrush="#FF525252" Foreground="#FF009CFF" ToolTip="Harvested by MGU-H"/>
                             <TextBlock Text="{Binding ERSMGUH, StringFormat={}{0:0.0\\%}, FallbackValue=50.0%}" Margin="2" Grid.Column="5" Grid.Row="2" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8"/>
 
 
@@ -255,30 +231,121 @@
                         </Grid>
                     </Border>
 
-                    <Border Background="Black" Grid.Column="2" Margin="2" Padding="2" CornerRadius="5">
+                    <Border Background="#7F000000" Grid.Column="2" Margin="2" Padding="2" CornerRadius="5">
                         <Grid>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="auto"/>
-                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
 
-                            <ProgressBar Value="{Binding Throttle, FallbackValue=50}" Foreground="LimeGreen" Orientation="Vertical" Grid.Column="0" Grid.Row="0" Margin="2" ToolTip="Throttle"/>
-                            <TextBlock Text="T" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1"/>
+                                    <TextBlock Text="{Binding Gear, FallbackValue=N}" Grid.Column="0" Grid.Row="0" FontSize="48" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding RPM, FallbackValue=0}"  Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Grid>
+                                <Grid x:Name="grid_revLight" MinHeight="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
 
-                            <ProgressBar Value="{Binding Brake, FallbackValue=50}" Foreground="Red" Orientation="Vertical" Grid.Column="1" Grid.Row="0" Margin="2" ToolTip="Brake"/>
-                            <TextBlock Text="B" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Grid.Row="1"/>
+                                    <Ellipse Grid.Column="0" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="1" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="2" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="3" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="4" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="5" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="6" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="7" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="8" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="9" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="10" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="11" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="12" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="13" Fill="Gray" Width="8" Height="8"/>
+                                    <Ellipse Grid.Column="14" Fill="Gray" Width="8" Height="8"/>
+                                </Grid>
+                                <Separator Margin="2,2,2,0"/>
+                                <Border Background="Black" CornerRadius="0,0,5,5" Padding="2" Margin="2,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="1*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="1*"/>
+                                            <RowDefinition Height="1*"/>
+                                        </Grid.RowDefinitions>
 
-                            <ProgressBar Value="{Binding Clutch, FallbackValue=50}" Foreground="White" Orientation="Vertical" Grid.Column="2" Grid.Row="0" Margin="2" ToolTip="Clutch"/>
-                            <TextBlock Text="C" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="1"/>
+                                        <TextBlock Text="{Binding SpeedKPH, StringFormat={}{0:0}, FallbackValue=0}"  HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0" Margin="2" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBlock Text="KPH" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Margin="2,2,2,2" FontSize="9"/>
+
+                                        <TextBlock Text="/" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="36" Margin="0,-8,0,0" FontWeight="Normal"/>
+
+                                        <TextBlock Text="{Binding SpeedMPH, StringFormat={}{0:0}, FallbackValue=0}" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="0" Margin="2" FontSize="18" VerticalAlignment="Center"/>
+                                        <TextBlock Text="MPH" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Margin="2" FontSize="9"/>
+
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                            <Rectangle Fill="White" Grid.Column="1" Margin="2" RadiusX="1" RadiusY="1" Width="2"/>
+                            <StackPanel Grid.Column="2">
+                                <Border Background="Black" Margin="2" CornerRadius="5">
+                                    <Grid Width="100" Height="100">
+                                        <Image x:Name="image_wheel" Source="/Images/DriverInfo/wheel.png" Width="64" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Steer, StringFormat={}{0:0.00}, FallbackValue=0.00}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,15"/>
+                                    </Grid>
+                                </Border>
+
+                                <Border Background="Black" Margin="2" Padding="2" CornerRadius="5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition Width="1*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Text="Throttle" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis"/>
+                                        <ProgressBar Value="{Binding Throttle, FallbackValue=50}" Foreground="LimeGreen" Background="#FF333232" BorderBrush="#FF525252" Orientation="Horizontal" Grid.Column="1" Grid.Row="0" Margin="2" ToolTip="Throttle"/>
+
+                                        <TextBlock Text="Brake" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis"/>
+                                        <ProgressBar Value="{Binding Brake, FallbackValue=50}" Foreground="Red" Background="#FF333232" BorderBrush="#FF525252" Orientation="Horizontal" Grid.Column="1" Grid.Row="1" Margin="2" ToolTip="Brake"/>
+
+                                        <TextBlock Text="Clutch" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis"/>
+                                        <ProgressBar Value="{Binding Clutch, FallbackValue=50}" Foreground="White" Background="#FF333232" BorderBrush="#FF525252" Orientation="Horizontal" Grid.Column="1" Grid.Row="2" Margin="2" ToolTip="Clutch"/>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
                         </Grid>
                     </Border>
 
-                    <Border Background="Black" Grid.Column="3" Margin="2" Padding="2" CornerRadius="5">
+                    <Border Background="#7F000000" Grid.Column="3" Margin="2" Padding="2" CornerRadius="5">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"/>

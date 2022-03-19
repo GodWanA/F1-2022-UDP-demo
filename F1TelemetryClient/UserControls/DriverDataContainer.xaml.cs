@@ -1,19 +1,20 @@
 ﻿using F1Telemetry.Models.CarStatusPacket;
 using F1Telemetry.Models.CarTelemetryPacket;
 using F1Telemetry.Models.LapDataPacket;
+using F1Telemetry.Models.MotionPacket;
 using F1Telemetry.Models.ParticipantsPacket;
 using F1Telemetry.Models.SessionHistoryPacket;
-using F1Telemetry.Models.SessionPacket;
 using F1TelemetryApp.Classes;
 using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using System.Windows.Threading;
 using static F1Telemetry.Helpers.Appendences;
 
 namespace F1TelemetryApp.UserControls
@@ -21,7 +22,7 @@ namespace F1TelemetryApp.UserControls
     /// <summary>
     /// Interaction logic for DriverDataContainer.xaml
     /// </summary>
-    public partial class DriverDataContainer : UserControl, INotifyPropertyChanged
+    public partial class DriverDataContainer : UserControl, INotifyPropertyChanged, IConnectUDP, IDisposable
     {
         public DriverDataContainer()
         {
@@ -371,8 +372,8 @@ namespace F1TelemetryApp.UserControls
                 if (isAi != value)
                 {
                     isAi = value;
-                    if (this.isAi) this.image_isAi.Source = DriverDataContainer.IsRobot;
-                    else this.image_isAi.Source = DriverDataContainer.NotRobot;
+                    if (this.isAi) this.image_isAi.Source = new BitmapImage(new Uri("pack://application:,,,/Images/DriverInfo/IsRobot.png"));
+                    else this.image_isAi.Source = new BitmapImage(new Uri("pack://application:,,,/Images/DriverInfo/NotRobot.png"));
                 }
             }
         }
@@ -572,48 +573,134 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
+        private float speedKPH;
+
+        public float SpeedKPH
+        {
+            get { return speedKPH; }
+            set
+            {
+                if (speedKPH != value)
+                {
+                    speedKPH = value;
+                    this.OnPropertyChanged("SpeedKPH");
+                }
+            }
+        }
+
+        private float speedMPH;
+
+        public float SpeedMPH
+        {
+            get { return speedMPH; }
+            set
+            {
+                if (speedMPH != value)
+                {
+                    speedMPH = value;
+                    this.OnPropertyChanged("SpeedMPH");
+                }
+            }
+        }
+
+        private float steer;
+
+        public float Steer
+        {
+            get { return steer; }
+            set
+            {
+                if (steer != value)
+                {
+                    steer = value;
+                    this.OnPropertyChanged("Steer");
+                }
+            }
+        }
+
+        private ushort rpm;
+
+        public ushort RPM
+        {
+            get { return rpm; }
+            set
+            {
+                if (rpm != value)
+                {
+                    rpm = value;
+                    this.OnPropertyChanged("RPM");
+                }
+            }
+        }
+
+        private string gear;
+
+        public string Gear
+        {
+            get { return gear; }
+            set
+            {
+                if (gear != value)
+                {
+                    gear = value;
+                    this.OnPropertyChanged("Gear");
+                }
+            }
+        }
+
+        private byte numberOfPits;
+
+        public byte NumberOfPits
+        {
+            get { return numberOfPits; }
+            set
+            {
+                if (value != this.numberOfPits)
+                {
+                    numberOfPits = value;
+                    this.OnPropertyChanged("NumberOfPits");
+                }
+            }
+        }
+
         private Flags lastFlag = Flags.InvalidOrUnknown;
         private TractionControlSettings tc;
         private bool isABS;
 
-        private static BitmapImage IsRobot = new BitmapImage(new Uri("pack://application:,,,/Images/DriverInfo/IsRobot.png"));
-        private static BitmapImage NotRobot = new BitmapImage(new Uri("pack://application:,,,/Images/DriverInfo/NotRobot.png"));
+        private int driverIndex;
+        private int prevIndex;
+        private bool canUpdate;
+        private int nextIndex;
+        private bool disposedValue;
 
         private void OnPropertyChanged(string propertyName)
         {
             if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        internal void UpdateLapdata(LapData lapdata, float trackLength)
+        private void UpdateLapdata(PacketLapData lapdata)
         {
             if (lapdata != null)
             {
-                this.StopGo = lapdata.NumberOfUnservedStopGoPenalties;
-                this.Warning = lapdata.Warnings;
-                this.DriveThrough = lapdata.NumberOfUnservedDriveThroughPenalties;
-                this.TimePenaltis = lapdata.Penalties;
-                this.CarPosition = lapdata.CarPosition;
-                this.CurrentLapTime = lapdata.CurrentLapTime;
-                this.CurrentStatus = lapdata.ResultStatus.ToString();
+                var player = lapdata.Lapdata[this.driverIndex];
+                var a = lapdata.Lapdata;
 
-                this.LapPercent = lapdata.LapDistance / trackLength * 100f;
+                this.StopGo = player.NumberOfUnservedStopGoPenalties;
+                this.Warning = player.Warnings;
+                this.DriveThrough = player.NumberOfUnservedDriveThroughPenalties;
+                this.TimePenaltis = player.Penalties;
+                this.CarPosition = player.CarPosition;
+                this.CurrentLapTime = player.CurrentLapTime;
+                this.CurrentStatus = player.ResultStatus.ToString();
+                this.NumberOfPits = player.NumberOfPitStops;
+
+                this.LapPercent = player.LapDistance / u.TrackLength * 100f;
+
+                this.prevIndex = Array.IndexOf(a, a.Where(x => x.CarPosition == player.CarPosition - 1 && x.CarPosition != 0).FirstOrDefault());
+                this.nextIndex = Array.IndexOf(a, a.Where(x => x.CarPosition == player.CarPosition + 1 && x.CarPosition != 0).FirstOrDefault());
+
+                this.UpdateLayout();
             }
-
-            this.UpdateLayout();
-        }
-
-        private static int FindPlayer(int position, int arraySize)
-        {
-            int ret = -1;
-            var lastLapData = u.Connention.LastLapDataPacket;
-
-            if (lastLapData != null)
-            {
-                int i = Array.IndexOf(lastLapData.Lapdata, lastLapData.Lapdata.Where(x => x.CarPosition == position).FirstOrDefault());
-                if (i < arraySize && i > -1) ret = i;
-            }
-
-            return ret;
         }
 
         internal void UpdateDatas(
@@ -622,53 +709,101 @@ namespace F1TelemetryApp.UserControls
             PacketSessionHistoryData history,
             PacketParticipantsData participants,
             Vector3 gForce,
+            PacketLapData lapdata,
             int playerIndex
-        )
+            )
         {
-            int prevIndex = DriverDataContainer.FindPlayer(this.carPosition - 1, participants.Participants.Length);
-            int nextIndex = DriverDataContainer.FindPlayer(this.carPosition + 1, participants.Participants.Length);
+            this.canUpdate = false;
 
-            if (participants != null)
+            this.driverIndex = playerIndex;
+
+            this.UpdateLapdata(lapdata);
+            this.UpdateParticipants(participants);
+            this.UpdateHistory(history);
+            this.UpdateStatus(status);
+            this.UpdateGForce(gForce);
+            this.UpdateTelemetry(telemetry);
+
+            this.UpdateLayout();
+
+            this.canUpdate = true;
+        }
+
+        private void UpdateTelemetry(CarTelemetryData telemetry)
+        {
+            if (telemetry != null)
             {
-                var player = participants.Participants[playerIndex];
-                this.DriverName = player.Name;
-                this.RaceNumber = player.RaceNumber;
-                this.TeamName = u.PickTeamName(player.TeamID);
-                this.TeamColor = u.PickTeamColor(player.TeamID);
-                this.image_nationality.Source = u.NationalityImage(player.Nationality);
-                this.IsAi = player.IsAI;
+                this.Throttle = telemetry.Throttle * 100f;
+                this.Brake = telemetry.Brake * 100f;
+                this.Clutch = telemetry.Clutch * 100f;
 
-                if (prevIndex != -1) this.PrevDriver = participants.Participants[prevIndex].ShortName;
-                else this.PrevDriver = "---";
+                this.SpeedKPH = telemetry.Speed;
+                this.SpeedMPH = telemetry.Speed * 0.621371192f;
 
-                if (nextIndex != -1) this.NextDriver = participants.Participants[nextIndex].ShortName;
-                else this.NextDriver = "---";
+                this.Gear = telemetry.GearString;
+
+                this.RPM = telemetry.EngineRPM;
+                for (int i = 0; i < this.grid_revLight.Children.Count; i++)
+                {
+                    var item = this.grid_revLight.Children[i] as Ellipse;
+                    if ((telemetry.RevLightBitValue & (1 << i)) != 0)
+                    {
+                        Brush c;
+
+                        if (i < 5) c = Brushes.LimeGreen;
+                        else if (i < 10) c = Brushes.Red;
+                        else c = Brushes.MediumPurple;
+
+                        item.Fill = c;
+                    }
+                    else
+                    {
+                        item.Fill = Brushes.Gray;
+                    }
+                }
+
+
+                this.Steer = 180f * telemetry.Steer;
+                this.image_wheel.RenderTransform = new RotateTransform(this.Steer, this.image_wheel.ActualWidth / 2, this.image_wheel.ActualHeight / 2);
+
+                this.UpdateLayout();
             }
+        }
 
-            if (history != null)
+        private void UpdateGForce(Vector3 gForce)
+        {
+            float g = MathF.Abs(gForce.X + gForce.Y);
+            if (g != this.GForce)
             {
-                if (history.BestLapTimeLapNumber > 0 && history.BestLapTimeLapNumber < history.LapHistoryData.Length)
-                {
-                    this.BestLapTime = history.LapHistoryData[history.BestLapTimeLapNumber - 1].LapTime;
-                }
+                this.GForce = g;
+                double r = this.grid_gCanvas.ActualWidth / 2;
+                double o = r - this.ellipse_gpointer.ActualWidth / 2;
+                float a = (float)o / 5f;
 
-                var lastHistoryPacket = u.Connention.LastSessionHistoryPacket;
-                var lastLapData = u.Connention.LastLapDataPacket;
+                float fy = gForce.Y * a;
+                if (MathF.Abs(fy) > o) fy = (float)o;
 
-                Brush f = Brushes.White;
-                if (prevIndex > -1)
+                float fx = gForce.X * a;
+                if (MathF.Abs(fx) > o) fx = (float)o;
+
+                this.ellipse_gpointer.Margin = new Thickness
                 {
-                    this.PrevDelta = u.CalculateDelta(lastLapData, lastHistoryPacket[prevIndex], history, out f);
-                    this.textblock_prev.Foreground = f;
-                }
-                if (nextIndex > -1)
-                {
-                    this.NextDelta = u.CalculateDelta(lastLapData, lastHistoryPacket[nextIndex], history, out f);
-                    this.textblock_next.Foreground = f;
-                }
-                f = null;
+                    Top = o + fy,
+                    Left = o + fx,
+                };
+
+                if (g > 5f) g = 5f;
+
+                byte red = (byte)MathF.Round(g * 51);
+                byte others = (byte)(255 - red);
+                this.textblock_gForce.Foreground = new SolidColorBrush(Color.FromRgb(255, others, others));
+
+                this.UpdateLayout();
             }
+        }
 
+        private void UpdateStatus(CarStatusData status)
+        {
             if (status != null)
             {
                 if (this.lastFlag != status.VehicleFIAFlag)
@@ -720,43 +855,87 @@ namespace F1TelemetryApp.UserControls
                 if (this.FuelRemaining < 0) this.RemainingColor = Brushes.Red;
                 else if (this.FuelRemaining > 0) this.RemainingColor = Brushes.LimeGreen;
                 else this.RemainingColor = Brushes.LightGray;
+
+                this.UpdateLayout();
             }
+        }
 
-            float g = MathF.Abs(gForce.X + gForce.Y);
-            if (g != this.GForce)
+        private void UpdateParticipants(PacketParticipantsData participantsData)
+        {
+            if (participantsData != null)
             {
-                this.GForce = g;
-                double r = this.grid_gCanvas.ActualWidth / 2;
-                double o = r - this.ellipse_gpointer.ActualWidth / 2;
-                float a = (float)o / 5f;
+                var player = participantsData.Participants[this.driverIndex];
+                this.DriverName = player.Name;
+                this.RaceNumber = player.RaceNumber;
+                this.TeamName = u.PickTeamName(player.TeamID);
+                this.TeamColor = u.PickTeamColor(player.TeamID);
+                this.image_nationality.Source = u.NationalityImage(player.Nationality);
+                this.IsAi = player.IsAI;
 
-                float fy = gForce.Y * a;
-                if (MathF.Abs(fy) > o) fy = (float)o;
+                if (prevIndex != -1) this.PrevDriver = participantsData.Participants[this.prevIndex].ShortName;
+                else this.PrevDriver = "---";
 
-                float fx = gForce.X * a;
-                if (MathF.Abs(fx) > o) fx = (float)o;
+                if (nextIndex != -1) this.NextDriver = participantsData.Participants[this.nextIndex].ShortName;
+                else this.NextDriver = "---";
 
-                this.ellipse_gpointer.Margin = new Thickness
+                this.UpdateLayout();
+            }
+        }
+
+        private void UpdateHistory(PacketSessionHistoryData history)
+        {
+            if (history != null)
+            {
+                if (history.BestLapTimeLapNumber > 0 && history.BestLapTimeLapNumber < history.LapHistoryData.Length)
                 {
-                    Top = o + fy,
-                    Left = o + fx,
-                };
+                    this.BestLapTime = history.LapHistoryData[history.BestLapTimeLapNumber - 1].LapTime;
+                }
 
-                if (g > 5f) g = 5f;
+                if (history.NumberOfTyreStints != this.stackpanel_tyrehistory.Children.Count)
+                {
+                    this.stackpanel_tyrehistory.Children.Clear();
 
-                byte red = (byte)MathF.Round(g * 51);
-                byte others = (byte)(255 - red);
-                this.textblock_gForce.Foreground = new SolidColorBrush(Color.FromRgb(255, others, others));
+                    for (int i = 0; i < history.NumberOfTyreStints; i++)
+                    {
+                        this.stackpanel_tyrehistory.Children.Add(new Image
+                        {
+                            Source = u.TyreCompoundToImage(history.TyreStintsHistoryData[i].TyreActualCompound),
+                            Width = 20,
+                            Height = 20,
+                            Margin = new Thickness(0),
+                        });
+                    }
+                }
+
+                var lastHistoryPacket = u.Connention.LastSessionHistoryPacket;
+                var lastLapData = u.Connention.LastLapDataPacket;
+
+                Brush f = Brushes.White;
+
+                if (this.prevIndex > -1)
+                {
+                    this.PrevDelta = u.CalculateDelta(lastLapData, lastHistoryPacket[prevIndex], history, out f);
+                    this.textblock_prev.Foreground = f;
+                }
+                else
+                {
+                    this.PrevDelta = null;
+                }
+
+                if (this.nextIndex > -1)
+                {
+                    this.NextDelta = u.CalculateDelta(lastLapData, lastHistoryPacket[nextIndex], history, out f);
+                    this.textblock_next.Foreground = f;
+                }
+                else
+                {
+                    this.NextDelta = null;
+                }
+
+                f = null;
+
+                this.UpdateLayout();
             }
-
-            if (telemetry != null)
-            {
-                this.Throttle = telemetry.Throttle * 100f;
-                this.Brake = telemetry.Brake * 100f;
-                this.Clutch = telemetry.Clutch * 100f;
-            }
-
-            this.UpdateLayout();
         }
 
         private void UserControl_Initialized(object sender, EventArgs e)
@@ -766,6 +945,148 @@ namespace F1TelemetryApp.UserControls
 
             this.ColorTC = Brushes.Gray;
             this.ColorABS = Brushes.Gray;
+
+            if (u.Connention != null)
+            {
+                this.SubscribeUDPEvents();
+            }
+
+            this.grid_nationality.OpacityMask = new ImageBrush
+            {
+                ImageSource = u.KepForras(Properties.Resources.natinalityMask),
+                TileMode = TileMode.None,
+                Stretch = Stretch.Fill,
+            };
+        }
+
+        private void Connention_LapDataPacket(object sender, EventArgs e)
+        {
+            this.OnUpdateEvent(() =>
+            {
+                var data = sender as PacketLapData;
+                this.UpdateLapdata(data);
+            });
+        }
+
+        private void Connention_CarMotionPacket(object sender, EventArgs e)
+        {
+            this.OnUpdateEvent(() =>
+            {
+                var data = sender as PacketMotionData;
+                if (data != null) this.UpdateGForce(data.CarMotionData[this.driverIndex].GForce);
+            });
+        }
+
+        private void Connention_CarStatusPacket(object sender, EventArgs e)
+        {
+            this.OnUpdateEvent(() =>
+            {
+                var data = sender as PacketCarStatusData;
+                this.UpdateStatus(data.CarStatusData[this.driverIndex]);
+            });
+        }
+
+        private void Connention_CarTelemetryPacket(object sender, EventArgs e)
+        {
+            this.OnUpdateEvent(() =>
+            {
+                var data = sender as PacketCarTelemetryData;
+                this.UpdateTelemetry(data.CarTelemetryData[this.driverIndex]);
+            });
+        }
+
+        private void Connention_SessionHistoryPacket(object sender, EventArgs e)
+        {
+            this.OnUpdateEvent(() =>
+            {
+                var data = sender as PacketSessionHistoryData;
+                if (data.CarIndex == this.driverIndex) this.UpdateHistory(data);
+            });
+        }
+
+        private void Connention_ParticipantsPacket(object sender, EventArgs e)
+        {
+            this.OnUpdateEvent(() =>
+            {
+                var data = sender as PacketParticipantsData;
+                this.UpdateParticipants(data);
+            });
+        }
+
+        private void OnUpdateEvent(Action method)
+        {
+            this.Dispatcher.BeginInvoke(() =>
+            {
+                if (this.canUpdate && this.IsLoaded)
+                {
+                    this.canUpdate = false;
+                    if (this.driverIndex > -1) method.Invoke();
+                    this.canUpdate = true;
+                }
+            }, DispatcherPriority.Background);
+        }
+
+        public void SubscribeUDPEvents()
+        {
+            u.Connention.ParticipantsPacket += Connention_ParticipantsPacket;
+            u.Connention.SessionHistoryPacket += Connention_SessionHistoryPacket;
+            u.Connention.CarStatusPacket += Connention_CarStatusPacket;
+            u.Connention.CarTelemetryPacket += Connention_CarTelemetryPacket;
+            u.Connention.CarMotionPacket += Connention_CarMotionPacket;
+            u.Connention.LapDataPacket += Connention_LapDataPacket;
+        }
+
+        public void UnsubscribeUDPEvents()
+        {
+            u.Connention.ParticipantsPacket -= Connention_ParticipantsPacket;
+            u.Connention.SessionHistoryPacket -= Connention_SessionHistoryPacket;
+            u.Connention.CarStatusPacket -= Connention_CarStatusPacket;
+            u.Connention.CarTelemetryPacket -= Connention_CarTelemetryPacket;
+            u.Connention.CarMotionPacket -= Connention_CarMotionPacket;
+            u.Connention.LapDataPacket -= Connention_LapDataPacket;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                    this.Background = null;
+                    this.ColorABS = null;
+                    this.ColorTC = null;
+                    this.DriverName = null;
+                    this.image_isAi.Source = null;
+                    this.image_nationality.Source = null;
+                    this.NextDelta = null;
+                    this.PrevDelta = null;
+                    this.RemainingColor = null;
+                    this.TeamColor = null;
+                    this.TeamName = null;
+
+                    this.UnsubscribeUDPEvents();
+                    this.PropertyChanged = null;
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~DriverDataContainer()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

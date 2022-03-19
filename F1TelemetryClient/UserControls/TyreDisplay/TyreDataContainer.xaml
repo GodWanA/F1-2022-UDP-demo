@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:F1TelemetryApp.UserControls.TyreDisplay" xmlns:UserControls="clr-namespace:F1TelemetryApp.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="500">
+             d:DesignHeight="300" d:DesignWidth="500" Initialized="UserControl_Initialized">
     <Grid>
         <GroupBox x:Name="groupbox_wear" Header="Tyre conditions" FontWeight="Normal" Margin="2" Grid.Column="0" Grid.ColumnSpan="12" Grid.Row="0">
             <Grid x:Name="grid_waar">

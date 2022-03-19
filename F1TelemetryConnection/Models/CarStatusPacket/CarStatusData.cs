@@ -142,10 +142,12 @@ namespace F1Telemetry.Models.CarStatusPacket
             //float m_ersHarvestedThisLapMGUK;  // ERS energy harvested this lap by MGU-K
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUK = f;
+            //this.ERSHarvestedThisLapMGUKPercent = CarStatusData.CalculateERSPercent(f, ERSCapacity2021 * 2f);
             this.ERSHarvestedThisLapMGUKPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersHarvestedThisLapMGUH;  // ERS energy harvested this lap by MGU-H
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUH = f;
+            //this.ERSHarvestedThisLapMGUHPercent = CarStatusData.CalculateERSPercent(f, ERSCapacity2021 * 2f);
             this.ERSHarvestedThisLapMGUHPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersDeployedThisLap;       // ERS energy deployed this lap
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
@@ -247,10 +249,12 @@ namespace F1Telemetry.Models.CarStatusPacket
             //float m_ersHarvestedThisLapMGUK;  // ERS energy harvested this lap by MGU-K
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUK = f;
+            //this.ERSHarvestedThisLapMGUKPercent = CarStatusData.CalculateERSPercent(f, ERSCapacity2021 * 2f);
             this.ERSHarvestedThisLapMGUKPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersHarvestedThisLapMGUH;  // ERS energy harvested this lap by MGU-H
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUH = f;
+            //this.ERSHarvestedThisLapMGUHPercent = CarStatusData.CalculateERSPercent(f, ERSCapacity2021 * 2f);
             this.ERSHarvestedThisLapMGUHPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersDeployedThisLap;       // ERS energy deployed this lap
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
@@ -364,10 +368,12 @@ namespace F1Telemetry.Models.CarStatusPacket
             //float m_ersHarvestedThisLapMGUK;  // ERS energy harvested this lap by MGU-K
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUK = f;
+            //this.ERSHarvestedThisLapMGUKPercent = CarStatusData.CalculateERSPercent(f, ERSCapacity2021 * 2f);
             this.ERSHarvestedThisLapMGUKPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersHarvestedThisLapMGUH;  // ERS energy harvested this lap by MGU-H
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUH = f;
+            //this.ERSHarvestedThisLapMGUHPercent = CarStatusData.CalculateERSPercent(f, ERSCapacity2021 * 2f);
             this.ERSHarvestedThisLapMGUHPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersDeployedThisLap;       // ERS energy deployed this lap
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
@@ -455,10 +461,12 @@ namespace F1Telemetry.Models.CarStatusPacket
             //float m_ersHarvestedThisLapMGUK;  // ERS energy harvested this lap by MGU-K
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUK = f;
+            //this.ERSHarvestedThisLapMGUKPercent = CarStatusData.CalculateERSPercent(f, ERSCapacity2021 * 2f);
             this.ERSHarvestedThisLapMGUKPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersHarvestedThisLapMGUH;  // ERS energy harvested this lap by MGU-H
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.ERSHarvestedThisLapMGUH = f;
+            //this.ERSHarvestedThisLapMGUHPercent = CarStatusData.CalculateERSPercent(f, ERSCapacity2021 * 2f);
             this.ERSHarvestedThisLapMGUHPercent = CarStatusData.CalculateERSPercent(f);
             //float m_ersDeployedThisLap;       // ERS energy deployed this lap
             this.Index += ByteReader.ToFloat(array, this.Index, out f);

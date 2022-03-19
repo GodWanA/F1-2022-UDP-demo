@@ -170,10 +170,10 @@ namespace F1Telemetry.Models.ParticipantsPacket
             this.NetworkID = uint8;
             //uint8 m_teamId;                 // Team id - see appendix
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.SetTeam(uint8);
             //uint8 m_myTeam;                 // My team flag – 1 = My Team, 0 = otherwise
             this.Index += ByteReader.ToBoolFromUint8(array, this.Index, out b);
             this.IsMyTeam = b;
+            this.SetTeam(uint8);
             //uint8 m_raceNumber;             // Race number of the car
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.RaceNumber = uint8;
@@ -199,28 +199,35 @@ namespace F1Telemetry.Models.ParticipantsPacket
 
         private void SetDriver(byte uint8)
         {
-            if (uint8 <= Enum.GetValues(Nationalities.Unknown.GetType()).Length - 1) this.DriverID = (Drivers)uint8;
+            if (uint8 <= Enum.GetValues(Drivers.Unknown.GetType()).Length - 1) this.DriverID = (Drivers)uint8;
             else this.DriverID = Drivers.Unknown;
         }
 
         private void SetTeam(byte uint8)
         {
-            if (uint8 <= Enum.GetValues(Teams.Unknown.GetType()).Length - 2) this.TeamID = (Teams)uint8;
-            else if (uint8 == (int)Teams.MyTeam) this.TeamID = Teams.MyTeam;
-            else this.TeamID = Teams.Unknown;
+            if (this.IsMyTeam)
+            {
+                this.TeamID = Teams.MyTeam;
+            }
+            else
+            {
+                this.TeamID = (Teams)uint8;
+                if (Regex.IsMatch(this.TeamID.ToString(), "^[\\d]+")) this.TeamID = Teams.Unknown;
+            }
         }
 
-        private void CreateShortName(Drivers drivers)
+        private void CreateShortName(Drivers driver)
         {
-            string name = drivers.ToString();
-
-            switch (name)
+            switch (driver)
             {
                 default:
-                    var elements = Regex.Split(name, "(?=[A-Z])", RegexOptions.IgnorePatternWhitespace);
+                    var elements = Regex.Split(driver.ToString(), "(?=[A-Z])", RegexOptions.IgnorePatternWhitespace);
                     this.ShortName = elements[elements.Length - 1].Substring(0, 3).ToUpper();
                     break;
-
+                case Drivers.MickSchumacher:
+                case Drivers.MichaelSchumacher:
+                    this.ShortName = "MSC";
+                    break;
             }
         }
 

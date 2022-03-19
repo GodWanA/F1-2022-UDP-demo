@@ -15,6 +15,7 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using static F1Telemetry.Helpers.Appendences;
 
@@ -34,15 +35,22 @@ namespace F1Telemetry
         /// Connection's Port address
         /// </summary>
         public int Port { get; private set; }
+        /// <summary>
+        /// Enables async process of packet
+        /// </summary>
+        public bool IsAsyncPacketProcessEnabled { get; set; } = true;
 
         protected IPEndPoint EndPoint { get; set; }
         protected UdpClient Connection { get; set; }
+
+        private CancellationTokenSource CancelToken;
+
         /// <summary>
         /// Maximum number of packet per second. Relevant on packets where intervals settable.<br/>
         /// Important to reduce cpu usage.<br/>
         /// 0 equals no limit.
         /// </summary>
-        public double NumberOfPacketPerSecond { get; set; } = 8;
+        public double NumberOfPacketPerSecond { get; set; } = 10;
         /// <summary>
         /// Is connection is still alive
         /// </summary>
@@ -227,13 +235,22 @@ namespace F1Telemetry
         /// <param name="port">Service Port number as integer</param>
         public F1UDP(string ipAdress, int port)
         {
-            this.IPAdress = ipAdress;
+            this.Connect(ipAdress, port);
+        }
+
+        /// <summary>
+        /// Opens connection to selected ip and port.
+        /// </summary>
+        /// <param name="ip">UDP data sender's IP</param>
+        /// <param name="port">UDP data sender's port</param>
+        public void Connect(string ip, int port)
+        {
+            this.IPAdress = ip;
             this.Port = port;
             this.IsConnecting = true;
-
             this.EndPoint = new IPEndPoint(IPAddress.Parse(this.IPAdress), this.Port);
-
             this.Connection = new UdpClient(this.EndPoint);
+            this.CancelToken = new CancellationTokenSource();
 
             Task.Run(() =>
             {
@@ -244,10 +261,14 @@ namespace F1Telemetry
                         var remoteEndPoint = new IPEndPoint(this.EndPoint.Address, this.EndPoint.Port);
                         var receivedResults = this.Connection.Receive(ref remoteEndPoint);
 
-                        Task.Run(() =>
+                        if (this.IsAsyncPacketProcessEnabled)
+                        {
+                            Task.Run(() => ByteArrayProcess((byte[])(receivedResults.Clone())), this.CancelToken.Token);
+                        }
+                        else
                         {
                             this.ByteArrayProcess((byte[])(receivedResults.Clone()));
-                        });
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -259,8 +280,45 @@ namespace F1Telemetry
                     this.Connection.Close();
                     this.OnClosedConnection(this);
                 }
-            });
+            }, this.CancelToken.Token);
         }
+
+        /// <summary>
+        /// Closing UPD connection
+        /// </summary>
+        public void Close()
+        {
+            if (this.IsConnecting)
+            {
+                this.IsConnecting = false;
+                this.CancelToken.Cancel();
+                //this.CancelToken.Dispose();
+                //this.CancelToken = null;
+            }
+        }
+
+
+        /// <summary>
+        /// Closing, and reopening connection to UDP service. 
+        /// </summary>
+        public void Reconnect()
+        {
+            this.Close();
+            this.Connect(this.IPAdress, this.Port);
+        }
+
+
+        /// <summary>
+        /// Closing the current UDP service, and opens a new connection to another service.
+        /// </summary>
+        /// <param name="ip">New UDP data sender's ip</param>
+        /// <param name="port">New UDP data sender's port</param>
+        public void Reconnect(string ip, int port)
+        {
+            this.Close();
+            this.Connect(ip, port);
+        }
+
 
         /// <summary>
         /// Selects and delver packet to its process method.
@@ -309,14 +367,6 @@ namespace F1Telemetry
                     this.SessionHistory(array, header);
                     break;
             }
-        }
-
-        /// <summary>
-        /// Closing UPD connection
-        /// </summary>
-        public void Close()
-        {
-            this.IsConnecting = false;
         }
 
         private void CarMotion(byte[] array, PacketHeader head)

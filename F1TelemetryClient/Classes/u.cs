@@ -22,6 +22,7 @@ namespace F1TelemetryApp.Classes
         internal static F1UDP Connention { get; set; }
 
         internal static Dictionary<Flags, System.Windows.Media.Brush> FlagColors { get; set; } = u.FillColors();
+        public static ushort TrackLength { get; internal set; }
 
         private static Dictionary<Flags, System.Windows.Media.Brush> FillColors()
         {
@@ -156,6 +157,50 @@ namespace F1TelemetryApp.Classes
                 case Teams.Williams:
                 case Teams.Williams2020:
                     return new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 90, 255));
+                // F2 Cars:
+                case Teams.ArtGP19:
+                case Teams.ArtGP20:
+                case Teams.ArtGP21:
+                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(180, 179, 180));
+                case Teams.Arden19:
+                case Teams.BWT20:
+                case Teams.BWT21:
+                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(252, 185, 229));
+                case Teams.Campos19:
+                case Teams.Campos20:
+                case Teams.Campos21:
+                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(235, 193, 16));
+                case Teams.Carlin19:
+                case Teams.Carlin20:
+                case Teams.Carlin21:
+                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(36, 62, 246));
+                case Teams.SauberJuniorCharouz19:
+                case Teams.Charouz20:
+                case Teams.Charouz21:
+                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(132, 2, 10));
+                case Teams.Dams19:
+                case Teams.Dams20:
+                case Teams.Dams21:
+                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(14, 212, 250));
+                case Teams.Hitech20:
+                case Teams.Hitech21:
+                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(232, 232, 232));
+                case Teams.MPMotorsport19:
+                case Teams.MPMotorsport20:
+                case Teams.MPMotorsport21:
+                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(247, 64, 26));
+                case Teams.Prema19:
+                case Teams.Prema20:
+                case Teams.Prema21:
+                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(232, 3, 9));
+                case Teams.Trident19:
+                case Teams.Trident20:
+                case Teams.Trident21:
+                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(14, 17, 133));
+                case Teams.UniVirtuosi19:
+                case Teams.UniVirtuosi20:
+                case Teams.UniVirtuosi21:
+                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(251, 236, 32));
             }
         }
 
@@ -207,6 +252,53 @@ namespace F1TelemetryApp.Classes
                 // MyTeam:
                 case Teams.MyTeam:
                     return "MyTeam";
+                // F2:                    
+                case Teams.ArtGP19:
+                case Teams.ArtGP20:
+                case Teams.ArtGP21:
+                    return "ART Grand Prix";
+                case Teams.Arden19:
+                    return "BWT Arden";
+                case Teams.BWT20:
+                    return "BWT HWA Racelab";
+                case Teams.BWT21:
+                    return "HWA Racelab";
+                case Teams.Campos19:
+                case Teams.Campos20:
+                case Teams.Campos21:
+                    return "CamposRacing";
+                case Teams.Carlin19:
+                case Teams.Carlin20:
+                case Teams.Carlin21:
+                    return "Carlin";
+                case Teams.SauberJuniorCharouz19:
+                    return "Sauber Junior Team by Charouz";
+                case Teams.Charouz20:
+                case Teams.Charouz21:
+                    return "Charouz Racing System";
+                case Teams.Dams19:
+                case Teams.Dams20:
+                case Teams.Dams21:
+                    return "DAMS";
+                case Teams.Hitech20:
+                case Teams.Hitech21:
+                    return "Hitech Grand Prix";
+                case Teams.MPMotorsport19:
+                case Teams.MPMotorsport20:
+                case Teams.MPMotorsport21:
+                    return "MP Motorsport";
+                case Teams.Prema19:
+                case Teams.Prema20:
+                case Teams.Prema21:
+                    return "Prema Racing";
+                case Teams.Trident19:
+                case Teams.Trident20:
+                case Teams.Trident21:
+                    return "Trident";
+                case Teams.UniVirtuosi19:
+                case Teams.UniVirtuosi20:
+                case Teams.UniVirtuosi21:
+                    return "UNI-Virtuosi Racing";
             }
         }
 

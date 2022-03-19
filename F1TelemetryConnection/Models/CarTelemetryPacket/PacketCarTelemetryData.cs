@@ -151,11 +151,11 @@ namespace F1Telemetry.Models.CarTelemetryPacket
             {
                 this.Header.Dispose();
 
-                for (int i = 0; i < this.CarTelemetryData.Length; i++) this.CarTelemetryData[i].Dispose();
+                for (int i = 0; i < this.CarTelemetryData?.Length; i++) this.CarTelemetryData[i].Dispose();
                 this.CarTelemetryData = null;
             }
 
-            this.pressedButtons.Clear();
+            //this.pressedButtons?.Clear();
             this.pressedButtons = null;
 
             base.Dispose(disposing);

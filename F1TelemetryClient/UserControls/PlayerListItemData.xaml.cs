@@ -1,4 +1,7 @@
-﻿using F1TelemetryApp.Classes;
+﻿using F1Telemetry.Models.CarStatusPacket;
+using F1Telemetry.Models.LapDataPacket;
+using F1Telemetry.Models.ParticipantsPacket;
+using F1TelemetryApp.Classes;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -6,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using static F1Telemetry.Helpers.Appendences;
 
 namespace F1TelemetryApp.UserControls
@@ -13,7 +17,7 @@ namespace F1TelemetryApp.UserControls
     /// <summary>
     /// Interaction logic for PlayerListItemData.xaml
     /// </summary>
-    public partial class PlayerListItemData : UserControl, INotifyPropertyChanged, IComparable<PlayerListItemData>, IDisposable
+    public partial class PlayerListItemData : UserControl, INotifyPropertyChanged, IComparable<PlayerListItemData>, IDisposable, IConnectUDP
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -341,9 +345,9 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private TimeSpan penaltyTime;
+        private TimeSpan? penaltyTime;
 
-        public TimeSpan PenaltyTime
+        public TimeSpan? PenaltyTime
         {
             get { return penaltyTime; }
             set
@@ -357,6 +361,9 @@ namespace F1TelemetryApp.UserControls
         }
 
         private ResultSatuses resultSatuses;
+        private bool isLapdata;
+        private bool isParticipants;
+        private bool isStatus;
 
         public ResultSatuses ResultStatus
         {
@@ -429,6 +436,7 @@ namespace F1TelemetryApp.UserControls
                     this.PropertyChanged = null;
                     this.TrackPercentForeground = null;
                     this.TimerForeground = null;
+                    this.UnsubscribeUDPEvents();
                 }
 
                 this.currentLapTime = null;
@@ -493,6 +501,115 @@ namespace F1TelemetryApp.UserControls
                     this.LeaderIntervalTime = "Out";
                     break;
             }
+        }
+
+        private void UserControl_Initialized(object sender, EventArgs e)
+        {
+            this.SubscribeUDPEvents();
+        }
+
+        private void Connention_CarStatusPacket(object sender, EventArgs e)
+        {
+            var status = sender as PacketCarStatusData;
+            if (status != null && !this.isStatus)
+            {
+                this.isStatus = true;
+                this.Dispatcher.BeginInvoke(() =>
+                {
+                    var current = status.CarStatusData[this.ArrayIndex];
+                    this.TyreCompund = current.VisualTyreCompound;
+
+                    this.UpdateLayout();
+                    this.isStatus = false;
+                }, DispatcherPriority.Background);
+            }
+        }
+
+        private void Connention_ParticipantsPacket(object sender, EventArgs e)
+        {
+            var participants = sender as PacketParticipantsData;
+            if (participants != null && !this.isParticipants)
+            {
+                this.isParticipants = true;
+
+                this.Dispatcher.BeginInvoke(() =>
+                {
+                    var current = participants.Participants[this.ArrayIndex];
+                    this.DriverName = current.Name;
+                    this.Nationality = current.Nationality;
+                    this.TeamID = current.TeamID;
+                    this.IsMyTeam = current.IsMyTeam;
+                    this.RaceNumber = current.RaceNumber;
+
+                    this.UpdateLayout();
+                    this.isParticipants = false;
+
+                    //if (this.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
+                    //else this.Visibility = Visibility.Visible;
+                }, DispatcherPriority.Background);
+            }
+        }
+
+        private void Connention_LapDataPacket(object sender, EventArgs e)
+        {
+            var lapData = sender as PacketLapData;
+            if (lapData != null && !this.isLapdata)
+            {
+                this.isLapdata = true;
+
+                this.Dispatcher.BeginInvoke(() =>
+                {
+                    var current = lapData.Lapdata[this.ArrayIndex];
+                    this.CarPosition = current.CarPosition;
+
+                    if (current.CarPosition > 0)
+                    {
+                        float p = current.LapDistance / u.TrackLength * 100.0f;
+
+                        this.CurrentLapTime = current.CurrentLapTime;
+                        this.TrackLengthPercent = p;
+                        //if (current.Warnings > 0) Debug.WriteLine("HELLÓÓÓ");
+                        this.WarningNumber = current.Warnings;
+
+                        if (current.Penalties > TimeSpan.Zero) this.PenaltyTime = current.Penalties;
+                        else this.PenaltyTime = null;
+
+                        this.ResultStatus = current.ResultStatus;
+                        this.SetPitStatues(current.PitStatus, current.PitStopTimer);
+
+                        if (current.IsCurrentLapInvalid)
+                        {
+                            this.TimerForeground = Brushes.Red;
+                            this.TrackPercentForeground = Brushes.Red;
+                        }
+                        else
+                        {
+                            this.TimerForeground = Brushes.White;
+                            this.TrackPercentForeground = Brushes.LimeGreen;
+                        }
+                    }
+
+                    this.UpdateLayout();
+                    this.isLapdata = false;
+
+                    //if (this.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
+                    //else this.Visibility = Visibility.Visible;
+                }, DispatcherPriority.Background);
+            }
+        }
+
+        public void SubscribeUDPEvents()
+        {
+            u.Connention.LapDataPacket += Connention_LapDataPacket;
+            u.Connention.ParticipantsPacket += Connention_ParticipantsPacket;
+            u.Connention.CarStatusPacket += Connention_CarStatusPacket;
+        }
+
+        public void UnsubscribeUDPEvents()
+        {
+            u.Connention.LapDataPacket -= Connention_LapDataPacket;
+            u.Connention.ParticipantsPacket -= Connention_ParticipantsPacket;
+            u.Connention.CarStatusPacket -= Connention_CarStatusPacket;
         }
     }
 }

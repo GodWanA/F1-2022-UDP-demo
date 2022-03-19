@@ -154,6 +154,15 @@
   <data name="Bulgarian" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\bulgarian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="C3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tyres\c3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="C4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tyres\c4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="C5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tyres\c5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Cameroonian" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\cameroonian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -164,6 +173,9 @@
     <value>..\images\flags\chilean.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Clear" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\weathericons\clear.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Clear1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\weathericons\clear.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Colombian" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -183,6 +195,9 @@
   </data>
   <data name="Danish" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\danish.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="DownArrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\driverinfo\downarrow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Dutch" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\dutch.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -217,7 +232,13 @@
   <data name="Guatemalan" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\guatemalan.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="hard" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tyres\hard.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="HeavyRain" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\weathericons\heavyrain.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="HeavyRain1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\weathericons\heavyrain.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Honduran" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -229,8 +250,14 @@
   <data name="Hungarian" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\hungarian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="hypersoft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tyres\hypersoft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Icelander" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\icelander.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Indian" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\indian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -238,11 +265,17 @@
   <data name="Indonesian" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\indonesian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="inter" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tyres\inter.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Irish" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\irish.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Israeli" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\israeli.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="IsRobot" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\driverinfo\isrobot.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Italian" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\italian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -268,7 +301,13 @@
   <data name="LightRain" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\weathericons\lightrain.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="LightRain1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\weathericons\lightrain.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="LitghtCloud" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\weathericons\litghtcloud.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="LitghtCloud1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\weathericons\litghtcloud.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Lithuanian" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -280,11 +319,23 @@
   <data name="Maltese" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\maltese.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="medium" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tyres\medium.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Mexican" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\mexican.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Monegasque" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\monegasque.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="natinalityMask" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\masks\natinalitymask.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="natinalityMask2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\masks\natinalitymask2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="natinalityMask3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\masks\natinalitymask3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="NewZealander" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\newzealander.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -298,10 +349,16 @@
   <data name="Norwegian" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\norwegian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="NotRobot" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\driverinfo\notrobot.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Omani" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\omani.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Overcast" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\weathericons\overcast.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Overcast1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\weathericons\overcast.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Pakistani" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -352,6 +409,9 @@
   <data name="Slovenian" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\slovenian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="soft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tyres\soft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="SouthAfrican" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\southafrican.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -363,6 +423,15 @@
   </data>
   <data name="Storm" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\weathericons\storm.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Storm1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\weathericons\storm.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="superhard" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tyres\superhard.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="supersoft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tyres\supersoft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Swedish" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\swedish.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -379,8 +448,14 @@
   <data name="Ukrainian" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\ukrainian.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="ultrasoft" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tyres\ultrasoft.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Unknown" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\unknown.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UpArrow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\driverinfo\uparrow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Uruguayan" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\uruguayan.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -393,5 +468,11 @@
   </data>
   <data name="Welsh" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\images\flags\welsh.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="wet" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\tyres\wet.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="wheel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\driverinfo\wheel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

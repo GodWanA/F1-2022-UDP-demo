@@ -106,14 +106,14 @@ namespace F1Telemetry.Models.MotionPacket
             {
                 this.Header.Dispose();
 
-                for (int i = 0; i < this.CarMotionData.Length; i++) this.CarMotionData[i].Dispose();
+                for (int i = 0; i < this.CarMotionData?.Length; i++) this.CarMotionData[i]?.Dispose();
                 this.CarMotionData = null;
 
-                this.SuspensionAcceleration.Clear();
-                this.SuspensionVelocity.Clear();
-                this.SuspensionPosition.Clear();
-                this.WheelSlip.Clear();
-                this.WheelSpeed.Clear();
+                this.SuspensionAcceleration?.Clear();
+                this.SuspensionVelocity?.Clear();
+                this.SuspensionPosition?.Clear();
+                this.WheelSlip?.Clear();
+                this.WheelSpeed?.Clear();
 
                 this.SuspensionAcceleration = null;
                 this.SuspensionVelocity = null;

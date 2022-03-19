@@ -43,7 +43,7 @@
         <TextBlock Text="°C" Foreground="White" Grid.Column="2" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="1" FontSize="10"/>
         <TextBlock x:Name="textblock_trackTemperature" Text="{Binding TrackTemperature, FallbackValue=--}" Foreground="White" Grid.Column="1" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="1" FontSize="10"/>
         <TextBlock Text="°C" Foreground="White" Grid.Column="2" Grid.Row="4" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="1" FontSize="10"/>
-        <TextBlock x:Name="textblock_offsetTime" Text="{Binding OffsetTime, StringFormat=\\+h\\:mm, FallbackValue=Actial}" Grid.Column="1" Grid.Row="5" Foreground="White"  VerticalAlignment="Stretch" Grid.ColumnSpan="6" HorizontalAlignment="Center" FontSize="8"/>
+        <TextBlock x:Name="textblock_offsetTime" Text="{Binding OffsetTime, StringFormat=\\+h\\:mm, FallbackValue=Actual}" Grid.Column="1" Grid.Row="5" Foreground="White"  VerticalAlignment="Stretch" Grid.ColumnSpan="6" HorizontalAlignment="Center" FontSize="8"/>
         <Rectangle x:Name="rectangle_marker" Fill="White" Grid.Column="0" Width="2" Margin="5" RadiusX="1" RadiusY="1" Grid.RowSpan="6" Visibility="Collapsed"/>
     </Grid>
 </UserControl>

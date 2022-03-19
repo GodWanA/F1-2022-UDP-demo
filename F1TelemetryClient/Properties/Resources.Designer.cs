@@ -181,6 +181,36 @@ namespace F1TelemetryApp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap C3 {
+            get {
+                object obj = ResourceManager.GetObject("C3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap C4 {
+            get {
+                object obj = ResourceManager.GetObject("C4", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap C5 {
+            get {
+                object obj = ResourceManager.GetObject("C5", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Cameroonian {
@@ -216,6 +246,16 @@ namespace F1TelemetryApp.Properties {
         internal static System.Drawing.Bitmap Clear {
             get {
                 object obj = ResourceManager.GetObject("Clear", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Clear1 {
+            get {
+                object obj = ResourceManager.GetObject("Clear1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -277,6 +317,16 @@ namespace F1TelemetryApp.Properties {
             get {
                 object obj = ResourceManager.GetObject("Danish", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap DownArrow {
+            get {
+                object obj = ResourceManager.GetObject("DownArrow", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -393,9 +443,29 @@ namespace F1TelemetryApp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap hard {
+            get {
+                object obj = ResourceManager.GetObject("hard", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap HeavyRain {
             get {
                 object obj = ResourceManager.GetObject("HeavyRain", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap HeavyRain1 {
+            get {
+                object obj = ResourceManager.GetObject("HeavyRain1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -431,12 +501,32 @@ namespace F1TelemetryApp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap hypersoft {
+            get {
+                object obj = ResourceManager.GetObject("hypersoft", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Icelander {
             get {
                 object obj = ResourceManager.GetObject("Icelander", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icon {
+            get {
+                object obj = ResourceManager.GetObject("icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -461,6 +551,16 @@ namespace F1TelemetryApp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap inter {
+            get {
+                object obj = ResourceManager.GetObject("inter", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Irish {
@@ -477,6 +577,16 @@ namespace F1TelemetryApp.Properties {
             get {
                 object obj = ResourceManager.GetObject("Israeli", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap IsRobot {
+            get {
+                object obj = ResourceManager.GetObject("IsRobot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -563,9 +673,29 @@ namespace F1TelemetryApp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap LightRain1 {
+            get {
+                object obj = ResourceManager.GetObject("LightRain1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap LitghtCloud {
             get {
                 object obj = ResourceManager.GetObject("LitghtCloud", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap LitghtCloud1 {
+            get {
+                object obj = ResourceManager.GetObject("LitghtCloud1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -601,6 +731,16 @@ namespace F1TelemetryApp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap medium {
+            get {
+                object obj = ResourceManager.GetObject("medium", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Mexican {
@@ -617,6 +757,36 @@ namespace F1TelemetryApp.Properties {
             get {
                 object obj = ResourceManager.GetObject("Monegasque", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap natinalityMask {
+            get {
+                object obj = ResourceManager.GetObject("natinalityMask", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap natinalityMask2 {
+            get {
+                object obj = ResourceManager.GetObject("natinalityMask2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap natinalityMask3 {
+            get {
+                object obj = ResourceManager.GetObject("natinalityMask3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
@@ -661,6 +831,16 @@ namespace F1TelemetryApp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap NotRobot {
+            get {
+                object obj = ResourceManager.GetObject("NotRobot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Omani {
@@ -676,6 +856,16 @@ namespace F1TelemetryApp.Properties {
         internal static System.Drawing.Bitmap Overcast {
             get {
                 object obj = ResourceManager.GetObject("Overcast", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Overcast1 {
+            get {
+                object obj = ResourceManager.GetObject("Overcast1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -841,6 +1031,16 @@ namespace F1TelemetryApp.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap soft {
+            get {
+                object obj = ResourceManager.GetObject("soft", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] SouthAfrican {
@@ -876,6 +1076,36 @@ namespace F1TelemetryApp.Properties {
         internal static System.Drawing.Bitmap Storm {
             get {
                 object obj = ResourceManager.GetObject("Storm", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Storm1 {
+            get {
+                object obj = ResourceManager.GetObject("Storm1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap superhard {
+            get {
+                object obj = ResourceManager.GetObject("superhard", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap supersoft {
+            get {
+                object obj = ResourceManager.GetObject("supersoft", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -933,9 +1163,29 @@ namespace F1TelemetryApp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ultrasoft {
+            get {
+                object obj = ResourceManager.GetObject("ultrasoft", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Unknown {
             get {
                 object obj = ResourceManager.GetObject("Unknown", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap UpArrow {
+            get {
+                object obj = ResourceManager.GetObject("UpArrow", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -977,6 +1227,26 @@ namespace F1TelemetryApp.Properties {
             get {
                 object obj = ResourceManager.GetObject("Welsh", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap wet {
+            get {
+                object obj = ResourceManager.GetObject("wet", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap wheel {
+            get {
+                object obj = ResourceManager.GetObject("wheel", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }
