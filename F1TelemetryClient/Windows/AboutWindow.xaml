@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:F1TelemetryApp.Windows"
         mc:Ignorable="d"
-        Title="About" Height="150" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
+        Title="Jeff+ | About" Height="150" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FFC1C1C1" Offset="0"/>
@@ -44,6 +44,14 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Client version:" Grid.Column="0" Margin="2" TextAlignment="Right"/>
                 <TextBlock x:Name="textblock_gameVersion" Grid.Column="1" Margin="2"/>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="DLL version:" Grid.Column="0" Margin="2" TextAlignment="Right"/>
+                <TextBlock x:Name="textblock_dllVersion" Grid.Column="1" Margin="2"/>
             </Grid>
 
             <Separator  Margin="2"/>

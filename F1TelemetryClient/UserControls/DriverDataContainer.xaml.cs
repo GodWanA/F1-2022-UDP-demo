@@ -4,6 +4,7 @@ using F1Telemetry.Models.LapDataPacket;
 using F1Telemetry.Models.MotionPacket;
 using F1Telemetry.Models.ParticipantsPacket;
 using F1Telemetry.Models.SessionHistoryPacket;
+using F1Telemetry.Models.SessionPacket;
 using F1TelemetryApp.Classes;
 using System;
 using System.ComponentModel;
@@ -16,13 +17,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using static F1Telemetry.Helpers.Appendences;
+using static F1TelemetryApp.Classes.IGridResize;
 
 namespace F1TelemetryApp.UserControls
 {
     /// <summary>
     /// Interaction logic for DriverDataContainer.xaml
     /// </summary>
-    public partial class DriverDataContainer : UserControl, INotifyPropertyChanged, IConnectUDP, IDisposable
+    public partial class DriverDataContainer : UserControl, INotifyPropertyChanged, IConnectUDP, IDisposable, IGridResize
     {
         public DriverDataContainer()
         {
@@ -663,6 +665,37 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
+        private string nextPitWindow;
+
+        public string NextPitWindow
+        {
+            get { return nextPitWindow; }
+            set
+            {
+                if (value != this.nextPitWindow)
+                {
+                    nextPitWindow = value;
+                    this.OnPropertyChanged("NextPitWindow");
+                }
+            }
+        }
+
+        private string rejoinPos;
+
+        public string RejoinPos
+        {
+            get { return rejoinPos; }
+            set
+            {
+                if (value != this.rejoinPos)
+                {
+                    rejoinPos = value;
+                    this.OnPropertyChanged("RejoinPos");
+                }
+            }
+        }
+
+
         private Flags lastFlag = Flags.InvalidOrUnknown;
         private TractionControlSettings tc;
         private bool isABS;
@@ -762,6 +795,8 @@ namespace F1TelemetryApp.UserControls
                     }
                 }
 
+                if (telemetry.IsDRS) this.textblock_DRS.Foreground = Brushes.LimeGreen;
+                else this.textblock_DRS.Foreground = Brushes.Gray;
 
                 this.Steer = 180f * telemetry.Steer;
                 this.image_wheel.RenderTransform = new RotateTransform(this.Steer, this.image_wheel.ActualWidth / 2, this.image_wheel.ActualHeight / 2);
@@ -856,6 +891,9 @@ namespace F1TelemetryApp.UserControls
                 else if (this.FuelRemaining > 0) this.RemainingColor = Brushes.LimeGreen;
                 else this.RemainingColor = Brushes.LightGray;
 
+                if (status.IsPitLimiter) this.textblock_PLS.Foreground = Brushes.Cyan;
+                else this.textblock_PLS.Foreground = Brushes.Gray;
+
                 this.UpdateLayout();
             }
         }
@@ -938,6 +976,38 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
+        private void UpdateSession(PacketSessionData session)
+        {
+            if (session != null)
+            {
+                if (
+                    session.PitStopWindowIdealLap > 0
+                //&& session.Header.Player1CarIndex == this.driverIndex
+                )
+                {
+                    this.NextPitWindow = session.PitStopWindowIdealLap + " - " + session.PitStopWindowLastestLap;
+                }
+                else
+                {
+                    this.NextPitWindow = "---";
+                }
+
+                if (
+                    session.PitStopRejoinPosition > 0
+                //&& session.Header.Player1CarIndex == this.driverIndex
+                )
+                {
+                    this.RejoinPos = session.PitStopRejoinPosition.ToString();
+                }
+                else
+                {
+                    this.rejoinPos = "-";
+                }
+
+                this.UpdateLayout();
+            }
+        }
+
         private void UserControl_Initialized(object sender, EventArgs e)
         {
             this.tc = TractionControlSettings.Off;
@@ -1013,6 +1083,15 @@ namespace F1TelemetryApp.UserControls
             });
         }
 
+        private void Connention_SessionPacket(object sender, EventArgs e)
+        {
+            this.OnUpdateEvent(() =>
+            {
+                var data = sender as PacketSessionData;
+                this.UpdateSession(data);
+            });
+        }
+
         private void OnUpdateEvent(Action method)
         {
             this.Dispatcher.BeginInvoke(() =>
@@ -1034,6 +1113,7 @@ namespace F1TelemetryApp.UserControls
             u.Connention.CarTelemetryPacket += Connention_CarTelemetryPacket;
             u.Connention.CarMotionPacket += Connention_CarMotionPacket;
             u.Connention.LapDataPacket += Connention_LapDataPacket;
+            u.Connention.SessionPacket += Connention_SessionPacket;
         }
 
         public void UnsubscribeUDPEvents()
@@ -1044,6 +1124,7 @@ namespace F1TelemetryApp.UserControls
             u.Connention.CarTelemetryPacket -= Connention_CarTelemetryPacket;
             u.Connention.CarMotionPacket -= Connention_CarMotionPacket;
             u.Connention.LapDataPacket -= Connention_LapDataPacket;
+            u.Connention.SessionPacket -= Connention_SessionPacket;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -1087,6 +1168,65 @@ namespace F1TelemetryApp.UserControls
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        public void ResizeXS()
+        {
+            IGridResize.SetGridSettings(this.border_driverInfo, 0, 0, 12);
+            IGridResize.SetGridSettings(this.border_speedOMeter, 0, 1, 12);
+            IGridResize.SetGridSettings(this.border_fuel, 0, 2, 12);
+            IGridResize.SetGridSettings(this.border_gForce, 0, 3, 12);
+        }
+
+        public void ResizeXM()
+        {
+            IGridResize.SetGridSettings(this.border_driverInfo, 0, 0, 12);
+            IGridResize.SetGridSettings(this.border_speedOMeter, 0, 1, 12);
+            IGridResize.SetGridSettings(this.border_fuel, 0, 2, 7);
+            IGridResize.SetGridSettings(this.border_gForce, 7, 2, 5);
+        }
+
+        public void ResizeMD()
+        {
+            IGridResize.SetGridSettings(this.border_driverInfo, 0, 0, 8);
+            IGridResize.SetGridSettings(this.border_gForce, 8, 0, 4);
+            IGridResize.SetGridSettings(this.border_speedOMeter, 0, 1, 7);
+            IGridResize.SetGridSettings(this.border_fuel, 7, 1, 5);
+        }
+
+        public void ResizeLG()
+        {
+            IGridResize.SetGridSettings(this.border_driverInfo, 0, 0, 4);
+            IGridResize.SetGridSettings(this.border_fuel, 4, 0, 3);
+            IGridResize.SetGridSettings(this.border_speedOMeter, 7, 0, 3);
+            IGridResize.SetGridSettings(this.border_gForce, 10, 0, 2);
+        }
+
+        public void ResizeXL()
+        {
+            this.ResizeLG();
+        }
+
+        internal void CalculateView(GridSizes gridSizes)
+        {
+            switch (gridSizes)
+            {
+                case GridSizes.XS:
+                    this.ResizeXS();
+                    break;
+                case GridSizes.XM:
+                    this.ResizeXM();
+                    break;
+                case GridSizes.MD:
+                    this.ResizeMD();
+                    break;
+                case GridSizes.LG:
+                    this.ResizeLG();
+                    break;
+                case GridSizes.XL:
+                    this.ResizeXL();
+                    break;
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using static F1Telemetry.Helpers.Appendences;
@@ -44,6 +45,11 @@ namespace F1Telemetry
         protected UdpClient Connection { get; set; }
 
         private CancellationTokenSource CancelToken;
+
+        /// <summary>
+        /// Version of the F1Telmetry dll.
+        /// </summary>
+        public static Version DLLVersion { get; private set; } = Assembly.GetCallingAssembly().GetName().Version;
 
         /// <summary>
         /// Maximum number of packet per second. Relevant on packets where intervals settable.<br/>
@@ -225,8 +231,6 @@ namespace F1Telemetry
         /// Occours on any undefined event. Sender is a Buttons object.
         /// </summary>
         public event EventHandler EventPacketButtons;
-
-        public static string DLLVersion { get; private set; } = "2021";
 
         /// <summary>
         /// Create and connects to Codemaster's F1 games UDP service.

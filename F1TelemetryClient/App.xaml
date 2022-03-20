@@ -15,6 +15,9 @@
             <Setter Property="TextElement.FontFamily" Value="{StaticResource Formula1 Display}"/>
             <Setter Property="TextElement.FontSize" Value="11 px"/>
             <Setter Property="RenderOptions.BitmapScalingMode" Value="LowQuality"/>
+            <Setter Property="TextWrapping" Value="NoWrap"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
         <BorderGapMaskConverter x:Key="BorderGapMaskConverter"/>
         <Style TargetType="GroupBox">

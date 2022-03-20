@@ -522,6 +522,11 @@ namespace F1TelemetryClient
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            this.CalculateView();
+        }
+
+        private void CalculateView()
+        {
             this.lockTimer.Stop();
             this.canDoUdp = false;
 
@@ -530,16 +535,17 @@ namespace F1TelemetryClient
             var res = GridSizes.XS;
             var d = this.ActualWidth;
 
-            if (d > 1900) res = GridSizes.XL;
-            else if (d > 1100) res = GridSizes.LG;
-            else if (d > 800) res = GridSizes.MD;
-            else if (d > 500) res = GridSizes.XM;
+            if (d > 1600) res = GridSizes.XL;
+            else if (d > 1200) res = GridSizes.LG;
+            else if (d > 900) res = GridSizes.MD;
+            else if (d > 700) res = GridSizes.XM;
 
             Debug.WriteLine(res);
 
             if (this.PrevRes != res)
             {
                 this.PrevRes = res;
+                this.drivercontainer.CalculateView(res);
                 this.Render();
             }
 
@@ -599,27 +605,129 @@ namespace F1TelemetryClient
 
         public void ResizeXS()
         {
-            //throw new NotImplementedException();
+            // Complete view components:
+            IGridResize.SetGridSettings(this.drivercontainer, 0, 0, 12);
+            IGridResize.SetGridSettings(this.tyrecontainer, 0, 1, 12);
+            IGridResize.SetGridSettings(this.groupbox_demage, 0, 2, 12);
+            IGridResize.SetGridSettings(this.groupbox_motor, 0, 3, 12);
+
+            // Engine wear components:
+            IGridResize.SetGridSettings(this.wear_ce, 0, 0, 6);
+            IGridResize.SetGridSettings(this.wear_ice, 0, 1, 6);
+            IGridResize.SetGridSettings(this.wear_tc, 0, 2, 6);
+            IGridResize.SetGridSettings(this.wear_mguh, 0, 3, 6);
+            IGridResize.SetGridSettings(this.wear_mguk, 0, 4, 6);
+            IGridResize.SetGridSettings(this.wear_es, 0, 5, 6);
+
+            // Demage components:
+            IGridResize.SetGridSettings(this.demage_fwLeft, 0, 0, 6);
+            IGridResize.SetGridSettings(this.demage_fwRight, 0, 1, 6);
+            IGridResize.SetGridSettings(this.demage_fl, 0, 2, 6);
+            IGridResize.SetGridSettings(this.demage_sp, 0, 3, 6);
+            IGridResize.SetGridSettings(this.demage_en, 0, 4, 6);
+            IGridResize.SetGridSettings(this.demage_ex, 0, 5, 6);
+            IGridResize.SetGridSettings(this.demage_gb, 0, 6, 6);
+            IGridResize.SetGridSettings(this.demage_df, 0, 7, 6);
+            IGridResize.SetGridSettings(this.demage_rw, 0, 8, 6);
         }
 
         public void ResizeXM()
         {
-            //throw new NotImplementedException();
+            // Complete view components:
+            IGridResize.SetGridSettings(this.drivercontainer, 0, 0, 12);
+            IGridResize.SetGridSettings(this.tyrecontainer, 0, 1, 12);
+            IGridResize.SetGridSettings(this.groupbox_demage, 0, 2, 12);
+            IGridResize.SetGridSettings(this.groupbox_motor, 0, 3, 12);
+
+            // Engine wear components:
+            IGridResize.SetGridSettings(this.wear_ce, 0, 0, 3);
+            IGridResize.SetGridSettings(this.wear_ice, 3, 0, 3);
+            IGridResize.SetGridSettings(this.wear_tc, 0, 1, 3);
+            IGridResize.SetGridSettings(this.wear_mguh, 3, 1, 3);
+            IGridResize.SetGridSettings(this.wear_mguk, 0, 2, 3);
+            IGridResize.SetGridSettings(this.wear_es, 3, 2, 3);
+
+            // Demage components:
+            IGridResize.SetGridSettings(this.demage_fwLeft, 0, 0, 3);
+            IGridResize.SetGridSettings(this.demage_fwRight, 3, 0, 3);
+            IGridResize.SetGridSettings(this.demage_fl, 0, 1, 3);
+            IGridResize.SetGridSettings(this.demage_sp, 3, 1, 3);
+            IGridResize.SetGridSettings(this.demage_en, 0, 2, 2);
+            IGridResize.SetGridSettings(this.demage_ex, 2, 2, 2);
+            IGridResize.SetGridSettings(this.demage_gb, 4, 2, 2);
+            IGridResize.SetGridSettings(this.demage_df, 0, 5, 3);
+            IGridResize.SetGridSettings(this.demage_rw, 3, 5, 3);
         }
 
         public void ResizeMD()
         {
-            //throw new NotImplementedException();
+            // Complete view components:
+            IGridResize.SetGridSettings(this.drivercontainer, 0, 0, 12);
+            IGridResize.SetGridSettings(this.tyrecontainer, 0, 1, 12);
+            IGridResize.SetGridSettings(this.groupbox_demage, 0, 2, 7);
+            IGridResize.SetGridSettings(this.groupbox_motor, 7, 2, 5);
+
+            // Engine wear components:
+            IGridResize.SetGridSettings(this.wear_ce, 0, 0, 6);
+            IGridResize.SetGridSettings(this.wear_ice, 0, 1, 6);
+            IGridResize.SetGridSettings(this.wear_tc, 0, 2, 6);
+            IGridResize.SetGridSettings(this.wear_mguh, 0, 3, 6);
+            IGridResize.SetGridSettings(this.wear_mguk, 0, 4, 6);
+            IGridResize.SetGridSettings(this.wear_es, 0, 5, 6);
+
+            // Demage components:
+            IGridResize.SetGridSettings(this.demage_fwLeft, 0, 0, 3);
+            IGridResize.SetGridSettings(this.demage_fwRight, 3, 0, 3);
+            IGridResize.SetGridSettings(this.demage_fl, 0, 1, 3);
+            IGridResize.SetGridSettings(this.demage_sp, 3, 1, 3);
+            IGridResize.SetGridSettings(this.demage_en, 0, 2, 6);
+            IGridResize.SetGridSettings(this.demage_ex, 0, 3, 6);
+            IGridResize.SetGridSettings(this.demage_gb, 0, 4, 6);
+            IGridResize.SetGridSettings(this.demage_df, 0, 5, 3);
+            IGridResize.SetGridSettings(this.demage_rw, 3, 5, 3);
         }
 
         public void ResizeLG()
         {
-            //throw new NotImplementedException();
+            // Complete view components:
+            IGridResize.SetGridSettings(this.drivercontainer, 0, 0, 12);
+            IGridResize.SetGridSettings(this.tyrecontainer, 0, 1, 7);
+            IGridResize.SetGridSettings(this.groupbox_demage, 7, 1, 5);
+            IGridResize.SetGridSettings(this.groupbox_motor, 0, 2, 12);
+
+            // Engine wear components:
+            IGridResize.SetGridSettings(this.wear_ce, 0, 0, 1);
+            IGridResize.SetGridSettings(this.wear_ice, 1, 0, 1);
+            IGridResize.SetGridSettings(this.wear_tc, 2, 0, 1);
+            IGridResize.SetGridSettings(this.wear_mguh, 3, 0, 1);
+            IGridResize.SetGridSettings(this.wear_mguk, 4, 0, 1);
+            IGridResize.SetGridSettings(this.wear_es, 5, 0, 1);
+
+            // Demage components:
+            IGridResize.SetGridSettings(this.demage_fwLeft, 0, 0, 3);
+            IGridResize.SetGridSettings(this.demage_fwRight, 3, 0, 3);
+            IGridResize.SetGridSettings(this.demage_fl, 0, 1, 3);
+            IGridResize.SetGridSettings(this.demage_sp, 3, 1, 3);
+            IGridResize.SetGridSettings(this.demage_en, 0, 2, 2);
+            IGridResize.SetGridSettings(this.demage_ex, 2, 2, 2);
+            IGridResize.SetGridSettings(this.demage_gb, 4, 2, 2);
+            IGridResize.SetGridSettings(this.demage_df, 0, 5, 3);
+            IGridResize.SetGridSettings(this.demage_rw, 3, 5, 3);
         }
 
         public void ResizeXL()
         {
             //throw new NotImplementedException();
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+            this.CalculateView();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.CalculateView();
         }
     }
 }

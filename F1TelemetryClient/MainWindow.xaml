@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:F1TelemetryClient"
         mc:Ignorable="d"
-        Title="Jeff+ Telemetry" Height="450" Width="800" Initialized="Window_Initialized" SizeChanged="Window_SizeChanged" Closing="Window_Closing" LocationChanged="Window_LocationChanged">
+        Title="Jeff+ | Telemetry" Height="450" Width="800" Initialized="Window_Initialized" SizeChanged="Window_SizeChanged" Closing="Window_Closing" LocationChanged="Window_LocationChanged" StateChanged="Window_StateChanged" Loaded="Window_Loaded">
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
             <GradientStop Color="#FFC1C1C1" Offset="0"/>
@@ -114,6 +114,11 @@
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
                                         <RowDefinition Height="auto"/>
                                         <RowDefinition Height="auto"/>
                                         <RowDefinition Height="auto"/>
@@ -254,8 +259,9 @@
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
+                <TabItem Header="Lap history" IsEnabled="False"/>
                 <TabItem Header="Carsetup" IsEnabled="False"/>
-                <TabItem Header="Telemetry graph" IsEnabled="False"/>
+                <TabItem Header="Telemetry graphs" IsEnabled="False"/>
             </TabControl>
         </Grid>
     </Grid>

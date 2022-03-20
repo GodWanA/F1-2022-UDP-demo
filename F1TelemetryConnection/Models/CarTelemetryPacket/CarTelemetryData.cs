@@ -403,15 +403,15 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         {
             if (disposing)
             {
-                //this.BrakesTemperature.Clear();
+                this.BrakesTemperature?.Clear();
                 this.BrakesTemperature = null;
-                //this.TyresSurfaceTemperature.Clear();
+                this.TyresSurfaceTemperature?.Clear();
                 this.TyresSurfaceTemperature = null;
-                //this.TyresInnerTemperature.Clear();
+                this.TyresInnerTemperature?.Clear();
                 this.TyresInnerTemperature = null;
-                //this.TyresPressure.Clear();
+                this.TyresPressure?.Clear();
                 this.TyresPressure = null;
-                //this.SurfaceType.Clear();
+                this.SurfaceType?.Clear();
                 this.SurfaceType = null;
             }
 

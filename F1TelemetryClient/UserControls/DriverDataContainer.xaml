@@ -9,20 +9,78 @@
     <Grid>
         <GroupBox Header="Driver info" Margin="2">
             <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="1" Visibility="Visible">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="0">
-                        <Border Grid.Column="0" CornerRadius="5" Background="Black" Margin="2" Padding="5">
+
+                <Border x:Name="border_driverInfo" Grid.Column="0" Grid.ColumnSpan="3" Background="#7F000000" CornerRadius="5" Margin="2">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Background="Black" CornerRadius="0" Padding="0">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                </Grid.RowDefinitions>
+
+                                <Border Background="White" CornerRadius="0,0,3,0" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Height="28" Width="28" Margin="2">
+                                    <TextBlock Text="{Binding CarPosition,FallbackValue=—}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" FontSize="14" FontWeight="Bold"/>
+                                </Border>
+                                <Rectangle Grid.Column="1" Width="5" Margin="0,2" Grid.RowSpan="2" Fill="{Binding TeamColor,FallbackValue=purple}"/>
+                                <TextBlock Text="{Binding DriverName, FallbackValue='Driver Name'}" Grid.Column="2" Margin="2,0" FontSize="12" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding RaceNumber, FallbackValue='——'}" Grid.Column="3" Foreground="{Binding TeamColor,FallbackValue=purple}" Margin="2,0" FontSize="12" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding TeamName,FallbackValue='Team'}" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="1" Margin="2,0" FontSize="9" VerticalAlignment="Center"/>
+                                <Grid x:Name="grid_nationality" Grid.Column="6" Grid.RowSpan="2" Width="56" HorizontalAlignment="Right">
+                                    <Image x:Name="image_nationality" Source="/Images/Flags/Unknown.png" Stretch="UniformToFill" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
+                                    <Image Source="/Images/Nationality/coverimage.png"/>
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="1" Grid.Column="0" Padding="2">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="80"/>
+                                    <ColumnDefinition Width="24"/>
+                                    <ColumnDefinition Width="24"/>
+                                    <ColumnDefinition Width="24"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="24"/>
                                     <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
@@ -30,379 +88,315 @@
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Text="Pit limiter:" Grid.Row="6" Grid.Column="0" Margin="2,1" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" TextAlignment="Right"/>
-                                <TextBlock Text="DRS:" Grid.Row="7" Grid.Column="0" Margin="2,1" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis" TextAlignment="Right"/>
+
+                                <TextBlock Text="{Binding CurrentLapTime, StringFormat=m\\:ss\\.fff, FallbackValue='-:--.---'}" Grid.Column="0" Grid.Row="0" Margin="2" VerticalAlignment="Center" ToolTip="Current laptime"/>
+                                <TextBlock Text="{Binding CurrentStatus, FallbackValue=Unknown}" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4" TextAlignment="Left" VerticalAlignment="Center" Margin="2" ToolTip="Drivers current status"/>
+
+                                <Image x:Name="image_isAi" Grid.Column="1" Grid.Row="1" Width="16" Margin="2" Source="/Images/DriverInfo/NotRobot.png"/>
+                                <TextBlock x:Name="textblick_abs" Text="ABS" Foreground="{Binding ColorABS, FallbackValue=gray}" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="1" Margin="2" FontSize="8"/>
+                                <TextBlock x:Name="textblick_tc" Text="TC" Foreground="{Binding ColorTC, FallbackValue=gray}" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="3" Grid.Row="1" Margin="2" FontSize="8"/>
+
+
+                                <TextBlock Text="{Binding BestLapTime, StringFormat=m\\:ss\\.fff, FallbackValue='-:--.---'}" Foreground="Magenta" Grid.Column="0" Grid.Row="1" Margin="2" VerticalAlignment="Center" ToolTip="Drivers best laptime"/>
+
+                                <Image Grid.Column="5" Grid.Row="0" Width="16" HorizontalAlignment="Right" Margin="2" Source="/Images/DriverInfo/UpArrow.png" Stretch="Fill"/>
+                                <Image Grid.Column="5" Grid.Row="1" Width="16" HorizontalAlignment="Right" Margin="2" Source="/Images/DriverInfo/DownArrow.png" Stretch="Fill"/>
+                                <TextBlock Text="{Binding PrevDriver, FallbackValue='Prev Driver'}" Margin="2" Grid.Column="6" Grid.Row="0" TextAlignment="Right" VerticalAlignment="Center" ToolTip="Driver in front"/>
+                                <TextBlock Text="{Binding NextDriver, FallbackValue='Next Driver'}" Margin="2" Grid.Column="6" Grid.Row="1" TextAlignment="Right" VerticalAlignment="Center" ToolTip="Driver behind"/>
+                                <TextBlock x:Name="textblock_prev" Text="{Binding PrevDelta, FallbackValue='- --.---'}" Grid.Column="7" Grid.Row="0" Margin="2" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="textblock_next" Text="{Binding NextDelta, FallbackValue='+ --.---'}" Grid.Column="7" Grid.Row="1" Margin="2" VerticalAlignment="Center"/>
+                                <ProgressBar Value="{Binding LapPercent, FallbackValue=50}" Grid.Column="0" Grid.ColumnSpan="10" Grid.Row="3" Height="3" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                            </Grid>
+                        </Border>
+
+                        <Border Grid.Row="5">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="64"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" MinHeight="4"/>
+                                    <RowDefinition Height="auto" MinHeight="4"/>
+                                    <RowDefinition Height="auto" MinHeight="4"/>
+                                    <RowDefinition Height="auto" MinHeight="4"/>
+                                    <RowDefinition Height="auto" MinHeight="4"/>
+                                    <RowDefinition Height="auto" MinHeight="4"/>
+                                    <RowDefinition Height="auto" MinHeight="4"/>
+                                    <RowDefinition Height="auto" MinHeight="4"/>
+                                    <RowDefinition Height="auto" MinHeight="4"/>
+                                </Grid.RowDefinitions>
+                                <Separator Grid.Row="0" Margin="2" Grid.ColumnSpan="6"/>
+
+                                <TextBlock Text="Brake bias:" Grid.Column="0" TextAlignment="Right" Grid.Row="1" Margin="2"/>
+                                <TextBlock Text="{Binding BrakeBias, StringFormat={}{0:0.##\\%}, FallbackValue=50%}" Grid.Row="1" Grid.Column="1" Margin="3,2,1,2"/>
+
+                                <TextBlock Text="Number of pit stops:" Grid.Column="2" TextAlignment="Right" Grid.Row="1" Margin="2"/>
+                                <TextBlock Text="{Binding NumberOfPits, StringFormat={}{0:0.##}, FallbackValue=0}" Grid.Row="1" Grid.Column="3" Margin="3,2,1,2"/>
+
+                                <TextBlock Text="Next PIT window:" TextAlignment="Right" Grid.Row="3" Grid.Column="2"/>
+                                <TextBlock Text="{Binding NextPitWindow}" TextAlignment="Left" Grid.Row="3" Grid.Column="3"/>
+
+                                <TextBlock Text="Rejoin position:" TextAlignment="Right" Grid.Row="4" Grid.Column="2"/>
+                                <TextBlock Text="{Binding RejoinPos}" TextAlignment="Left" Grid.Row="4" Grid.Column="3"/>
+
+                                <TextBlock Text="Tyres history:" Grid.Column="2" TextAlignment="Right" Grid.Row="2" Margin="2"/>
+                                <StackPanel x:Name="stackpanel_tyrehistory" Orientation="Horizontal" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2"/>
+
+                                <Separator Grid.Row="5" Margin="2" Grid.ColumnSpan="6"/>
+
+                                <TextBlock Text="Time penalties:" TextAlignment="Right" Grid.Column="0" Grid.Row="7" Margin="2"/>
+                                <TextBlock Text="{ Binding TimePenaltis, StringFormat=\\+s, FallbackValue='+0 sec' }" Grid.Column="1" Grid.Row="7" Margin="2"/>
+
+                                <TextBlock Text="Drive through:" TextAlignment="Right" Grid.Column="0" Grid.Row="6" Margin="2"/>
+                                <TextBlock Text="{ Binding DriveThrough, StringFormat=\\x0, FallbackValue='x0'}" Grid.Column="1" Grid.Row="6" Margin="2"/>
+
+                                <TextBlock Text="Stop'n'Go:" TextAlignment="Right" Grid.Column="2" Grid.Row="6" Margin="2"/>
+                                <TextBlock Text="{ Binding StopGo, StringFormat=\\x0, FallbackValue='x0'}" Grid.Column="3" Grid.Row="6" Margin="2"/>
+
+                                <TextBlock Text="Warnings:" TextAlignment="Right" Grid.Column="2" Grid.Row="7" Margin="2"/>
+                                <TextBlock Text="{ Binding Warning, StringFormat=\\x0, FallbackValue='x0'}" Grid.Column="3" Grid.Row="7" Margin="2"/>
+
+                                <Rectangle x:Name="rectangle_flag" Fill="Transparent" RadiusX="2" RadiusY="2" Height="32" Grid.Row="7" Grid.RowSpan="4" Grid.Column="5" Margin="2"/>
+                                <TextBlock Text="Flag:" Grid.Column="5" Grid.Row="6" Margin="2" TextAlignment="Center" Foreground="White"/>
                             </Grid>
                         </Border>
                     </Grid>
-                    <Grid Grid.Column="2"/>
-                    <Grid Grid.Column="3"/>
-                </Grid>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="3*"/>
-                        <ColumnDefinition Width="auto"/>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Border Background="#7F000000" CornerRadius="5" Margin="2,2,2,2">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                            </Grid.ColumnDefinitions>
-                            <Border Background="Black" CornerRadius="0" Padding="0">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="1*"/>
-                                        <RowDefinition Height="1*"/>
-                                    </Grid.RowDefinitions>
+                </Border>
 
-                                    <Border Background="White" CornerRadius="0,0,3,0" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Height="28" Width="28" Margin="2">
-                                        <TextBlock Text="{Binding CarPosition,FallbackValue=—}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black" FontSize="14" FontWeight="Bold"/>
-                                    </Border>
-                                    <Rectangle Grid.Column="1" Width="5" Margin="0,2" Grid.RowSpan="2" Fill="{Binding TeamColor,FallbackValue=purple}"/>
-                                    <TextBlock Text="{Binding DriverName, FallbackValue='Driver Name'}" Grid.Column="2" Margin="2,0" FontSize="12" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding RaceNumber, FallbackValue='——'}" Grid.Column="3" Foreground="{Binding TeamColor,FallbackValue=purple}" Margin="2,0" FontSize="12" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding TeamName,FallbackValue='Team'}" Grid.Column="2" Grid.ColumnSpan="3" Grid.Row="1" Margin="2,0" FontSize="9" VerticalAlignment="Center"/>
-                                    <Grid x:Name="grid_nationality" Grid.Column="6" Grid.RowSpan="2" Width="56" HorizontalAlignment="Right">
-                                        <Image x:Name="image_nationality" Source="/Images/Flags/Unknown.png" Stretch="UniformToFill" VerticalAlignment="Stretch" HorizontalAlignment="Center"/>
-                                        <Image Source="/Images/Nationality/coverimage.png"/>
-                                    </Grid>
-                                </Grid>
-                            </Border>
+                <Border x:Name="border_fuel" Grid.Column="3" Grid.ColumnSpan="3" Background="Black" CornerRadius="5" Padding="5" Margin="2,2,2,2">
+                    <Grid MinHeight="50">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
 
-                            <Border Grid.Row="1" Grid.Column="0" Padding="2">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="80"/>
-                                        <ColumnDefinition Width="24"/>
-                                        <ColumnDefinition Width="24"/>
-                                        <ColumnDefinition Width="24"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="24"/>
-                                        <ColumnDefinition Width="auto"/>
-                                        <ColumnDefinition Width="auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
-                                    </Grid.RowDefinitions>
+                        <TextBlock Text="Fuel" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center"/>
+                        <ProgressBar Grid.Column="0" Grid.Row="1" Value="{Binding FuelPercent, FallbackValue=50}" Orientation="Vertical" Background="#FF333232" BorderBrush="#FF525252" Foreground="LimeGreen" ToolTip="Fuel in tank" />
+                        <TextBlock Text="{Binding FuelInTank, StringFormat={}{0:0.## kg}, FallbackValue='50 kg'}" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center" FontSize="8" />
+                        <Separator Grid.Column="0" Grid.Row="3" Background="White"/>
+                        <TextBlock Text="{Binding FuelCapacity, StringFormat={}{0:0.## kg}, FallbackValue='110 kg'}" Grid.Column="0" Grid.Row="4" HorizontalAlignment="Center" FontSize="8" />
+                        <Separator Grid.Column="0" Grid.Row="5" Background="Transparent"/>
+                        <TextBlock Text="{Binding FuelRemaining, StringFormat={}{0:+0.## L;-0.## L; +0.00 L}, FallbackValue='+0 L'}" Foreground="{Binding RemainingColor,FallbackValue=LightGray }" Grid.Column="0" Grid.Row="6" HorizontalAlignment="Center" ToolTip="Fuel remaining laps"/>
+                        <TextBlock Text="{Binding FuelMix, FallbackValue=Auto}" Grid.Column="0" Grid.Row="7" HorizontalAlignment="Center" ToolTip="Fuel mix"/>
 
-                                    <TextBlock Text="{Binding CurrentLapTime, StringFormat=m\\:ss\\.fff, FallbackValue='-:--.---'}" Grid.Column="0" Grid.Row="0" Margin="2" VerticalAlignment="Center" ToolTip="Current laptime"/>
-                                    <TextBlock Text="{Binding CurrentStatus, FallbackValue=Unknown}" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="4" TextAlignment="Left" VerticalAlignment="Center" Margin="2" ToolTip="Drivers current status"/>
+                        <Rectangle Width="2" Margin="4,2" RadiusX="1" RadiusY="1" Fill="White" Grid.Column="1" Grid.Row="0" Grid.RowSpan="10"/>
 
-                                    <Image x:Name="image_isAi" Grid.Column="1" Grid.Row="1" Width="16" Margin="2" Source="/Images/DriverInfo/NotRobot.png"/>
-                                    <TextBlock x:Name="textblick_abs" Text="ABS" Foreground="{Binding ColorABS, FallbackValue=gray}" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="1" Margin="2" FontSize="8"/>
-                                    <TextBlock x:Name="textblick_tc" Text="TC" Foreground="{Binding ColorTC, FallbackValue=gray}" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="3" Grid.Row="1" Margin="2" FontSize="8"/>
+                        <TextBlock Text="ERS" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Center" Grid.ColumnSpan="4" />
+                        <ProgressBar  Value="{Binding ERSEnergy, FallbackValue=50}" Margin="10,0" Grid.Column="2" Grid.Row="1" Orientation="Vertical" Background="#FF333332" BorderBrush="#FF525252" Foreground="#FFFFD200" ToolTip="Current ERS stored"/>
+                        <TextBlock Text="{Binding ERSEnergy, StringFormat={}{0:0.0\\%}, FallbackValue=50.0%}" Margin="2" Grid.Column="2" Grid.Row="2" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8"/>
+
+                        <ProgressBar Value="{Binding ERSDeployable, FallbackValue=50}" Margin="10,0" Grid.Column="3" Grid.Row="1" Orientation="Vertical" Background="#FF333232" BorderBrush="#FF525252" Foreground="White" ToolTip="Aviable ERS on this lap"/>
+                        <TextBlock Text="{Binding ERSDeployable, StringFormat={}{0:0.0\\%}, FallbackValue=50.0%}" Margin="2" Grid.Column="3" Grid.Row="2" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8"/>
+
+                        <ProgressBar Value="{Binding ERSMGUK, FallbackValue=50}" Margin="10,0" Grid.Column="4" Grid.Row="1" Orientation="Vertical" Background="#FF323333" BorderBrush="#FF525252" Foreground="#FF00E2FF" ToolTip="Harvested by MGU-K"/>
+                        <TextBlock Text="{Binding ERSMGUK, StringFormat={}{0:0.0\\%}, FallbackValue=50.0%}" Margin="2" Grid.Column="4" Grid.Row="2" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8"/>
+
+                        <ProgressBar Value="{Binding ERSMGUH, FallbackValue=50}" Margin="10,0" Grid.Column="5" Grid.Row="1" Orientation="Vertical" Background="#FF333232" BorderBrush="#FF525252" Foreground="#FF009CFF" ToolTip="Harvested by MGU-H"/>
+                        <TextBlock Text="{Binding ERSMGUH, StringFormat={}{0:0.0\\%}, FallbackValue=50.0%}" Margin="2" Grid.Column="5" Grid.Row="2" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8"/>
 
 
-                                    <TextBlock Text="{Binding BestLapTime, StringFormat=m\\:ss\\.fff, FallbackValue='-:--.---'}" Foreground="Magenta" Grid.Column="0" Grid.Row="1" Margin="2" VerticalAlignment="Center" ToolTip="Drivers best laptime"/>
+                        <TextBlock Text="{Binding ERSMode,FallbackValue=Overtake}" Grid.Column="2" Grid.Row="7" Grid.ColumnSpan="4" HorizontalAlignment="Center" ToolTip="ERS mode"/>
+                    </Grid>
+                </Border>
 
-                                    <Image Grid.Column="5" Grid.Row="0" Width="16" HorizontalAlignment="Right" Margin="2" Source="/Images/DriverInfo/UpArrow.png" Stretch="Fill"/>
-                                    <Image Grid.Column="5" Grid.Row="1" Width="16" HorizontalAlignment="Right" Margin="2" Source="/Images/DriverInfo/DownArrow.png" Stretch="Fill"/>
-                                    <TextBlock Text="{Binding PrevDriver, FallbackValue='Prev Driver'}" Margin="2" Grid.Column="6" Grid.Row="0" TextAlignment="Right" VerticalAlignment="Center" ToolTip="Driver in front"/>
-                                    <TextBlock Text="{Binding NextDriver, FallbackValue='Next Driver'}" Margin="2" Grid.Column="6" Grid.Row="1" TextAlignment="Right" VerticalAlignment="Center" ToolTip="Driver behind"/>
-                                    <TextBlock x:Name="textblock_prev" Text="{Binding PrevDelta, FallbackValue='- --.---'}" Grid.Column="7" Grid.Row="0" Margin="2" VerticalAlignment="Center"/>
-                                    <TextBlock x:Name="textblock_next" Text="{Binding NextDelta, FallbackValue='+ --.---'}" Grid.Column="7" Grid.Row="1" Margin="2" VerticalAlignment="Center"/>
-                                    <ProgressBar Value="{Binding LapPercent, FallbackValue=50}" Grid.Column="0" Grid.ColumnSpan="10" Grid.Row="3" Height="3" BorderBrush="{x:Null}" Background="{x:Null}"/>
-                                </Grid>
-                            </Border>
+                <Border x:Name="border_speedOMeter" Grid.Column="6" Grid.ColumnSpan="4" Background="#7F000000" Margin="2" Padding="2" CornerRadius="5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
 
-                            <Border Grid.Row="5">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="2*"/>
-                                        <ColumnDefinition Width="64"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto" MinHeight="4"/>
-                                        <RowDefinition Height="auto" MinHeight="4"/>
-                                        <RowDefinition Height="auto" MinHeight="4"/>
-                                        <RowDefinition Height="auto" MinHeight="4"/>
-                                        <RowDefinition Height="auto" MinHeight="4"/>
-                                        <RowDefinition Height="auto" MinHeight="4"/>
-                                        <RowDefinition Height="auto" MinHeight="4"/>
-                                    </Grid.RowDefinitions>
-                                    <Separator Grid.Row="0" Margin="2" Grid.ColumnSpan="5"/>
-
-                                    <TextBlock Text="Brake bias:" Grid.Column="0" TextAlignment="Right" Grid.Row="1" Margin="2"/>
-                                    <TextBlock Text="{Binding BrakeBias, StringFormat={}{0:0.##\\%}, FallbackValue=50%}" Grid.Row="1" Grid.Column="1" Margin="3,2,1,2"/>
-
-                                    <TextBlock Text="Number of pit stops:" Grid.Column="2" TextAlignment="Right" Grid.Row="1" Margin="2"/>
-                                    <TextBlock Text="{Binding NumberOfPits, StringFormat={}{0:0.##}, FallbackValue=0}" Grid.Row="1" Grid.Column="3" Margin="3,2,1,2"/>
-
-                                    <TextBlock Text="Tyres history:" Grid.Column="2" TextAlignment="Right" Grid.Row="2" Margin="2"/>
-                                    <StackPanel x:Name="stackpanel_tyrehistory" Orientation="Horizontal" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="2"/>
-
-                                    <Separator Grid.Row="3" Margin="2" Grid.ColumnSpan="5"/>
-
-                                    <TextBlock Text="Time penalties:" TextAlignment="Right" Grid.Column="0" Grid.Row="5" Margin="2"/>
-                                    <TextBlock Text="{ Binding TimePenaltis, StringFormat=\\+s, FallbackValue='+0 sec' }" Grid.Column="1" Grid.Row="5" Margin="2"/>
-
-                                    <TextBlock Text="Drive through:" TextAlignment="Right" Grid.Column="0" Grid.Row="6" Margin="2"/>
-                                    <TextBlock Text="{ Binding DriveThrough, StringFormat=\\x0, FallbackValue='x0'}" Grid.Column="1" Grid.Row="6" Margin="2"/>
-
-                                    <TextBlock Text="Stop'n'Go:" TextAlignment="Right" Grid.Column="2" Grid.Row="5" Margin="2"/>
-                                    <TextBlock Text="{ Binding StopGo, StringFormat=\\x0, FallbackValue='x0'}" Grid.Column="3" Grid.Row="5" Margin="2"/>
-
-                                    <TextBlock Text="Warnings:" TextAlignment="Right" Grid.Column="2" Grid.Row="6" Margin="2"/>
-                                    <TextBlock Text="{ Binding Warning, StringFormat=\\x0, FallbackValue='x0'}" Grid.Column="3" Grid.Row="6" Margin="2"/>
-
-                                    <Rectangle x:Name="rectangle_flag" Fill="Transparent" RadiusX="2" RadiusY="2" Height="32" Grid.Row="6" Grid.RowSpan="4" Grid.Column="4" Margin="2"/>
-                                    <TextBlock Text="Flag:" Grid.Column="4" Grid.Row="5" Margin="2" TextAlignment="Center" Foreground="White"/>
-                                </Grid>
-                            </Border>
-                        </Grid>
-                    </Border>
-                    <Border Background="Black" Grid.Column="1" CornerRadius="5" Padding="5" Margin="2,2,2,2">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="40"/>
-                                <ColumnDefinition Width="40"/>
-                                <ColumnDefinition Width="40"/>
-                                <ColumnDefinition Width="40"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="1*" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                                <RowDefinition Height="auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Text="Fuel" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center"/>
-                            <ProgressBar Grid.Column="0" Grid.Row="1" Value="{Binding FuelPercent, FallbackValue=50}" Orientation="Vertical" Background="#FF333232" BorderBrush="#FF525252" Foreground="LimeGreen" ToolTip="Fuel in tank" />
-                            <TextBlock Text="{Binding FuelInTank, StringFormat={}{0:0.## kg}, FallbackValue='50 kg'}" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center" FontSize="8" />
-                            <Separator Grid.Column="0" Grid.Row="3" Background="White"/>
-                            <TextBlock Text="{Binding FuelCapacity, StringFormat={}{0:0.## kg}, FallbackValue='110 kg'}" Grid.Column="0" Grid.Row="4" HorizontalAlignment="Center" FontSize="8" />
-                            <Separator Grid.Column="0" Grid.Row="5" Background="Transparent"/>
-                            <TextBlock Text="{Binding FuelRemaining, StringFormat={}{0:+0.## L;-0.## L; +0.00 L}, FallbackValue='+0 L'}" Foreground="{Binding RemainingColor,FallbackValue=LightGray }" Grid.Column="0" Grid.Row="6" HorizontalAlignment="Center" ToolTip="Fuel remaining laps"/>
-                            <TextBlock Text="{Binding FuelMix, FallbackValue=Auto}" Grid.Column="0" Grid.Row="7" HorizontalAlignment="Center" ToolTip="Fuel mix"/>
-
-                            <Rectangle Width="2" Margin="4,2" RadiusX="1" RadiusY="1" Fill="White" Grid.Column="1" Grid.Row="0" Grid.RowSpan="10"/>
-
-                            <TextBlock Text="ERS" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Center" Grid.ColumnSpan="4" />
-                            <ProgressBar  Value="{Binding ERSEnergy, FallbackValue=50}" Margin="10,0" Grid.Column="2" Grid.Row="1" Orientation="Vertical" Background="#FF333332" BorderBrush="#FF525252" Foreground="#FFFFD200" ToolTip="Current ERS stored"/>
-                            <TextBlock Text="{Binding ERSEnergy, StringFormat={}{0:0.0\\%}, FallbackValue=50.0%}" Margin="2" Grid.Column="2" Grid.Row="2" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8"/>
-
-                            <ProgressBar Value="{Binding ERSDeployable, FallbackValue=50}" Margin="10,0" Grid.Column="3" Grid.Row="1" Orientation="Vertical" Background="#FF333232" BorderBrush="#FF525252" Foreground="White" ToolTip="Aviable ERS on this lap"/>
-                            <TextBlock Text="{Binding ERSDeployable, StringFormat={}{0:0.0\\%}, FallbackValue=50.0%}" Margin="2" Grid.Column="3" Grid.Row="2" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8"/>
-
-                            <ProgressBar Value="{Binding ERSMGUK, FallbackValue=50}" Margin="10,0" Grid.Column="4" Grid.Row="1" Orientation="Vertical" Background="#FF323333" BorderBrush="#FF525252" Foreground="#FF00E2FF" ToolTip="Harvested by MGU-K"/>
-                            <TextBlock Text="{Binding ERSMGUK, StringFormat={}{0:0.0\\%}, FallbackValue=50.0%}" Margin="2" Grid.Column="4" Grid.Row="2" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8"/>
-
-                            <ProgressBar Value="{Binding ERSMGUH, FallbackValue=50}" Margin="10,0" Grid.Column="5" Grid.Row="1" Orientation="Vertical" Background="#FF333232" BorderBrush="#FF525252" Foreground="#FF009CFF" ToolTip="Harvested by MGU-H"/>
-                            <TextBlock Text="{Binding ERSMGUH, StringFormat={}{0:0.0\\%}, FallbackValue=50.0%}" Margin="2" Grid.Column="5" Grid.Row="2" Grid.RowSpan="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="8"/>
-
-
-                            <TextBlock Text="{Binding ERSMode,FallbackValue=Overtake}" Grid.Column="2" Grid.Row="7" Grid.ColumnSpan="4" HorizontalAlignment="Center" ToolTip="ERS mode"/>
-                        </Grid>
-                    </Border>
-
-                    <Border Background="#7F000000" Grid.Column="2" Margin="2" Padding="2" CornerRadius="5">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="1*"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="auto"/>
-                                        <RowDefinition Height="auto"/>
-                                    </Grid.RowDefinitions>
-
-                                    <TextBlock Text="{Binding Gear, FallbackValue=N}" Grid.Column="0" Grid.Row="0" FontSize="48" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="{Binding RPM, FallbackValue=0}"  Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                </Grid>
-                                <Grid x:Name="grid_revLight" MinHeight="16">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                        <ColumnDefinition Width="1*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Ellipse Grid.Column="0" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="1" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="2" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="3" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="4" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="5" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="6" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="7" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="8" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="9" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="10" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="11" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="12" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="13" Fill="Gray" Width="8" Height="8"/>
-                                    <Ellipse Grid.Column="14" Fill="Gray" Width="8" Height="8"/>
-                                </Grid>
-                                <Separator Margin="2,2,2,0"/>
-                                <Border Background="Black" CornerRadius="0,0,5,5" Padding="2" Margin="2,0">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1*"/>
-                                            <ColumnDefinition Width="auto"/>
-                                            <ColumnDefinition Width="1*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="1*"/>
-                                            <RowDefinition Height="1*"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Text="{Binding SpeedKPH, StringFormat={}{0:0}, FallbackValue=0}"  HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0" Margin="2" FontSize="18" VerticalAlignment="Center"/>
-                                        <TextBlock Text="KPH" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Margin="2,2,2,2" FontSize="9"/>
-
-                                        <TextBlock Text="/" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="36" Margin="0,-8,0,0" FontWeight="Normal"/>
-
-                                        <TextBlock Text="{Binding SpeedMPH, StringFormat={}{0:0}, FallbackValue=0}" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="0" Margin="2" FontSize="18" VerticalAlignment="Center"/>
-                                        <TextBlock Text="MPH" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Margin="2" FontSize="9"/>
-
-                                    </Grid>
-                                </Border>
-                            </StackPanel>
-                            <Rectangle Fill="White" Grid.Column="1" Margin="2" RadiusX="1" RadiusY="1" Width="2"/>
-                            <StackPanel Grid.Column="2">
-                                <Border Background="Black" Margin="2" CornerRadius="5">
-                                    <Grid Width="100" Height="100">
-                                        <Image x:Name="image_wheel" Source="/Images/DriverInfo/wheel.png" Width="64" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                        <TextBlock Text="{Binding Steer, StringFormat={}{0:0.00}, FallbackValue=0.00}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,15"/>
-                                    </Grid>
-                                </Border>
-
-                                <Border Background="Black" Margin="2" Padding="2" CornerRadius="5">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="auto"/>
-                                            <ColumnDefinition Width="1*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Text="Throttle" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis"/>
-                                        <ProgressBar Value="{Binding Throttle, FallbackValue=50}" Foreground="LimeGreen" Background="#FF333232" BorderBrush="#FF525252" Orientation="Horizontal" Grid.Column="1" Grid.Row="0" Margin="2" ToolTip="Throttle"/>
-
-                                        <TextBlock Text="Brake" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis"/>
-                                        <ProgressBar Value="{Binding Brake, FallbackValue=50}" Foreground="Red" Background="#FF333232" BorderBrush="#FF525252" Orientation="Horizontal" Grid.Column="1" Grid.Row="1" Margin="2" ToolTip="Brake"/>
-
-                                        <TextBlock Text="Clutch" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis"/>
-                                        <ProgressBar Value="{Binding Clutch, FallbackValue=50}" Foreground="White" Background="#FF333232" BorderBrush="#FF525252" Orientation="Horizontal" Grid.Column="1" Grid.Row="2" Margin="2" ToolTip="Clutch"/>
-                                    </Grid>
-                                </Border>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <Border Background="#7F000000" Grid.Column="3" Margin="2" Padding="2" CornerRadius="5">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="1*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="1*"/>
-                            </Grid.RowDefinitions>
-
-                            <Grid x:Name="grid_gCanvas" Grid.Row="1" Grid.Column="1" Width="150" Height="150" Margin="2">
-                                <Ellipse Stroke="#66FFFFFF">
-                                    <Ellipse.Fill>
-                                        <RadialGradientBrush SpreadMethod="Pad">
-                                            <GradientStop Color="Black" Offset="0.3"/>
-                                            <GradientStop Color="#FF1D1D1D" Offset="1"/>
-                                        </RadialGradientBrush>
-                                    </Ellipse.Fill>
-                                </Ellipse>
-                                <Ellipse Stroke="#4CFFFFFF" Margin="18.75"/>
-                                <Ellipse Stroke="#33FFFFFF" Margin="37.5"/>
-                                <Ellipse Stroke="#19FFFFFF" Margin="56.25"/>
-                                <Rectangle VerticalAlignment="Center" HorizontalAlignment="Stretch" Height="1" Margin="-2">
-                                    <Rectangle.Fill>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                            <GradientStop Color="#BFFFFFFF"/>
-                                            <GradientStop Color="Transparent" Offset="0.1"/>
-                                            <GradientStop Color="Transparent" Offset="0.9"/>
-                                            <GradientStop Color="#BFFFFFFF" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Rectangle.Fill>
-                                </Rectangle>
-
-                                <Rectangle VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="1" Margin="-2">
-                                    <Rectangle.Fill>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                            <GradientStop Color="#BFFFFFFF"/>
-                                            <GradientStop Color="Transparent" Offset="0.1"/>
-                                            <GradientStop Color="Transparent" Offset="0.9"/>
-                                            <GradientStop Color="#BFFFFFFF" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Rectangle.Fill>
-                                </Rectangle>
-
-                                <Ellipse x:Name="ellipse_gpointer" Width="14" Height="14" Margin="68" Fill="#FF8E0000" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                                <TextBlock x:Name="textblock_gForce" Text="{Binding GForce, StringFormat={}{0:0.0\\G}, FallbackValue=0 G}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <TextBlock Text="{Binding Gear, FallbackValue=N}" Grid.Column="0" Grid.Row="0" FontSize="48" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding RPM, FallbackValue=0}"  Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Grid>
+                            <Grid x:Name="grid_revLight" MinHeight="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="B" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <TextBlock Text="A" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            <TextBlock Text="L" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-                            <TextBlock Text="R" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                <Ellipse Grid.Column="0" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="1" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="2" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="3" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="4" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="5" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="6" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="7" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="8" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="9" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="10" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="11" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="12" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="13" Fill="Gray" Width="8" Height="8"/>
+                                <Ellipse Grid.Column="14" Fill="Gray" Width="8" Height="8"/>
+                            </Grid>
+                            <Separator Margin="2,2,2,0"/>
+                            <Border Background="Black" CornerRadius="0,0,5,5" Padding="2" Margin="2,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="1*"/>
+                                        <RowDefinition Height="1*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Text="{Binding SpeedKPH, StringFormat={}{0:0}, FallbackValue=0}"  HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0" Margin="2" FontSize="18" VerticalAlignment="Center"/>
+                                    <TextBlock Text="KPH" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="1" Margin="2,2,2,2" FontSize="9"/>
+
+                                    <TextBlock Text="/" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="36" Margin="0,-8,0,0" FontWeight="Normal"/>
+
+                                    <TextBlock Text="{Binding SpeedMPH, StringFormat={}{0:0}, FallbackValue=0}" HorizontalAlignment="Center" Grid.Column="2" Grid.Row="0" Margin="2" FontSize="18" VerticalAlignment="Center"/>
+                                    <TextBlock Text="MPH" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" Margin="2" FontSize="9"/>
+
+                                </Grid>
+                            </Border>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="textblock_PLS" Foreground="Gray" Text="PLS" HorizontalAlignment="Center" Margin="10" Grid.Column="0" />
+                                <TextBlock x:Name="textblock_DRS" Foreground="Gray" Text="DRS" HorizontalAlignment="Center" Margin="10" Grid.Column="1" />
+                            </Grid>
+                        </StackPanel>
+                        <Rectangle Fill="White" Grid.Column="1" Margin="2" RadiusX="1" RadiusY="1" Width="2"/>
+                        <StackPanel Grid.Column="2">
+                            <Border Background="Black" Margin="2" CornerRadius="5">
+                                <Grid Width="100" Height="100">
+                                    <Image x:Name="image_wheel" Source="/Images/DriverInfo/wheel.png" Width="64" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Steer, StringFormat={}{0:0.00}, FallbackValue=0.00}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,15"/>
+                                </Grid>
+                            </Border>
+
+                            <Border Background="Black" Margin="2" Padding="2" CornerRadius="5">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="auto"/>
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Text="Throttle" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis"/>
+                                    <ProgressBar Value="{Binding Throttle, FallbackValue=50}" Foreground="LimeGreen" Background="#FF333232" BorderBrush="#FF525252" Orientation="Horizontal" Grid.Column="1" Grid.Row="0" Margin="2" ToolTip="Throttle"/>
+
+                                    <TextBlock Text="Brake" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis"/>
+                                    <ProgressBar Value="{Binding Brake, FallbackValue=50}" Foreground="Red" Background="#FF333232" BorderBrush="#FF525252" Orientation="Horizontal" Grid.Column="1" Grid.Row="1" Margin="2" ToolTip="Brake"/>
+
+                                    <TextBlock Text="Clutch" Margin="2" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2" TextWrapping="WrapWithOverflow" TextTrimming="CharacterEllipsis"/>
+                                    <ProgressBar Value="{Binding Clutch, FallbackValue=50}" Foreground="White" Background="#FF333232" BorderBrush="#FF525252" Orientation="Horizontal" Grid.Column="1" Grid.Row="2" Margin="2" ToolTip="Clutch"/>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border x:Name="border_gForce" Grid.Column="10" Grid.ColumnSpan="2" Background="#7F000000"  Margin="2" Padding="2" CornerRadius="5">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid x:Name="grid_gCanvas" Grid.Row="1" Grid.Column="1" Width="150" Height="150" Margin="2">
+                            <Ellipse Stroke="#66FFFFFF">
+                                <Ellipse.Fill>
+                                    <RadialGradientBrush SpreadMethod="Pad">
+                                        <GradientStop Color="Black" Offset="0.3"/>
+                                        <GradientStop Color="#FF1D1D1D" Offset="1"/>
+                                    </RadialGradientBrush>
+                                </Ellipse.Fill>
+                            </Ellipse>
+                            <Ellipse Stroke="#4CFFFFFF" Margin="18.75"/>
+                            <Ellipse Stroke="#33FFFFFF" Margin="37.5"/>
+                            <Ellipse Stroke="#19FFFFFF" Margin="56.25"/>
+                            <Rectangle VerticalAlignment="Center" HorizontalAlignment="Stretch" Height="1" Margin="-2">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#BFFFFFFF"/>
+                                        <GradientStop Color="Transparent" Offset="0.1"/>
+                                        <GradientStop Color="Transparent" Offset="0.9"/>
+                                        <GradientStop Color="#BFFFFFFF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+
+                            <Rectangle VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="1" Margin="-2">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#BFFFFFFF"/>
+                                        <GradientStop Color="Transparent" Offset="0.1"/>
+                                        <GradientStop Color="Transparent" Offset="0.9"/>
+                                        <GradientStop Color="#BFFFFFFF" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+
+                            <Ellipse x:Name="ellipse_gpointer" Width="14" Height="14" Margin="68" Fill="#FF8E0000" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            <TextBlock x:Name="textblock_gForce" Text="{Binding GForce, StringFormat={}{0:0.0\\G}, FallbackValue=0 G}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                         </Grid>
-                    </Border>
-                </Grid>
+
+                        <TextBlock Text="B" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="A" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Text="L" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        <TextBlock Text="R" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
             </Grid>
         </GroupBox>
     </Grid>

@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <Version>2021.51.1.0</Version>
+    <Description>Contains everything what are requered to automatic connect any Codemasters' F1 games since 2018.</Description>
+    <Copyright>Csernay Attila</Copyright>
+    <Authors>Csernay Attila</Authors>
+    <Product>F1 UDP Telemetry Connection</Product>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
