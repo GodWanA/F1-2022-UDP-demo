@@ -71,8 +71,14 @@ namespace F1TelemetryApp.UserControls
                 if (this.IsLoaded)
                 {
                     this.Condition = 100.0 - this.Wear;
-                    this.TyreConditionForeground = new SolidColorBrush(this.ColorMapTyreConditionBackground.GradientStops.GetRelativeColor(this.Condition / 100.0));
-                    this.TyreConditionText = new SolidColorBrush(this.ColorMapTyreConditionText.GradientStops.GetRelativeColor(this.Condition / 100.0));
+                    var fg = new SolidColorBrush(this.ColorMapTyreConditionBackground.GradientStops.GetRelativeColor(this.Condition / 100.0));
+                    var t = new SolidColorBrush(this.ColorMapTyreConditionText.GradientStops.GetRelativeColor(this.Condition / 100.0));
+
+                    if (fg.CanFreeze) fg.Freeze();
+                    if (t.CanFreeze) t.Freeze();
+
+                    this.TyreConditionForeground = fg;
+                    this.TyreConditionText = t;
                 }
             }
         }
@@ -235,7 +241,9 @@ namespace F1TelemetryApp.UserControls
                 colors.Add(new GradientStop(Colors.LimeGreen, 0.9));
                 colors.Add(new GradientStop(Colors.LimeGreen, 1));
 
-                this.ColorMapTyreConditionBackground = new LinearGradientBrush(colors);
+                var c = new LinearGradientBrush(colors);
+                if (c.CanFreeze) c.Freeze();
+                this.ColorMapTyreConditionBackground = c;
             }
 
             if (this.ColorMapTyreConditionText == null)

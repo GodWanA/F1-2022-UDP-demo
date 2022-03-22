@@ -71,7 +71,11 @@ namespace F1TelemetryApp.UserControls
                         item.Height = this.weather_actual.ActualHeight;
                         item.Width = this.weather_actual.ActualWidth;
 
-                        if (i != 0 && rawData[i].TimeOffset == TimeSpan.Zero) item.NewBlockMarker = true;
+                        if (i != 0 && rawData[i].TimeOffset == TimeSpan.Zero)
+                        {
+                            item.NewBlockMarker = true;
+                            item.Width += 5;
+                        }
                         else item.NewBlockMarker = false;
 
                         if (rawData[i].SeassonType == this.weather_actual.SessionType) item.IsCurrentSession = true;
@@ -85,20 +89,23 @@ namespace F1TelemetryApp.UserControls
                 }
 
                 var groups = items.Where(x => x.SessionType != SessionTypes.Unknown).GroupBy(x => x.SessionType);
+                Brush fg = Brushes.White;
+                if (fg.CanFreeze) fg.Freeze();
+
                 foreach (var group in groups)
                 {
                     double d = group.Sum(x => x.ActualWidth);
-                    var t = new TextBlock();
-                    t.Margin = new Thickness(0);
-                    t.Width = d;
-                    t.Height = 16;
-                    //t.FontSize = 11;
-                    t.Foreground = Brushes.White;
-                    //t.Background = Brushes.Red;
-                    t.TextAlignment = TextAlignment.Center;
-                    t.VerticalAlignment = VerticalAlignment.Center;
-                    t.Text = group.Select(x => x.SessionType).FirstOrDefault().ToString();
-                    this.stackpanel_names.Children.Add(t);
+
+                    this.stackpanel_names.Children.Add(new TextBlock
+                    {
+                        Margin = new Thickness(0),
+                        Width = d,
+                        Height = 16,
+                        Foreground = fg,
+                        TextAlignment = TextAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Text = group.Select(x => x.SessionType).FirstOrDefault().ToString(),
+                    });
                 }
             }
         }

@@ -20,9 +20,8 @@ namespace F1TelemetryApp.Classes
     internal static class u
     {
         internal static F1UDP Connention { get; set; }
-
+        internal static ushort TrackLength { get; set; }
         internal static Dictionary<Flags, System.Windows.Media.Brush> FlagColors { get; set; } = u.FillColors();
-        public static ushort TrackLength { get; internal set; }
 
         private static Dictionary<Flags, System.Windows.Media.Brush> FillColors()
         {
@@ -35,9 +34,13 @@ namespace F1TelemetryApp.Classes
             ret.Add(Flags.Yellow, new SolidColorBrush(System.Windows.Media.Color.FromRgb(240, 198, 0)));
             ret.Add(Flags.Red, new SolidColorBrush(System.Windows.Media.Color.FromRgb(245, 0, 47)));
 
+            foreach (System.Windows.Media.Brush item in ret.Values)
+            {
+                if (item.CanFreeze) item.Freeze();
+            }
+
             return ret;
         }
-
 
         [DllImport("gdi32.dll")]
         private static extern bool DeleteObject(IntPtr hObject);
@@ -71,143 +74,189 @@ namespace F1TelemetryApp.Classes
         internal static BitmapImage TyreCompoundToImage(TyreCompounds tyre)
         {
             string src = "pack://application:,,,/Images/Tyres/";
+            BitmapImage ret = null;
 
             switch (tyre)
             {
                 default:
-                    return null;
+                    ret = null;
+                    break;
                 // 2019+: 'S' tyre
                 case TyreCompounds.C5:
-                    return new BitmapImage(new Uri(src + "C5.png"));
+                    ret = new BitmapImage(new Uri(src + "C5.png"));
+                    break;
                 // 2019+: 'M' tyre
                 case TyreCompounds.C4:
-                    return new BitmapImage(new Uri(src + "C4.png"));
+                    ret = new BitmapImage(new Uri(src + "C4.png"));
+                    break;
                 // 2019+: 'H' tyre
                 case TyreCompounds.C3:
-                    return new BitmapImage(new Uri(src + "C3.png"));
+                    ret = new BitmapImage(new Uri(src + "C3.png"));
+                    break;
                 // 'I' tyre
                 case TyreCompounds.Inter:
-                    return new BitmapImage(new Uri(src + "inter.png"));
+                    ret = new BitmapImage(new Uri(src + "inter.png"));
+                    break;
                 // 'W' tyre
                 case TyreCompounds.Wet:
                 case TyreCompounds.F2Wet:
-                    return new BitmapImage(new Uri(src + "wet.png"));
+                    ret = new BitmapImage(new Uri(src + "wet.png"));
+                    break;
                 // 'HS' tyre
                 case TyreCompounds.HyperSoft:
-                    return new BitmapImage(new Uri(src + "hypersoft.png"));
+                    ret = new BitmapImage(new Uri(src + "hypersoft.png"));
+                    break;
                 // 'US' tyre
                 case TyreCompounds.UltraSoft:
-                    return new BitmapImage(new Uri(src + "ultrasoft.png"));
+                    ret = new BitmapImage(new Uri(src + "ultrasoft.png"));
+                    break;
                 // 'SS' tyre
                 case TyreCompounds.SuperSoft:
                 case TyreCompounds.F2SuperSoft:
-                    return new BitmapImage(new Uri(src + "supersoft.png"));
+                    ret = new BitmapImage(new Uri(src + "supersoft.png"));
+                    break;
                 // 'S' tyre
                 case TyreCompounds.Soft:
                 case TyreCompounds.F2Soft:
-                    return new BitmapImage(new Uri(src + "soft.png"));
+                    ret = new BitmapImage(new Uri(src + "soft.png"));
+                    break;
                 // 'M' tyre
                 case TyreCompounds.Medium:
                 case TyreCompounds.F2Medium:
-                    return new BitmapImage(new Uri(src + "medium.png"));
+                    ret = new BitmapImage(new Uri(src + "medium.png"));
+                    break;
                 // 'H' tyre
                 case TyreCompounds.Hard:
                 case TyreCompounds.F2Hard:
-                    return new BitmapImage(new Uri(src + "hard.png"));
+                    ret = new BitmapImage(new Uri(src + "hard.png"));
+                    break;
                 // 'SH' tyre
                 case TyreCompounds.SuperHard:
-                    return new BitmapImage(new Uri(src + "superhard.png"));
+                    ret = new BitmapImage(new Uri(src + "superhard.png"));
+                    break;
             }
+
+            if (ret.CanFreeze) ret.Freeze();
+            return ret;
         }
 
         internal static SolidColorBrush PickTeamColor(Teams teamid)
         {
+            SolidColorBrush ret = null;
+
             switch (teamid)
             {
                 default:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 0, 255));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 0, 255));
+                    break;
                 // F1 Cars:
                 case Teams.Mercedes:
                 case Teams.Mercedes2020:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 210, 90));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 210, 90));
+                    break;
                 case Teams.Ferrari:
                 case Teams.Ferrari2020:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(220, 0, 0));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(220, 0, 0));
+                    break;
                 case Teams.RedBullRacing:
                 case Teams.RedBull2020:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(6, 0, 239));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(6, 0, 239));
+                    break;
                 case Teams.Alpine:
                 case Teams.Renault2020:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 144, 255));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 144, 255));
+                    break;
                 case Teams.Haas:
                 case Teams.Haas2020:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
+                    break;
                 case Teams.AstonMartin:
                 case Teams.RacingPoint2020:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 111, 98));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 111, 98));
+                    break;
                 case Teams.AlphaTauri:
                 case Teams.AlphaTauri2020:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(43, 69, 98));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(43, 69, 98));
+                    break;
                 case Teams.McLaren:
                 case Teams.McLaren2020:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 135, 0));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 135, 0));
+                    break;
                 case Teams.AlfaRomeo:
                 case Teams.AlfaRomeo2020:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(144, 0, 0));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(144, 0, 0));
+                    break;
                 case Teams.Williams:
                 case Teams.Williams2020:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 90, 255));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 90, 255));
+                    break;
                 // F2 Cars:
                 case Teams.ArtGP19:
                 case Teams.ArtGP20:
                 case Teams.ArtGP21:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(180, 179, 180));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(180, 179, 180));
+                    break;
                 case Teams.Arden19:
                 case Teams.BWT20:
                 case Teams.BWT21:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(252, 185, 229));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(252, 185, 229));
+                    break;
                 case Teams.Campos19:
                 case Teams.Campos20:
                 case Teams.Campos21:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(235, 193, 16));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(235, 193, 16));
+                    break;
                 case Teams.Carlin19:
                 case Teams.Carlin20:
                 case Teams.Carlin21:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(36, 62, 246));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(36, 62, 246));
+                    break;
                 case Teams.SauberJuniorCharouz19:
                 case Teams.Charouz20:
                 case Teams.Charouz21:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(132, 2, 10));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(132, 2, 10));
+                    break;
                 case Teams.Dams19:
                 case Teams.Dams20:
                 case Teams.Dams21:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(14, 212, 250));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(14, 212, 250));
+                    break;
                 case Teams.Hitech20:
                 case Teams.Hitech21:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(232, 232, 232));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(232, 232, 232));
+                    break;
                 case Teams.MPMotorsport19:
                 case Teams.MPMotorsport20:
                 case Teams.MPMotorsport21:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(247, 64, 26));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(247, 64, 26));
+                    break;
                 case Teams.Prema19:
                 case Teams.Prema20:
                 case Teams.Prema21:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(232, 3, 9));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(232, 3, 9));
+                    break;
                 case Teams.Trident19:
                 case Teams.Trident20:
                 case Teams.Trident21:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(14, 17, 133));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(14, 17, 133));
+                    break;
                 case Teams.UniVirtuosi19:
                 case Teams.UniVirtuosi20:
                 case Teams.UniVirtuosi21:
-                    return new SolidColorBrush(System.Windows.Media.Color.FromRgb(251, 236, 32));
+                    ret = new SolidColorBrush(System.Windows.Media.Color.FromRgb(251, 236, 32));
+                    break;
             }
+
+            if (ret.CanFreeze) ret.Freeze();
+            return ret;
         }
 
         internal static BitmapImage NationalityImage(Nationalities nationality)
         {
             if (nationality == (Nationalities)255) nationality = Nationalities.Unknown;
-            return new BitmapImage(new Uri("pack://application:,,,/Images/Flags/" + nationality + ".png"));
+            var ret = new BitmapImage(new Uri("pack://application:,,,/Images/Flags/" + nationality + ".png"));
+            if (ret.CanFreeze) ret.Freeze();
+            return ret;
         }
 
         internal static String PickTeamName(Teams teamid)
@@ -314,10 +363,10 @@ namespace F1TelemetryApp.Classes
             var sessionData = u.Connention.LastSessionDataPacket;
 
             if (
-                lapDatas != null &&
-                sessionData != null &&
-                prevHistory != null &&
-                nextHistory != null
+                lapDatas != null
+                && sessionData != null
+                && prevHistory != null
+                && nextHistory != null
             )
             {
                 switch (sessionData.SessionType)
@@ -367,6 +416,7 @@ namespace F1TelemetryApp.Classes
                 }
             }
 
+            if (fontColor.CanFreeze) fontColor.Freeze();
             //return sb.ToString().Replace("--","-");
             return sb.ToString();
         }

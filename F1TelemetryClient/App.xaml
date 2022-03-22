@@ -10,7 +10,9 @@
             <Setter Property="TextElement.FontFamily" Value="{StaticResource Formula1 Display}"/>
             <Setter Property="TextElement.FontSize" Value="11 px"/>
             <Setter Property="RenderOptions.BitmapScalingMode" Value="LowQuality"/>
+            <Setter Property="SnapsToDevicePixels" Value="False"/>
         </Style>
+
         <Style TargetType="TextBlock">
             <Setter Property="TextElement.FontFamily" Value="{StaticResource Formula1 Display}"/>
             <Setter Property="TextElement.FontSize" Value="11 px"/>
@@ -18,7 +20,9 @@
             <Setter Property="TextWrapping" Value="NoWrap"/>
             <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="SnapsToDevicePixels" Value="False"/>
         </Style>
+
         <BorderGapMaskConverter x:Key="BorderGapMaskConverter"/>
         <Style TargetType="GroupBox">
             <Setter Property="BorderBrush" Value="white" />
@@ -73,9 +77,11 @@
                             <Border x:Name="Rectangle1" CornerRadius="3" HorizontalAlignment="Stretch" 
                                         VerticalAlignment="Stretch" Width="8" Height="Auto" 
                                         Background="{TemplateBinding Background}">
+                                <!--
                                 <Border.Effect>
                                     <DropShadowEffect Direction="270" ShadowDepth="1" BlurRadius="3" Opacity="0.9" Color="Black"/>
                                 </Border.Effect>
+                                -->
                             </Border>
                         </Grid>
                         <ControlTemplate.Triggers>
@@ -150,6 +156,27 @@
 
         <Style TargetType="Image">
             <Setter Property="RenderOptions.BitmapScalingMode" Value="LowQuality"/>
+            <Setter Property="SnapsToDevicePixels" Value="False"/>
+        </Style>
+
+        <Style TargetType="ProgressBar">
+            <Setter Property="RenderOptions.BitmapScalingMode" Value="NearestNeighbor"/>
+            <Setter Property="SnapsToDevicePixels" Value="False"/>
+        </Style>
+
+        <Style TargetType="Ellipse">
+            <Setter Property="RenderOptions.BitmapScalingMode" Value="NearestNeighbor"/>
+            <Setter Property="SnapsToDevicePixels" Value="False"/>
+        </Style>
+
+        <Style TargetType="Rectangle">
+            <Setter Property="RenderOptions.BitmapScalingMode" Value="NearestNeighbor"/>
+            <Setter Property="SnapsToDevicePixels" Value="False"/>
+        </Style>
+
+        <Style TargetType="Border">
+            <Setter Property="RenderOptions.BitmapScalingMode" Value="NearestNeighbor"/>
+            <Setter Property="SnapsToDevicePixels" Value="False"/>
         </Style>
 
     </Application.Resources>

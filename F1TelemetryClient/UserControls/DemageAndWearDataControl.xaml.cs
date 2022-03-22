@@ -46,8 +46,14 @@ namespace F1TelemetryApp.UserControls
 
                 if (this.IsLoaded)
                 {
-                    this.ProgressbarForeground = new SolidColorBrush(this.ColorMapBackgound.GradientStops.GetRelativeColor(this.percent / 100.0));
-                    this.ProgressbarText = new SolidColorBrush(this.ColorMapText.GradientStops.GetRelativeColor(this.percent / 100.0));
+                    var fg = new SolidColorBrush(this.ColorMapBackgound.GradientStops.GetRelativeColor(this.percent / 100.0));
+                    var t = new SolidColorBrush(this.ColorMapText.GradientStops.GetRelativeColor(this.percent / 100.0));
+
+                    if (fg.CanFreeze) fg.Freeze();
+                    if (t.CanFreeze) t.Freeze();
+
+                    this.ProgressbarForeground = fg;
+                    this.ProgressbarText = t;
                 }
             }
         }

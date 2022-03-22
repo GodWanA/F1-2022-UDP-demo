@@ -4,11 +4,9 @@ using F1Telemetry.Models.ParticipantsPacket;
 using F1TelemetryApp.Classes;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using static F1Telemetry.Helpers.Appendences;
 
@@ -101,16 +99,36 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private int carPosition;
+        private int carPosition = -1;
         public int CarPosition
         {
             get { return carPosition; }
             set
             {
-                if (CarPosition != value)
+                if (carPosition != value)
                 {
+
+                    if (value == 0)
+                    {
+                        this.Visibility = System.Windows.Visibility.Collapsed;
+                        this.IsEnabled = false;
+                    }
+                    else
+                    {
+                        this.Visibility = System.Windows.Visibility.Visible;
+                        this.IsEnabled = true;
+
+                        if (this.IsLoaded)
+                        {
+                            Storyboard sb;
+                            if (carPosition > value) sb = this.Resources["PosDec"] as Storyboard;
+                            else sb = this.Resources["PosInc"] as Storyboard;
+                            if (sb != null) sb.Begin();
+                        }
+                    }
+
                     carPosition = value;
-                    //this.label_carPosition.Content = this.carPosition.ToString();
+
                     PlayerListItemData.PosChange = true;
                     this.OnPropertyChanged("CarPosition");
                 }
@@ -519,9 +537,9 @@ namespace F1TelemetryApp.UserControls
                     var current = status.CarStatusData[this.ArrayIndex];
                     this.TyreCompund = current.VisualTyreCompound;
 
-                    this.UpdateLayout();
+                    //// this.UpdateLayout();
                     this.isStatus = false;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -541,12 +559,12 @@ namespace F1TelemetryApp.UserControls
                     this.IsMyTeam = current.IsMyTeam;
                     this.RaceNumber = current.RaceNumber;
 
-                    this.UpdateLayout();
+                    //// this.UpdateLayout();
                     this.isParticipants = false;
 
                     //if (this.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
                     //else this.Visibility = Visibility.Visible;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -589,12 +607,9 @@ namespace F1TelemetryApp.UserControls
                         }
                     }
 
-                    this.UpdateLayout();
+                    //// this.UpdateLayout();
                     this.isLapdata = false;
-
-                    //if (this.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
-                    //else this.Visibility = Visibility.Visible;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 

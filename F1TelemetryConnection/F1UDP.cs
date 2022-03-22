@@ -25,10 +25,6 @@ namespace F1Telemetry
     public class F1UDP
     {
         /// <summary>
-        /// The connections working paralel task
-        /// </summary>
-        public Task _Task { get; private set; }
-        /// <summary>
         /// Connection's IP address
         /// </summary>
         public string IPAdress { get; private set; }
@@ -256,35 +252,28 @@ namespace F1Telemetry
             this.Connection = new UdpClient(this.EndPoint);
             this.CancelToken = new CancellationTokenSource();
 
-            Task.Run(() =>
+            try
             {
-                try
-                {
-                    while (IsConnecting)
-                    {
-                        var remoteEndPoint = new IPEndPoint(this.EndPoint.Address, this.EndPoint.Port);
-                        var receivedResults = this.Connection.Receive(ref remoteEndPoint);
+                this.Connection.BeginReceive(new AsyncCallback(recv), null);
+            }
+            catch (Exception e)
+            {
+                this.OnConnectionError(e);
+            }
+        }
 
-                        if (this.IsAsyncPacketProcessEnabled)
-                        {
-                            Task.Run(() => ByteArrayProcess((byte[])(receivedResults.Clone())), this.CancelToken.Token);
-                        }
-                        else
-                        {
-                            this.ByteArrayProcess((byte[])(receivedResults.Clone()));
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    this.OnConnectionError(ex);
-                }
-                finally
-                {
-                    this.Connection.Close();
-                    this.OnClosedConnection(this);
-                }
-            }, this.CancelToken.Token);
+        private void recv(IAsyncResult res)
+        {
+            if (this.IsConnecting)
+            {
+                IPEndPoint RemoteIpEndPoint = this.EndPoint;
+                byte[] received = this.Connection.EndReceive(res, ref RemoteIpEndPoint);
+
+                if (!this.IsAsyncPacketProcessEnabled) this.ByteArrayProcess(received);
+                else Task.Run(() => ByteArrayProcess(received), this.CancelToken.Token);
+
+                this.Connection.BeginReceive(new AsyncCallback(recv), null);
+            }
         }
 
         /// <summary>
@@ -299,6 +288,9 @@ namespace F1Telemetry
                 //this.CancelToken.Dispose();
                 //this.CancelToken = null;
             }
+
+            if (this.ClosedConnection != null) this.ClosedConnection(this, new EventArgs());
+            this.Connection.Close();
         }
 
 
@@ -330,6 +322,7 @@ namespace F1Telemetry
         /// <param name="array">Raw byte array</param>
         private void ByteArrayProcess(byte[] array)
         {
+            var start = DateTime.Now;
             var header = new PacketHeader(array);
 
             switch (header.PacketID)
@@ -370,6 +363,11 @@ namespace F1Telemetry
                 case PacketTypes.SessionHistory:
                     this.SessionHistory(array, header);
                     break;
+            }
+
+            if (DateTime.Now - start > TimeSpan.FromSeconds(0.3))
+            {
+                this.OnDataReadError(new Exception("LASSSÚÚÚÚÚ!"));
             }
         }
 

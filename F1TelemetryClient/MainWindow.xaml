@@ -15,12 +15,10 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <DockPanel>
-            <DockPanel.Effect>
-                <DropShadowEffect Direction="-90" ShadowDepth="1" BlurRadius="2" Opacity="0.555"/>
-            </DockPanel.Effect>
             <Menu DockPanel.Dock="Top" Padding="2">
                 <MenuItem Header="File" Padding="5,2">
                     <MenuItem x:Name="menuitem_exit" Header="Exit" IsEnabled="True" Click="menuitem_exit_Click"/>
@@ -31,7 +29,15 @@
                 </MenuItem>
             </Menu>
         </DockPanel>
-        <Grid Grid.Row="1">
+        <Rectangle Grid.Row="1" Height="2" Margin="0,0,0,-2">
+            <Rectangle.Fill>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#BF000000"/>
+                    <GradientStop Color="#00000000" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="1*"/>
@@ -43,30 +49,39 @@
             <Grid Margin="5,5,2.5,5" HorizontalAlignment="Left" Width="265" Grid.RowSpan="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
-                    <RowDefinition />
+                    <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <Border x:Name="border_sessioninfo" Background="Black" CornerRadius="5,5,0,0" Height="42" Grid.Row="0">
-                    <Grid>
-                        <TextBlock x:Name="textBlock_counterHead" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" TextAlignment="Center"/>
-                    </Grid>
-                </Border>
-                <ListBox x:Name="listBox_drivers" ItemsSource="{Binding ParticipantsList}" Grid.Row="1" BorderBrush="{x:Null}" Foreground="{x:Null}" SelectionChanged="listBox_drivers_SelectionChanged" BorderThickness="0,0,0,0" >
-                    <ListBox.Background>
-                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                            <GradientStop Color="#FF4A4A4A"/>
-                            <GradientStop Color="#FF5D5D5D" Offset="1"/>
-                        </LinearGradientBrush>
-                    </ListBox.Background>
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="BorderThickness" Value="0"/>
-                            <Setter Property="Margin" Value="0"/>
-                            <Setter Property="Padding" Value="0"/>
-                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                </ListBox>
+                <Grid Grid.Row="0">
+                    <UserControls:Map x:Name="map" Margin="0,0,0,2" />
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Border x:Name="border_sessioninfo" Background="Black" CornerRadius="5,5,0,0" Height="42" Grid.Row="0">
+                        <Grid>
+                            <TextBlock x:Name="textBlock_counterHead" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" TextAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    <ListBox x:Name="listBox_drivers" ItemsSource="{Binding ParticipantsList}" Grid.Row="1" BorderBrush="{x:Null}" Foreground="{x:Null}" SelectionChanged="listBox_drivers_SelectionChanged" BorderThickness="0,0,0,0" >
+                        <ListBox.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="#FF4A4A4A"/>
+                                <GradientStop Color="#FF5D5D5D" Offset="1"/>
+                            </LinearGradientBrush>
+                        </ListBox.Background>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="Margin" Value="0"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </Grid>
             </Grid>
             <UserControls:WeatherDisplayController Margin="2.5,5,5,2.5" x:Name="weatherController" VerticalAlignment="Top" Height="175" Grid.Column="1" Grid.Row="0"/>
             <TabControl Padding="0" Grid.Column="1" Margin="2.5,2.5,5,5" Grid.Row="1">

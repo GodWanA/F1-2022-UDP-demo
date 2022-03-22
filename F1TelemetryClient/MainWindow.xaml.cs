@@ -53,11 +53,11 @@ namespace F1TelemetryClient
         public event PropertyChangedEventHandler PropertyChanged;
 
         private bool isWorking_SessionData = false;
-        //private bool isWorking_LapData = false;
+        private bool isWorking_LapData = false;
         private bool isWorking_ParticipantsData = false;
         private bool isWorking_DemageData = false;
         private bool isWorking_CarStatusData = false;
-        private bool isWorking_CarTelemetryData = false;
+        //private bool isWorking_CarTelemetryData = false;
         private bool isLoadingWear = false;
         private bool canDoUdp = true;
         private Flags lastFlag = Flags.InvalidOrUnknown;
@@ -83,7 +83,7 @@ namespace F1TelemetryClient
             this.lockTimer.Interval = TimeSpan.FromMilliseconds(500);
             this.lockTimer.Tick += LockTimer_Tick;
 
-            this.cleanTimer.Interval = TimeSpan.FromSeconds(1);
+            this.cleanTimer.Interval = TimeSpan.FromSeconds(0.5);
             this.cleanTimer.Tick += CleanTimer_Tick;
         }
 
@@ -117,6 +117,23 @@ namespace F1TelemetryClient
             //this.cleanTimer.Stop();
         }
 
+        private DateTime LastClean;
+
+        private void Udp_LapDataPacket(object sender, EventArgs e)
+        {
+            if (this.canDoUdp && !this.isWorking_LapData && DateTime.Now - this.LastClean > TimeSpan.FromSeconds(0.5))
+            {
+                this.isWorking_LapData = true;
+                LastClean = DateTime.Now;
+
+                this.Dispatcher.BeginInvoke(() =>
+                {
+                    this.CleanUpList();
+                    this.isWorking_LapData = false;
+                }, DispatcherPriority.Render);
+            }
+        }
+
         private void Connention_ConnectionError(object sender, EventArgs e)
         {
             this.ShowError(sender as Exception);
@@ -138,8 +155,8 @@ namespace F1TelemetryClient
                     MessageBoxImage.Error
                 );
 
-                if (res == MessageBoxResult.OK) Application.Current.Shutdown();
-            }, DispatcherPriority.Background);
+                if (res == MessageBoxResult.OK) Application.Current?.Shutdown();
+            }, DispatcherPriority.Render);
         }
 
         private void CleanTimer_Tick(object sender, EventArgs e)
@@ -162,24 +179,20 @@ namespace F1TelemetryClient
             GC.WaitForFullGCComplete();
             GC.WaitForPendingFinalizers();
             GC.Collect();
-            this.UpdateLayout();
+            // this.UpdateLayout();
             this.canDoUdp = true;
         }
 
         private bool ListFilter(object o)
         {
-            if (o is PlayerListItemData)
-            {
-                if ((o as PlayerListItemData).CarPosition > 0) return true;
-                else return false;
-            }
-            else
-            {
-                return false;
-            }
+            if (o is PlayerListItemData && (o as PlayerListItemData).CarPosition > 0) return true;
+            else return false;
         }
+
         private void Udp_SessionHistoryPacket(object sender, EventArgs e)
         {
+            //this.Dispatcher.BeginInvoke(() => this.CleanUpList(), DispatcherPriority.Render);
+
             if (this.canDoUdp)
             {
                 this.Dispatcher.BeginInvoke(() =>
@@ -234,10 +247,10 @@ namespace F1TelemetryClient
                             curItem.setStateText();
                             curItem.TextColor = Brushes.White;
                         }
-
-                        //this.CleanUpList();
                     }
-                }, DispatcherPriority.Background);
+
+                    //this.CleanUpList();
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -247,28 +260,15 @@ namespace F1TelemetryClient
             {
                 this.isCleaning = true;
 
-                this.listBox_drivers.Items.Filter = this.ListFilter;
-                this.listBox_drivers.Items.Refresh();
+                //this.listBox_drivers.Items.Filter = this.ListFilter;
+                if (this.participantsList.Count > 0) this.listBox_drivers.Items.Refresh();
 
-                GC.WaitForFullGCApproach();
-                GC.WaitForFullGCComplete();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
+                //GC.WaitForFullGCApproach();
+                //GC.WaitForFullGCComplete();
+                //GC.WaitForPendingFinalizers();
+                //GC.Collect();
 
                 this.isCleaning = false;
-            }
-        }
-
-        private void Udp_CarTelemetryPacket(object sender, EventArgs e)
-        {
-            if (!this.isWorking_CarTelemetryData && this.canDoUdp)
-            {
-                this.isWorking_CarTelemetryData = true;
-                this.Dispatcher.BeginInvoke(() =>
-                {
-                    //this.LoadWear();
-                    this.isWorking_CarTelemetryData = false;
-                }, DispatcherPriority.Background);
             }
         }
 
@@ -279,20 +279,15 @@ namespace F1TelemetryClient
                 this.isWorking_CarStatusData = true;
                 this.Dispatcher.BeginInvoke(() =>
                 {
-                    //this.LoadWear();
                     var status = sender as PacketCarStatusData;
-
-                    //foreach (PlayerListItemData item in this.participantsList)
-                    //{
-                    //    var current = status.CarStatusData[item.ArrayIndex];
-                    //    item.TyreCompund = current.VisualTyreCompound;
-                    //}
 
                     var flags = status.CarStatusData.Select(x => x.VehicleFIAFlag);
                     this.SetSessionInfoColor(flags);
 
+                    //this.CleanUpList();
+
                     this.isWorking_CarStatusData = false;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -309,7 +304,7 @@ namespace F1TelemetryClient
                     if (i > -1) this.UpdateDemageInfo(data.CarDamageData[i]);
 
                     this.isWorking_DemageData = false;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -325,29 +320,18 @@ namespace F1TelemetryClient
                     var participants = sender as PacketParticipantsData;
                     this.PlayerList(participants.Participants.Length);
 
-
-                    //foreach (PlayerListItemData item in this.participantsList)
-                    //{
-                    //    var current = participants.Participants[item.ArrayIndex];
-                    //    item.DriverName = current.Name;
-                    //    item.Nationality = current.Nationality;
-                    //    item.TeamID = current.TeamID;
-                    //    item.IsMyTeam = current.IsMyTeam;
-                    //    item.RaceNumber = current.RaceNumber;
-                    //}
-
                     if (index != -1) this.listBox_drivers.SelectedIndex = index;
                     else if (participants.Header.Player1CarIndex != 255) this.listBox_drivers.SelectedItem = this.participantsList[participants.Header.Player1CarIndex];
-
-                    //this.CalculateInterval();
 
                     if (this.listBox_drivers.SelectedItem != null)
                     {
                         this.listBox_drivers.ScrollIntoView(this.listBox_drivers.SelectedItem);
                     }
 
+                    //this.CleanUpList();
+                    //this.listBox_drivers.Items.Filter = this.ListFilter;
                     this.isWorking_ParticipantsData = false;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -379,9 +363,9 @@ namespace F1TelemetryClient
                     var flags = sessionData.MarshalZones.Select(x => x.ZoneFlag);
                     this.SetSessionInfoColor(flags);
 
-                    this.CleanUpList();
+                    //this.CleanUpList();
 
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -392,6 +376,7 @@ namespace F1TelemetryClient
             if (this.lastFlag != flag)
             {
                 this.lastFlag = flag;
+
                 switch (flag)
                 {
                     default:
@@ -407,6 +392,9 @@ namespace F1TelemetryClient
                         this.textBlock_counterHead.Foreground = Brushes.White;
                         break;
                 }
+
+                //this.border_sessioninfo.UpdateLayout();
+                //this.textBlock_counterHead.UpdateLayout();
             }
         }
 
@@ -416,18 +404,19 @@ namespace F1TelemetryClient
             {
                 if (this.listBox_drivers.SelectedIndex > -1)
                 {
-                    foreach (var item in this.participantsList)
-                    {
-                        item.IsSelected = false;
-                    }
-
                     var selected = this.listBox_drivers.SelectedItem as PlayerListItemData;
-                    selected.IsSelected = true;
 
-                    int i = selected.ArrayIndex;
+                    if (selected.CarPosition > 0)
+                    {
+                        foreach (var item in this.participantsList) item.IsSelected = false;
 
-                    this.LoadWear();
-
+                        selected.IsSelected = true;
+                        this.LoadWear();
+                    }
+                    else
+                    {
+                        this.listBox_drivers.SelectedItem = null;
+                    }
                 }
             }
         }
@@ -717,7 +706,30 @@ namespace F1TelemetryClient
 
         public void ResizeXL()
         {
-            //throw new NotImplementedException();
+            // Complete view components:
+            IGridResize.SetGridSettings(this.drivercontainer, 0, 0, 12);
+            IGridResize.SetGridSettings(this.tyrecontainer, 0, 1, 5);
+            IGridResize.SetGridSettings(this.groupbox_demage, 5, 1, 5);
+            IGridResize.SetGridSettings(this.groupbox_motor, 10, 1, 2);
+
+            // Engine wear components:
+            IGridResize.SetGridSettings(this.wear_ce, 0, 0, 6);
+            IGridResize.SetGridSettings(this.wear_ice, 0, 1, 6);
+            IGridResize.SetGridSettings(this.wear_tc, 0, 2, 6);
+            IGridResize.SetGridSettings(this.wear_mguh, 0, 3, 6);
+            IGridResize.SetGridSettings(this.wear_mguk, 0, 4, 6);
+            IGridResize.SetGridSettings(this.wear_es, 0, 5, 6);
+
+            // Demage components:
+            IGridResize.SetGridSettings(this.demage_fwLeft, 0, 0, 3);
+            IGridResize.SetGridSettings(this.demage_fwRight, 3, 0, 3);
+            IGridResize.SetGridSettings(this.demage_fl, 0, 1, 3);
+            IGridResize.SetGridSettings(this.demage_sp, 3, 1, 3);
+            IGridResize.SetGridSettings(this.demage_en, 0, 2, 2);
+            IGridResize.SetGridSettings(this.demage_ex, 2, 2, 2);
+            IGridResize.SetGridSettings(this.demage_gb, 4, 2, 2);
+            IGridResize.SetGridSettings(this.demage_df, 0, 5, 3);
+            IGridResize.SetGridSettings(this.demage_rw, 3, 5, 3);
         }
 
         private void Window_StateChanged(object sender, EventArgs e)

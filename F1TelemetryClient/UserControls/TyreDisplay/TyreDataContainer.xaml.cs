@@ -71,7 +71,7 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
             this.UpdateTelemetry(telemetry);
             this.UpdateDemage(demage);
 
-            this.UpdateLayout();
+            // this.UpdateLayout();
 
             this.canUpdate = true;
         }
@@ -95,7 +95,7 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
                 this.tyredata_rl.BrakeDemage = demage.BrakesDemage["RearLeft"];
                 this.tyredata_rr.BrakeDemage = demage.BrakesDemage["RearRight"];
 
-                this.UpdateLayout();
+                // this.UpdateLayout();
             }
         }
 
@@ -123,7 +123,7 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
                 this.tyredata_rl.BrakesTemperature = telemetry.BrakesTemperature["RearLeft"];
                 this.tyredata_rr.BrakesTemperature = telemetry.BrakesTemperature["RearRight"];
 
-                this.UpdateLayout();
+                // this.UpdateLayout();
             }
         }
 
@@ -134,7 +134,7 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
                 this.ActualTyreCpompund = status.VisualTyreCompound;
                 this.LapAges = (int)status.TyresAgeLaps;
 
-                this.UpdateLayout();
+                // this.UpdateLayout();
             }
         }
 
@@ -183,7 +183,7 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
                     if (this.driverIndex > -1) method.Invoke();
                     this.canUpdate = true;
                 }
-            }, DispatcherPriority.Background);
+            }, DispatcherPriority.Render);
         }
 
         public void SubscribeUDPEvents()

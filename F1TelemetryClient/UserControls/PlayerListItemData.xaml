@@ -1,11 +1,30 @@
-﻿<UserControl x:Class="F1TelemetryApp.UserControls.PlayerListItemData"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:F1TelemetryApp.UserControls"
+             x:Class="F1TelemetryApp.UserControls.PlayerListItemData"
              mc:Ignorable="d" 
              d:DesignWidth="300" Height="auto" RenderOptions.BitmapScalingMode="LowQuality" Initialized="UserControl_Initialized">
+    <UserControl.Resources>
+        <Storyboard x:Key="PosDec">
+            <ColorAnimationUsingKeyFrames Storyboard.TargetName="border_position" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)">
+                <EasingColorKeyFrame KeyTime="00:00:00.0000000" Value="White"/>
+                <EasingColorKeyFrame KeyTime="00:00:00.2000000" Value="LimeGreen"/>
+                <EasingColorKeyFrame KeyTime="00:00:00.8000000" Value="LimeGreen"/>
+                <EasingColorKeyFrame KeyTime="00:00:01.0000000" Value="White"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="PosInc">
+            <ColorAnimationUsingKeyFrames Storyboard.TargetName="border_position" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)">
+                <EasingColorKeyFrame KeyTime="00:00:00.0000000" Value="White"/>
+                <EasingColorKeyFrame KeyTime="00:00:00.2000000" Value="Red"/>
+                <EasingColorKeyFrame KeyTime="00:00:00.8000000" Value="Red"/>
+                <EasingColorKeyFrame KeyTime="00:00:01.0000000" Value="White"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="24"/>
@@ -23,9 +42,9 @@
                 <Label x:Name="label_carPosition" FontWeight="Bold" Content="{Binding CarPosition, FallbackValue=—}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0" Margin="0" FontStyle="Normal" FontStretch="Medium"/>
             </Border>
             <StackPanel Orientation="Horizontal" Grid.Column="1">
-                <Rectangle Width="5" Margin="1,3" x:Name="rectangle_teamColor" Fill="{Binding TeamColor,FallbackValue=#ff00ff}" RadiusX="0.2" RadiusY="0.2"/>
-                <TextBlock x:Name="textblock_driver" Foreground="White" Text="{Binding DriverName,FallbackValue=Driver}" VerticalAlignment="Center" Padding="0" Margin="0" FontWeight="Normal" TextTrimming="CharacterEllipsis" FontStyle="Normal" FontSize="12"/>
-                <Label x:Name="label_raceNumber" FontWeight="Bold" FontStyle="Italic" Foreground="{Binding TeamColor,FallbackValue=#ff00ff}" Content="{Binding RaceNumber, FallbackValue=--}" VerticalAlignment="Center" Padding="0" Margin="5,0,0,0" Background="{x:Null}" BorderThickness="0,0,0,0" FontSize="12"/>
+                <Rectangle Width="5" Margin="1,3" x:Name="rectangle_teamColor" Fill="{Binding TeamColor, FallbackValue=#ff00ff}" RadiusX="0.2" RadiusY="0.2"/>
+                <TextBlock x:Name="textblock_driver" Foreground="White" Text="{Binding DriverName, FallbackValue=Driver}" VerticalAlignment="Center" Padding="0" Margin="0" FontWeight="Normal" TextTrimming="CharacterEllipsis" FontStyle="Normal" FontSize="12"/>
+                <Label x:Name="label_raceNumber" FontWeight="Bold" FontStyle="Italic" Foreground="{Binding TeamColor, FallbackValue=#ff00ff}" Content="{Binding RaceNumber, FallbackValue=--}" VerticalAlignment="Center" Padding="0" Margin="5,0,0,0" Background="{x:Null}" BorderThickness="0,0,0,0" FontSize="12"/>
             </StackPanel>
             <Image x:Name="image_tyre"  RenderOptions.BitmapScalingMode="NearestNeighbor" Grid.Column="2" Margin="0,0,-5,0" Width="24" Height="24"/>
             <!--<Label x:Name="label_nation" Foreground="White" Padding="0" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Right" Content="{Binding Nationality, FallbackValue=-}" Grid.Column="2"/>-->
@@ -66,12 +85,12 @@
                 <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <TextBlock x:Name="textblock_laptime" Grid.Column="0" Foreground="{Binding TimerForeground, FallbackValue=White}" Text="{Binding CurrentLapTime, StringFormat=m\\:ss\\.fff, FallbackValue=--:--.---}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0" FontFamily="{StaticResource Formula1 Display}"/>
+            <TextBlock x:Name="textblock_laptime" Grid.Column="0" Foreground="{Binding TimerForeground, FallbackValue=White}" Text="{Binding CurrentLapTime, FallbackValue=--:--.---, StringFormat=m\\:ss\\.fff}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0" FontFamily="{StaticResource Formula1 Display}"/>
             <TextBlock x:Name="textblock_pittime" Grid.Column="1" Foreground="LimeGreen" Text="{Binding PitText, FallbackValue=PIT}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0" FontFamily="{StaticResource Formula1 Display}"/>
             <TextBlock x:Name="textblock_interval" Grid.Column="2" Foreground="{Binding TextColor, FallbackValue=white}" Text="{Binding IntervalTime, FallbackValue=interval}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0" FontFamily="{StaticResource Formula1 Display}"/>
             <TextBlock x:Name="textblock_leaderInterval" Grid.Column="3" Foreground="White" Text="{Binding LeaderIntervalTime, FallbackValue=leader}" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="0" Margin="0,0,2,0" FontFamily="{StaticResource Formula1 Display}"/>
-            <TextBlock x:Name="textblock_warnings" Grid.Column="4" Foreground="Orange" Text="{Binding WarningNumber, StringFormat={}{0:\\x0;\\x0;''}, FallbackValue=x0}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-            <TextBlock x:Name="textblock_penaltys" Grid.Column="5" Foreground="Red" Text="{Binding PenaltyTime, StringFormat=\\+s, FallbackValue=+0}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <TextBlock x:Name="textblock_warnings" Grid.Column="4" Foreground="Orange" Text="{Binding WarningNumber, FallbackValue=x0, StringFormat=\{0:\\x0;\\x0;\'\'\}}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <TextBlock x:Name="textblock_penaltys" Grid.Column="5" Foreground="Red" Text="{Binding PenaltyTime, FallbackValue=+0, StringFormat=\\+s}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Grid>
         <Grid Grid.Row="2" Background="#3F000000">
             <ProgressBar x:Name="progressBar_Lap" Foreground="{Binding TrackPercentForeground, FallbackValue=LimeGreen}" BorderBrush="{x:Null}" Value="{Binding TrackLengthPercent, FallbackValue=100}" Background="{x:Null}" Height="2"/>

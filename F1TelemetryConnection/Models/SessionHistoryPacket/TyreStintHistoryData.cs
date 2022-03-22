@@ -14,6 +14,7 @@ namespace F1Telemetry.Models.SessionHistoryPacket
         public byte EndLap { get; private set; }
         public bool IsCurrentTyre { get; private set; }
         public TyreCompounds TyreActualCompound { get; private set; }
+        public TyreCompounds TyreVisualCompound { get; private set; }
 
         protected override void Reader2021(byte[] array)
         {
@@ -33,7 +34,7 @@ namespace F1Telemetry.Models.SessionHistoryPacket
 
             //uint8 m_tyreVisualCompound;    // Visual tyres used by this driver
             index += ByteReader.ToUInt8(array, index, out valb);
-            this.TyreActualCompound = (TyreCompounds)valb;
+            this.TyreVisualCompound = (TyreCompounds)valb;
 
             this.Index = index;
         }

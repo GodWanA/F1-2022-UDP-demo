@@ -104,32 +104,35 @@ namespace F1TelemetryApp.UserControls
                 if (this.weather != value)
                 {
                     weather = value;
+                    BitmapImage source;
 
                     switch (this.weather)
                     {
                         default:
-                            this.image_wheather.Source = null;
+                            source = null;
                             break;
                         case WeatherTypes.Clear:
-                            this.image_wheather.Source = new BitmapImage(new Uri(forras + "Clear.png"));
+                            source = new BitmapImage(new Uri(forras + "Clear.png"));
                             break;
                         case WeatherTypes.LitghtCloud:
-                            this.image_wheather.Source = new BitmapImage(new Uri(forras + "LitghtCloud.png"));
+                            source = new BitmapImage(new Uri(forras + "LitghtCloud.png"));
                             break;
                         case WeatherTypes.Overcast:
-                            this.image_wheather.Source = new BitmapImage(new Uri(forras + "Overcast.png"));
+                            source = new BitmapImage(new Uri(forras + "Overcast.png"));
                             break;
                         case WeatherTypes.LightRain:
-                            this.image_wheather.Source = new BitmapImage(new Uri(forras + "LightRain.png"));
+                            source = new BitmapImage(new Uri(forras + "LightRain.png"));
                             break;
                         case WeatherTypes.HeavyRain:
-                            this.image_wheather.Source = new BitmapImage(new Uri(forras + "HeavyRain.png"));
+                            source = new BitmapImage(new Uri(forras + "HeavyRain.png"));
                             break;
                         case WeatherTypes.Storm:
-                            this.image_wheather.Source = new BitmapImage(new Uri(forras + "Storm.png"));
+                            source = new BitmapImage(new Uri(forras + "Storm.png"));
                             break;
                     }
 
+                    if (source != null && source.CanFreeze) source.Freeze();
+                    this.image_wheather.Source = source;
                     //this.OnPropertyChanged("Weather");
                 }
             }
@@ -183,7 +186,7 @@ namespace F1TelemetryApp.UserControls
         }
 
 
-        private static string forras = "pack://application:,,,/Images/WeatherIcons/";
+        private const string forras = "pack://application:,,,/Images/WeatherIcons/";
         private bool disposedValue;
 
         protected virtual void Dispose(bool disposing)

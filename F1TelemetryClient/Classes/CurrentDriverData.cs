@@ -154,8 +154,9 @@ namespace F1TelemetryApp.Classes
             {
                 this._nationality = value;
 
-                this.ImageSource = null;
-                this.ImageSource = new BitmapImage(new Uri("Images/Flags/" + this._nationality + ".png", UriKind.Relative));
+                var img = new BitmapImage(new Uri("Images/Flags/" + this._nationality + ".png", UriKind.Relative));
+                if (img.CanFreeze) img.Freeze();
+                this.ImageSource = img;
 
                 this.OnPropertyChanged("Nationality");
             }
