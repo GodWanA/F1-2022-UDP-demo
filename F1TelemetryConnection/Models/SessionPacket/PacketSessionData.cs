@@ -44,7 +44,7 @@ namespace F1Telemetry.Models.SessionPacket
             //                                    // 5 = Q1, 6 = Q2, 7 = Q3, 8 = Short Q, 9 = OSQ
             //                                    // 10 = R, 11 = R2, 12 = Time Trial
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.SessionType = (SessionTypes)uint8;
+            this.SetSessionType(uint8);
             //    int8 m_trackId;                 // -1 for unknown, 0-21 for tracks, see appendix
             this.Index += ByteReader.ToInt8(array, this.Index, out int8);
             this.TrackID = (Tracks)int8;
@@ -89,6 +89,21 @@ namespace F1Telemetry.Models.SessionPacket
             //    uint8 m_networkGame;              // 0 = offline, 1 = online
             this.Index += ByteReader.ToBoolFromUint8(array, this.Index, out b);
             this.IsNetworkGame = b;
+        }
+
+        private void SetSessionType(byte uint8)
+        {
+            if (this.Header.PacketFormat >= 2021)
+            {
+                var tt = (byte)SessionTypes.TimeTrial;
+                if (uint8 == tt) this.SessionType = SessionTypes.Race3;
+                else if (uint8 == tt + 1) this.SessionType = SessionTypes.TimeTrial;
+                else this.SessionType = (SessionTypes)uint8;
+            }
+            else
+            {
+                this.SessionType = (SessionTypes)uint8;
+            }
         }
 
         protected override void Reader2019(byte[] array)

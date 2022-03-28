@@ -35,7 +35,7 @@ namespace F1Telemetry
         /// <summary>
         /// Enables async process of packet
         /// </summary>
-        public bool IsAsyncPacketProcessEnabled { get; set; } = true;
+        public bool IsAsyncPacketProcessEnabled { get; set; } = false;
 
         protected IPEndPoint EndPoint { get; set; }
         protected UdpClient Connection { get; set; }
@@ -367,7 +367,7 @@ namespace F1Telemetry
 
             if (DateTime.Now - start > TimeSpan.FromSeconds(0.3))
             {
-                this.OnDataReadError(new Exception("LASSSÚÚÚÚÚ!"));
+                this.OnDataReadError(new Exception("LASSÚ!\r\n" + header.PacketID));
             }
         }
 

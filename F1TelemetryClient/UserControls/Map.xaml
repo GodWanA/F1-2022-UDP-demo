@@ -8,7 +8,10 @@
              Height="265" Width="265" Initialized="UserControl_Initialized">
     <Grid>
         <Border Background="Black" CornerRadius="5" Padding="5">
-            <Path x:Name="path_track" Stroke="Gray" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" />
+            <Grid>
+                <Path x:Name="path_track" Stroke="Gray" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" Height="255" Width="255" />
+                <Canvas x:Name="canvas"/>
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

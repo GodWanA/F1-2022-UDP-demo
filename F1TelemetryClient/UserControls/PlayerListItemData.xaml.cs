@@ -118,7 +118,7 @@ namespace F1TelemetryApp.UserControls
                         this.Visibility = System.Windows.Visibility.Visible;
                         this.IsEnabled = true;
 
-                        if (this.IsLoaded)
+                        if (this.IsLoaded && this.carPosition > 0)
                         {
                             Storyboard sb;
                             if (carPosition > value) sb = this.Resources["PosDec"] as Storyboard;
@@ -338,7 +338,7 @@ namespace F1TelemetryApp.UserControls
                     isSelected = value;
                     if (isSelected)
                     {
-                        this.grid_header.Background = new SolidColorBrush(Color.FromRgb(160, 160, 160));
+                        this.grid_header.Background = new SolidColorBrush(Color.FromRgb(130, 130, 130));
                     }
                     else
                     {

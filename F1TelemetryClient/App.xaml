@@ -98,8 +98,8 @@
         <!--SCROLLBARS-->
         <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
             <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-            <Setter Property="Foreground" Value="#FF999999"/>
-            <Setter Property="Background" Value="DarkGray"/>
+            <Setter Property="Foreground" Value="#FF5A5A5A"/>
+            <Setter Property="Background" Value="#FF797979"/>
             <Setter Property="Width" Value="10"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -177,6 +177,18 @@
         <Style TargetType="Border">
             <Setter Property="RenderOptions.BitmapScalingMode" Value="NearestNeighbor"/>
             <Setter Property="SnapsToDevicePixels" Value="False"/>
+        </Style>
+
+        <Style TargetType="TabControl">
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="#FF746F6F" Offset="0.83"/>
+                        <GradientStop Color="White" Offset="0"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Padding" Value="0"/>
         </Style>
 
     </Application.Resources>

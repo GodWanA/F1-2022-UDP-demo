@@ -1,4 +1,5 @@
-﻿using F1Telemetry.Models.MotionPacket;
+﻿using F1Telemetry.Models.LapDataPacket;
+using F1Telemetry.Models.MotionPacket;
 using F1TelemetryApp.Classes;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,15 @@ namespace F1TelemetryApp.UserControls
         private bool disposedValue;
         private bool isCarMotion;
         private List<Vector3> trackCoords = new List<Vector3>();
+        private bool isLapdata;
+        private bool canDraw;
+        private int lapNumber;
+        private bool canRecord = true;
+
+        private double maxY = 0;
+        private double maxX = 0;
+        private double minX = 0;
+        private double minY = 0;
 
         public Map()
         {
@@ -28,17 +38,65 @@ namespace F1TelemetryApp.UserControls
 
         public void SubscribeUDPEvents()
         {
-            if (u.Connention != null)
-            {
-                u.Connention.CarMotionPacket += Connention_CarMotionPacket;
-            }
+            //if (u.Connention != null)
+            //{
+            //    u.Connention.CarMotionPacket += Connention_CarMotionPacket;
+            //    u.Connention.LapDataPacket += Connention_LapDataPacket;
+            //}
         }
 
         public void UnsubscribeUDPEvents()
         {
-            if (u.Connention != null)
+            //if (u.Connention != null)
+            //{
+            //    u.Connention.CarMotionPacket -= Connention_CarMotionPacket;
+            //    u.Connention.LapDataPacket -= Connention_LapDataPacket;
+            //}
+        }
+
+        private void Connention_LapDataPacket(object sender, EventArgs e)
+        {
+            if (!this.isLapdata && sender != null)
             {
-                u.Connention.CarMotionPacket -= Connention_CarMotionPacket;
+                this.isLapdata = true;
+                this.Dispatcher.BeginInvoke(() =>
+                {
+                    var data = sender as PacketLapData;
+                    this.UpdateLapdata(data);
+                    this.isLapdata = false;
+                }, DispatcherPriority.Background);
+            }
+        }
+
+        private void UpdateLapdata(PacketLapData data)
+        {
+            if (this.canRecord)
+            {
+                var player = data.Lapdata[data.Header.Player1CarIndex];
+                bool ok = player.DriverStatus == F1Telemetry.Helpers.Appendences.DriverSatuses.FlyingLap
+                          || player.DriverStatus == F1Telemetry.Helpers.Appendences.DriverSatuses.OnTrack;
+
+                if (ok && this.lapNumber == 0)
+                {
+                    this.canDraw = true;
+                    this.lapNumber = player.CurrentLapNum;
+                }
+
+                if (!ok || this.lapNumber + 2 < player.CurrentLapNum)
+                {
+                    this.canDraw = false;
+                    this.canRecord = false;
+                    this.lapNumber = 0;
+
+                    this.maxX = 0;
+                    this.maxY = 0;
+                    this.minX = 0;
+                    this.minY = 0;
+                }
+            }
+            else
+            {
+                this.canDraw = false;
             }
         }
 
@@ -58,9 +116,19 @@ namespace F1TelemetryApp.UserControls
 
         private void UpdateCarMotion(PacketMotionData motion)
         {
-            var player = motion.CarMotionData[motion.Header.Player1CarIndex];
+            if (this.canDraw)
+            {
+                var player = motion.CarMotionData[motion.Header.Player1CarIndex];
 
-            if (!this.trackCoords.Contains(player.WorldPosition)) this.trackCoords.Add(player.WorldPosition);
+                if (!this.trackCoords.Contains(player.WorldPosition))
+                {
+                    this.trackCoords.Add(player.WorldPosition);
+                    //this.minX = 0;
+                    //this.maxX = 0;
+                    //this.minY = 0;
+                    //this.maxX = 0;
+                }
+            }
 
             if (this.trackCoords.Count > 0)
             {
@@ -68,19 +136,25 @@ namespace F1TelemetryApp.UserControls
                 var geometry = this.path_track.Data.GetFlattenedPathGeometry();
                 var last = Vector3.Zero;
 
-                var dx = Map.ImageMiltiplier(this.trackCoords.Select(x => x.X), this.ActualWidth);
-                var dy = Map.ImageMiltiplier(this.trackCoords.Select(x => x.Y), this.ActualHeight);
-                var a = this.ActualWidth / 2;
+                double ax, ay;
+
+                var x = this.trackCoords.Select(x => x.X);
+                var y = this.trackCoords.Select(x => x.Z);
+
+                var dx = Map.ImageMiltiplier(x, this.ActualWidth - 20, out ax);
+                var dy = Map.ImageMiltiplier(y, this.ActualHeight - 20, out ay);
 
                 var m = dx;
-                if (m < dy) m = dy;
+                if (m > dy) m = dy;
 
                 foreach (var v in this.trackCoords)
                 {
                     if (last != Vector3.Zero)
                     {
-                        //var tmp = new LineGeometry(new Point(last.X * m + a, last.Z * m + a), new Point(v.X * m + a, last.Z * m + a));
-                        var tmp = new LineGeometry(new Point(last.X * dx + a, last.Z * dy + a), new Point(v.X * dx + a, last.Z * dy + a));
+                        var tmp = new LineGeometry(
+                                this.CalcPoint(last, ax, ay, m),
+                                this.CalcPoint(v, ax, ay, m)
+                            );
                         if (tmp.CanFreeze) tmp.Freeze();
                         geometry.AddGeometry(tmp);
                     }
@@ -90,17 +164,54 @@ namespace F1TelemetryApp.UserControls
 
                 if (geometry.CanFreeze) geometry.Freeze();
                 this.path_track.Data = geometry;
+
+                if (this.trackCoords.Count > 1)
+                {
+                    this.canvas.Children.Clear();
+                    foreach (var c in motion.CarMotionData)
+                    {
+                        var p = this.CalcPoint(c.WorldPosition, ax, ay, m, false);
+                        this.canvas.Children.Add(new Ellipse
+                        {
+                            Margin = new Thickness(p.X - 5, p.Y - 5, 0, 0),
+                            Width = 10,
+                            Height = 10,
+                            Fill = Brushes.Red,
+                        });
+                    }
+                }
             }
 
-            //this.canvas.Children.Clear();
-            //this.canvas.Children.Add(path);
+
         }
 
-        private static double ImageMiltiplier(IEnumerable<float> x, double forWhat)
+        private Point CalcPoint(Vector3 v, double midX, double midY, double multiply, bool canListenMinMax = true)
         {
-            var minX = x.Min();
-            var maxX = x.Max();
-            return Math.Abs(maxX - minX) / forWhat;
+            var x = 5 + (v.X - midX) * multiply;
+            var y = 5 + (v.Z - midY) * multiply;
+
+            if (canListenMinMax)
+            {
+                if (x > this.maxX) this.maxX = x;
+                if (x < this.minY) this.minY = x;
+                if (y > this.maxY) this.maxY = y;
+                if (y < this.minY) this.minY = y;
+            }
+
+            var ax = (this.minX + this.maxX) / 2;
+            var ay = (this.minY + this.maxY) / 2;
+
+            return new Point(x + (this.ActualWidth - 20) / 2 - ax, y + (this.ActualHeight - 20) / 2 - ay);
+        }
+
+        private static double ImageMiltiplier(IEnumerable<float> x, double forWhat, out double a)
+        {
+            var min = x.Min();
+            var max = x.Max();
+
+            a = min;
+
+            return forWhat / Math.Abs(max - min);
         }
 
         private void UserControl_Initialized(object sender, EventArgs e)
@@ -116,6 +227,7 @@ namespace F1TelemetryApp.UserControls
                 {
                     // TODO: dispose managed state (managed objects)
                     this.UnsubscribeUDPEvents();
+                    this.trackCoords = null;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

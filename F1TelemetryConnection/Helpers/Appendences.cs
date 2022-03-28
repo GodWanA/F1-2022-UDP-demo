@@ -640,6 +640,7 @@ namespace F1Telemetry.Helpers
             Race,
             Race2,
             TimeTrial,
+            Race3,
         }
 
         public enum Formulas

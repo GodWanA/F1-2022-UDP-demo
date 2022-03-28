@@ -741,5 +741,21 @@ namespace F1TelemetryClient
         {
             this.CalculateView();
         }
+
+        private void menuitem_trackLayout_Click(object sender, RoutedEventArgs e)
+        {
+            using (var window = new TrackLayoutRecorderWindow
+            {
+                Owner = this,
+                Width = 600,
+                Height = 450,
+            })
+            {
+                if (window.ShowDialog() == true)
+                {
+
+                }
+            }
+        }
     }
 }

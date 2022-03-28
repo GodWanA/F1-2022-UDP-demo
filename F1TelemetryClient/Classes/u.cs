@@ -5,6 +5,7 @@ using F1Telemetry.Models.SessionPacket;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
@@ -136,8 +137,18 @@ namespace F1TelemetryApp.Classes
                     break;
             }
 
-            if (ret.CanFreeze) ret.Freeze();
+            if (ret != null && ret.CanFreeze) ret.Freeze();
             return ret;
+        }
+
+        internal static double ImageMiltiplier(IEnumerable<double> x, double forWhat, out double a)
+        {
+            var min = x.Min();
+            var max = x.Max();
+
+            a = min;
+
+            return forWhat / Math.Abs(max - min);
         }
 
         internal static SolidColorBrush PickTeamColor(Teams teamid)
