@@ -1,5 +1,7 @@
-﻿using F1Telemetry.Models.LapDataPacket;
+﻿using F1Telemetry.Helpers;
+using F1Telemetry.Models.LapDataPacket;
 using F1Telemetry.Models.MotionPacket;
+using F1Telemetry.Models.SessionPacket;
 using F1TelemetryApp.Classes;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using static F1Telemetry.Helpers.Appendences;
 
 namespace F1TelemetryApp.UserControls
 {
@@ -19,17 +22,10 @@ namespace F1TelemetryApp.UserControls
     public partial class Map : UserControl, IConnectUDP, IDisposable
     {
         private bool disposedValue;
-        private bool isCarMotion;
-        private List<Vector3> trackCoords = new List<Vector3>();
-        private bool isLapdata;
-        private bool canDraw;
-        private int lapNumber;
-        private bool canRecord = true;
-
-        private double maxY = 0;
-        private double maxX = 0;
-        private double minX = 0;
-        private double minY = 0;
+        private bool isSessionRunning;
+        private Tracks trackID = Tracks.Unknown;
+        private static Point zeroPoint = new Point();
+        private static Brush drsColor = new SolidColorBrush(Color.FromArgb(60, 30, 200, 20));
 
         public Map()
         {
@@ -38,185 +34,166 @@ namespace F1TelemetryApp.UserControls
 
         public void SubscribeUDPEvents()
         {
-            //if (u.Connention != null)
-            //{
-            //    u.Connention.CarMotionPacket += Connention_CarMotionPacket;
-            //    u.Connention.LapDataPacket += Connention_LapDataPacket;
-            //}
+            if (u.Connention != null)
+            {
+                u.Connention.SessionPacket += Connention_SessionPacket;
+            }
         }
 
         public void UnsubscribeUDPEvents()
         {
-            //if (u.Connention != null)
-            //{
-            //    u.Connention.CarMotionPacket -= Connention_CarMotionPacket;
-            //    u.Connention.LapDataPacket -= Connention_LapDataPacket;
-            //}
+            if (u.Connention != null)
+            {
+                u.Connention.SessionPacket -= Connention_SessionPacket;
+            }
         }
 
-        private void Connention_LapDataPacket(object sender, EventArgs e)
+        private void Connention_SessionPacket(object sender, EventArgs e)
         {
-            if (!this.isLapdata && sender != null)
+            if (!this.isSessionRunning && sender != null)
             {
-                this.isLapdata = true;
+                this.isSessionRunning = true;
                 this.Dispatcher.BeginInvoke(() =>
                 {
-                    var data = sender as PacketLapData;
-                    this.UpdateLapdata(data);
-                    this.isLapdata = false;
-                }, DispatcherPriority.Background);
-            }
-        }
-
-        private void UpdateLapdata(PacketLapData data)
-        {
-            if (this.canRecord)
-            {
-                var player = data.Lapdata[data.Header.Player1CarIndex];
-                bool ok = player.DriverStatus == F1Telemetry.Helpers.Appendences.DriverSatuses.FlyingLap
-                          || player.DriverStatus == F1Telemetry.Helpers.Appendences.DriverSatuses.OnTrack;
-
-                if (ok && this.lapNumber == 0)
-                {
-                    this.canDraw = true;
-                    this.lapNumber = player.CurrentLapNum;
-                }
-
-                if (!ok || this.lapNumber + 2 < player.CurrentLapNum)
-                {
-                    this.canDraw = false;
-                    this.canRecord = false;
-                    this.lapNumber = 0;
-
-                    this.maxX = 0;
-                    this.maxY = 0;
-                    this.minX = 0;
-                    this.minY = 0;
-                }
-            }
-            else
-            {
-                this.canDraw = false;
-            }
-        }
-
-        private void Connention_CarMotionPacket(object sender, EventArgs e)
-        {
-            if (!this.isCarMotion && sender != null)
-            {
-                this.isCarMotion = true;
-                this.Dispatcher.BeginInvoke(() =>
-                {
-                    var data = sender as PacketMotionData;
-                    this.UpdateCarMotion(data);
-                    this.isCarMotion = false;
+                    var data = sender as PacketSessionData;
+                    this.UpdateSession(data);
+                    this.isSessionRunning = false;
                 }, DispatcherPriority.Render);
             }
         }
 
-        private void UpdateCarMotion(PacketMotionData motion)
+        private void UpdateSession(PacketSessionData data)
         {
-            if (this.canDraw)
+            if (data.TrackID != this.trackID)
             {
-                var player = motion.CarMotionData[motion.Header.Player1CarIndex];
+                this.trackID = data.TrackID;
+                var t = TrackLayout.FindNearestMap(this.trackID.ToString(), data.Header.PacketFormat);
 
-                if (!this.trackCoords.Contains(player.WorldPosition))
+                if (t != null)
                 {
-                    this.trackCoords.Add(player.WorldPosition);
-                    //this.minX = 0;
-                    //this.maxX = 0;
-                    //this.minY = 0;
-                    //this.maxX = 0;
-                }
-            }
+                    var minX = t.BaseLine.Min(x => x.X);
+                    var maxX = t.BaseLine.Max(x => x.X);
+                    var minY = t.BaseLine.Min(x => x.Y);
+                    var maxY = t.BaseLine.Max(x => x.Y);
 
-            if (this.trackCoords.Count > 0)
-            {
-                this.path_track.Data = Geometry.Empty;
-                var geometry = this.path_track.Data.GetFlattenedPathGeometry();
-                var last = Vector3.Zero;
+                    double ax, ay;
+                    var dx = u.ImageMiltiplier(t.BaseLine.Select(x => x.X), this.path_baseline.ActualWidth, out ax);
+                    var dy = u.ImageMiltiplier(t.BaseLine.Select(x => x.Y), this.path_baseline.ActualHeight, out ay);
 
-                double ax, ay;
+                    var m = dx;
+                    if (m > dy) m = dy;
 
-                var x = this.trackCoords.Select(x => x.X);
-                var y = this.trackCoords.Select(x => x.Z);
+                    Map.DrawPath(this.path_baseline, ax, ay, m, minX, maxX, minY, maxY, t.BaseLine, 235);
 
-                var dx = Map.ImageMiltiplier(x, this.ActualWidth - 20, out ax);
-                var dy = Map.ImageMiltiplier(y, this.ActualHeight - 20, out ay);
+                    Map.DrawPath(this.path_s1, ax, ay, m, minX, maxX, minY, maxY, t.SectorZones[0], 235);
+                    Map.DrawPath(this.path_s2, ax, ay, m, minX, maxX, minY, maxY, t.SectorZones[1], 235);
+                    Map.DrawPath(this.path_s3, ax, ay, m, minX, maxX, minY, maxY, t.SectorZones[2], 235);
 
-                var m = dx;
-                if (m > dy) m = dy;
-
-                foreach (var v in this.trackCoords)
-                {
-                    if (last != Vector3.Zero)
+                    if (t.MarshalZones.Count > 0)
                     {
-                        var tmp = new LineGeometry(
-                                this.CalcPoint(last, ax, ay, m),
-                                this.CalcPoint(v, ax, ay, m)
-                            );
-                        if (tmp.CanFreeze) tmp.Freeze();
-                        geometry.AddGeometry(tmp);
-                    }
+                        this.grid_drs.Children.Clear();
 
-                    last = v;
-                }
-
-                if (geometry.CanFreeze) geometry.Freeze();
-                this.path_track.Data = geometry;
-
-                if (this.trackCoords.Count > 1)
-                {
-                    this.canvas.Children.Clear();
-                    foreach (var c in motion.CarMotionData)
-                    {
-                        var p = this.CalcPoint(c.WorldPosition, ax, ay, m, false);
-                        this.canvas.Children.Add(new Ellipse
+                        foreach (var item in t.DRSZones.Values)
                         {
-                            Margin = new Thickness(p.X - 5, p.Y - 5, 0, 0),
-                            Width = 10,
-                            Height = 10,
-                            Fill = Brushes.Red,
-                        });
+                            var p = Map.CreatePath(null);
+                            this.grid_drs.Children.Add(p);
+                            Map.DrawPath(p, ax, ay, m, minX, maxX, minY, maxY, item, 235);
+                        }
+                    }
+
+                    if (t.DRSZones.Count > 0)
+                    {
+                        this.grid_drs.Children.Clear();
+
+                        foreach (var item in t.DRSZones.Values)
+                        {
+                            var p = Map.CreatePath(Map.drsColor);
+                            this.grid_drs.Children.Add(p);
+                            Map.DrawPath(p, ax, ay, m, minX, maxX, minY, maxY, item, 235);
+                        }
                     }
                 }
             }
 
-
+            for (int i = 0; i < this.grid_marshal.Children.Count; i++)
+            {
+                var p = this.grid_marshal.Children[i] as Path;
+                p.Stroke = u.FlagColors[data.MarshalZones[i].ZoneFlag];
+            }
         }
 
-        private Point CalcPoint(Vector3 v, double midX, double midY, double multiply, bool canListenMinMax = true)
+        private static Path CreatePath(Brush brush)
+        {
+            return new Path
+            {
+                Stroke = brush,
+                StrokeStartLineCap = PenLineCap.Round,
+                StrokeEndLineCap = PenLineCap.Round,
+                StrokeDashCap = PenLineCap.Round,
+            };
+        }
+
+        private static void DrawPath(
+            Path p,
+            double ax,
+            double ay,
+            double m,
+            double minX,
+            double maxX,
+            double minY,
+            double maxY,
+            IEnumerable<Point> c,
+            double maxWidth
+        )
+        {
+            p.Data = Geometry.Empty;
+            var geometry = p.Data.GetFlattenedPathGeometry();
+            Point last = new Point();
+
+            foreach (var v in c)
+            {
+                if (last != zeroPoint)
+                {
+                    var tmp = new LineGeometry(
+                            Map.CalcPoint(last, ax, ay, m, minX, maxX, minY, maxY, maxWidth),
+                            Map.CalcPoint(v, ax, ay, m, minX, maxX, minY, maxY, maxWidth)
+                        );
+                    if (tmp.CanFreeze) tmp.Freeze();
+                    geometry.AddGeometry(tmp);
+                }
+
+                last = v;
+            }
+
+            if (geometry.CanFreeze) geometry.Freeze();
+            p.Data = geometry;
+        }
+
+        private static Point CalcPoint(
+            Point v,
+            double midX,
+            double midY,
+            double multiply,
+            double minX,
+            double maxX,
+            double minY,
+            double maxY,
+            double maxWidth
+        )
         {
             var x = 5 + (v.X - midX) * multiply;
-            var y = 5 + (v.Z - midY) * multiply;
+            var y = 5 + (v.Y - midY) * multiply;
 
-            if (canListenMinMax)
-            {
-                if (x > this.maxX) this.maxX = x;
-                if (x < this.minY) this.minY = x;
-                if (y > this.maxY) this.maxY = y;
-                if (y < this.minY) this.minY = y;
-            }
+            var ax = (minX + maxX) / 2;
+            var ay = (minY + maxY) / 2;
 
-            var ax = (this.minX + this.maxX) / 2;
-            var ay = (this.minY + this.maxY) / 2;
-
-            return new Point(x + (this.ActualWidth - 20) / 2 - ax, y + (this.ActualHeight - 20) / 2 - ay);
-        }
-
-        private static double ImageMiltiplier(IEnumerable<float> x, double forWhat, out double a)
-        {
-            var min = x.Min();
-            var max = x.Max();
-
-            a = min;
-
-            return forWhat / Math.Abs(max - min);
+            return new Point(x + maxWidth / 2 - ax, y + maxWidth / 2 - ay);
         }
 
         private void UserControl_Initialized(object sender, EventArgs e)
         {
             this.SubscribeUDPEvents();
+            if (Map.drsColor.CanFreeze) Map.drsColor.Freeze();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -227,7 +204,6 @@ namespace F1TelemetryApp.UserControls
                 {
                     // TODO: dispose managed state (managed objects)
                     this.UnsubscribeUDPEvents();
-                    this.trackCoords = null;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

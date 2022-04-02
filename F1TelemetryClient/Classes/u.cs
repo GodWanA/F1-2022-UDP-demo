@@ -11,6 +11,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using static F1Telemetry.Helpers.Appendences;
 
 namespace F1TelemetryApp.Classes
@@ -432,7 +433,7 @@ namespace F1TelemetryApp.Classes
             return sb.ToString();
         }
 
-        public static float CalculateERS(float value)
+        internal static float CalculateERS(float value)
         {
             return value / 4000000f * 100f;
         }

@@ -35,6 +35,8 @@
                     <MenuItem Header="Share live data" IsEnabled="False"/>
                 </MenuItem>
                 <MenuItem Header="Help" Padding="5,2">
+                    <MenuItem Header="Help" IsEnabled="False" />
+                    <MenuItem Header="Send feedback" IsEnabled="False" />
                     <MenuItem x:Name="menitem_about" Header="About" IsEnabled="True" Click="menitem_about_Click"/>
                 </MenuItem>
             </Menu>

@@ -98,7 +98,7 @@
         <!--SCROLLBARS-->
         <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
             <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
-            <Setter Property="Foreground" Value="#FF5A5A5A"/>
+            <Setter Property="Foreground" Value="#FF2F2F2F"/>
             <Setter Property="Background" Value="#FF797979"/>
             <Setter Property="Width" Value="10"/>
             <Setter Property="Template">

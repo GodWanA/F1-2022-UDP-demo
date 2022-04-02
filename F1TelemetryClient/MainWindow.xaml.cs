@@ -753,7 +753,7 @@ namespace F1TelemetryClient
             {
                 if (window.ShowDialog() == true)
                 {
-
+                    TrackLayout.SaveTrack(window.Map);
                 }
             }
         }

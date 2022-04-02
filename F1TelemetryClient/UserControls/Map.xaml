@@ -9,8 +9,14 @@
     <Grid>
         <Border Background="Black" CornerRadius="5" Padding="5">
             <Grid>
-                <Path x:Name="path_track" Stroke="Gray" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" Height="255" Width="255" />
-                <Canvas x:Name="canvas"/>
+                <Path x:Name="path_baseline" Stroke="Gray" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" Height="255" Width="255" />
+
+                <Path x:Name="path_s1" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" Height="255" Width="255" />
+                <Path x:Name="path_s2" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" Height="255" Width="255" />
+                <Path x:Name="path_s3" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" Height="255" Width="255" />
+
+                <Grid x:Name="grid_marshal" Height="255" Width="255" />
+                <Grid x:Name="grid_drs" Height="255" Width="255" />
             </Grid>
         </Border>
     </Grid>

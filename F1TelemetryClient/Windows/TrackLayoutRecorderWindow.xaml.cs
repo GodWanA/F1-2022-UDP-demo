@@ -1,5 +1,4 @@
 ﻿using F1Telemetry.Models.CarStatusPacket;
-using F1Telemetry.Models.EventPacket;
 using F1Telemetry.Models.LapDataPacket;
 using F1Telemetry.Models.MotionPacket;
 using F1Telemetry.Models.SessionPacket;
@@ -81,6 +80,8 @@ namespace F1TelemetryApp.Windows
         }
 
         private Tracks trackID;
+        private ushort year;
+        private string trackName;
 
         public Tracks TrackID
         {
@@ -94,6 +95,8 @@ namespace F1TelemetryApp.Windows
                 }
             }
         }
+
+        internal TrackLayout Map { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -330,9 +333,12 @@ namespace F1TelemetryApp.Windows
             if (this.canSession)
             {
                 this.canSession = false;
+                var data = sender as PacketSessionData;
                 this.Dispatcher.BeginInvoke(() =>
                 {
-                    this.UpdateSession(sender as PacketSessionData);
+                    this.year = data.Header.PacketFormat;
+                    this.trackName = data.TrackID.ToString();
+                    this.UpdateSession(data);
                     this.canSession = true;
                 }, DispatcherPriority.Render);
             }
@@ -421,22 +427,32 @@ namespace F1TelemetryApp.Windows
         private void Window_Initialized(object sender, EventArgs e)
         {
             this.SubscribeUDPEvents();
+            //this.DialogResult = false;
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
-            this.DialogResult = false;
+            //this.DialogResult = false;
         }
 
         private void button_save_Click(object sender, RoutedEventArgs e)
         {
+            this.UnsubscribeUDPEvents();
             this.DialogResult = true;
+
+            this.Map = new TrackLayout(this.year, this.trackName);
+            this.Map.SetBaseline(this.TrackCoords);
+
+            foreach (var item in this.DRSZones) this.Map.AppendDRS(item.Value);
+            foreach (var item in this.MarshalZoneCoords) this.Map.AppendMarshal(item.Value);
+            foreach (var item in this.SectorCoords) this.Map.AppendSector(item.Value);
+
             this.Close();
         }
 
         private void button_cancel_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = false;
+            this.UnsubscribeUDPEvents();
             this.Close();
         }
 
