@@ -1,7 +1,6 @@
 ﻿using F1Telemetry;
 using F1Telemetry.Models.LapDataPacket;
 using F1Telemetry.Models.SessionHistoryPacket;
-using F1Telemetry.Models.SessionPacket;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,7 +10,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using static F1Telemetry.Helpers.Appendences;
 
 namespace F1TelemetryApp.Classes
@@ -24,6 +22,9 @@ namespace F1TelemetryApp.Classes
         internal static F1UDP Connention { get; set; }
         internal static ushort TrackLength { get; set; }
         internal static Dictionary<Flags, System.Windows.Media.Brush> FlagColors { get; set; } = u.FillColors();
+        public static int SelectedIndex { get; internal set; }
+        public static object SelectedItem { get; internal set; }
+        public static bool CanDoUdp { get; internal set; }
 
         private static Dictionary<Flags, System.Windows.Media.Brush> FillColors()
         {
@@ -147,7 +148,7 @@ namespace F1TelemetryApp.Classes
             var min = x.Min();
             var max = x.Max();
 
-            a = min;
+            a = x.Average();
 
             return forWhat / Math.Abs(max - min);
         }

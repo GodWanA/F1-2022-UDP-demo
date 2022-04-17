@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -8,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Xml;
+using static F1Telemetry.Helpers.Appendences;
 
 namespace F1TelemetryApp.Classes
 {
@@ -19,6 +19,9 @@ namespace F1TelemetryApp.Classes
         public Dictionary<int, List<Point>> DRSZones { get; private set; }
         public Dictionary<int, List<Point>> MarshalZones { get; private set; }
         public Dictionary<int, List<Point>> SectorZones { get; private set; }
+        public TyreCompounds TyreSoft { get; private set; }
+        public TyreCompounds TyreMedium { get; private set; }
+        public TyreCompounds TyreHard { get; private set; }
 
         public TrackLayout(int year, string trackName)
         {
@@ -54,6 +57,13 @@ namespace F1TelemetryApp.Classes
             if (this.SectorZones == null) this.SectorZones = new Dictionary<int, List<Point>>();
             int index = this.SectorZones.Keys.Count;
             this.SectorZones.Add(index, source);
+        }
+
+        public void SetTyres(TyreCompounds soft, TyreCompounds medium, TyreCompounds hard)
+        {
+            this.TyreSoft = soft;
+            this.TyreMedium = medium;
+            this.TyreHard = hard;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -103,10 +113,37 @@ namespace F1TelemetryApp.Classes
         private bool disposedValue;
 
         internal static List<TrackLayout> Tracks { get; private set; } = TrackLayout.LoadTracks();
+        //private static FileSystemWatcher trackUpdater = TrackLayout.CreateUpdate();
+        private static bool isLoadingTracks = false;
+
+        private static FileSystemWatcher CreateUpdate()
+        {
+            var t = new FileSystemWatcher();
+            t.Path = TrackLayout.trackFolder;
+            t.Filter = "tracks.xml";
+            t.NotifyFilter = NotifyFilters.LastWrite;
+            t.EnableRaisingEvents = true;
+
+            t.Changed += T_Changed;
+
+            return t;
+        }
+
+        private static void T_Changed(object sender, FileSystemEventArgs e)
+        {
+            //TrackLayout.trackUpdater.EnableRaisingEvents = false;
+            if (!TrackLayout.isLoadingTracks)
+            {
+                TrackLayout.isLoadingTracks = true;
+                TrackLayout.Tracks = TrackLayout.LoadTracks();
+                TrackLayout.isLoadingTracks = false;
+            }
+            //TrackLayout.trackUpdater.EnableRaisingEvents = true;
+        }
 
         private static List<TrackLayout> LoadTracks()
         {
-            TrackLayout.Tracks.Clear();
+            TrackLayout.Tracks?.Clear();
 
             var tracks = new List<TrackLayout>();
 
@@ -123,6 +160,12 @@ namespace F1TelemetryApp.Classes
                         string name = item.Attributes["Name"].Value;
 
                         var tmp = new TrackLayout(year, name);
+
+                        var soft = (TyreCompounds)int.Parse(item.Attributes["Soft"].Value);
+                        var medium = (TyreCompounds)int.Parse(item.Attributes["Medium"].Value);
+                        var hard = (TyreCompounds)int.Parse(item.Attributes["Hard"].Value);
+
+                        tmp.SetTyres(soft, medium, hard);
 
                         var baseline = new List<Point>();
                         foreach (XmlNode inner in item.SelectNodes(".//Baseline//Point"))
@@ -197,6 +240,9 @@ namespace F1TelemetryApp.Classes
                 CloseOutput = true,
             };
 
+            TrackLayout.Tracks.Clear();
+            TrackLayout.Tracks = TrackLayout.LoadTracks();
+
             if (TrackLayout.Tracks.Contains(track))
             {
                 int i = Array.IndexOf(
@@ -211,6 +257,7 @@ namespace F1TelemetryApp.Classes
             }
 
             if (!Directory.Exists(TrackLayout.trackFolder)) Directory.CreateDirectory(TrackLayout.trackFolder);
+
             using (var writer = XmlWriter.Create(TrackLayout.trackFile, settings))
             {
                 writer.WriteStartDocument();
@@ -221,6 +268,10 @@ namespace F1TelemetryApp.Classes
                     writer.WriteStartElement("Track");
                     writer.WriteAttributeString("Name", t.TrackName);
                     writer.WriteAttributeString("Year", t.Year.ToString());
+
+                    writer.WriteAttributeString("Soft", ((int)t.TyreSoft).ToString());
+                    writer.WriteAttributeString("Medium", ((int)t.TyreMedium).ToString());
+                    writer.WriteAttributeString("Hard", ((int)t.TyreHard).ToString());
 
                     writer.WriteStartElement("Baseline");
                     foreach (var b in t.BaseLine)
@@ -288,10 +339,25 @@ namespace F1TelemetryApp.Classes
         {
             TrackLayout ret = null;
 
-            ret = TrackLayout.Tracks.Where(x => Regex.IsMatch(x.TrackName, trackName, RegexOptions.IgnoreCase))
+            ret = TrackLayout.Tracks?.Where(x => Regex.IsMatch(x.TrackName, trackName, RegexOptions.IgnoreCase))
                 .OrderBy(x => MathF.Abs(x.Year - season)).FirstOrDefault();
 
             return ret;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is TrackLayout)
+            {
+                var o = obj as TrackLayout;
+                if (o.TrackName == this.TrackName && o.Year == this.Year) return true;
+                else return false;
+            }
+            else
+            {
+                //return base.Equals(obj);
+                return false;
+            }
         }
     }
 }

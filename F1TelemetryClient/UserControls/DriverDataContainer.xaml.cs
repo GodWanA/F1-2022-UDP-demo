@@ -911,19 +911,26 @@ namespace F1TelemetryApp.UserControls
         {
             if (participantsData != null)
             {
-                var player = participantsData.Participants[this.driverIndex];
-                this.DriverName = player.Name;
-                this.RaceNumber = player.RaceNumber;
-                this.TeamName = u.PickTeamName(player.TeamID);
-                this.TeamColor = u.PickTeamColor(player.TeamID);
-                this.image_nationality.Source = u.NationalityImage(player.Nationality);
-                this.IsAi = player.IsAI;
+                if (participantsData.Participants.Length > this.driverIndex)
+                {
+                    var player = participantsData.Participants[this.driverIndex];
+                    this.DriverName = player.Name;
+                    this.RaceNumber = player.RaceNumber;
+                    this.TeamName = u.PickTeamName(player.TeamID);
+                    this.TeamColor = u.PickTeamColor(player.TeamID);
+                    this.image_nationality.Source = u.NationalityImage(player.Nationality);
+                    this.IsAi = player.IsAI;
 
-                if (prevIndex != -1) this.PrevDriver = participantsData.Participants[this.prevIndex].ShortName;
-                else this.PrevDriver = "---";
+                    if (prevIndex != -1) this.PrevDriver = participantsData.Participants[this.prevIndex].ShortName;
+                    else this.PrevDriver = "---";
 
-                if (nextIndex != -1) this.NextDriver = participantsData.Participants[this.nextIndex].ShortName;
-                else this.NextDriver = "---";
+                    if (nextIndex != -1) this.NextDriver = participantsData.Participants[this.nextIndex].ShortName;
+                    else this.NextDriver = "---";
+                }
+                else
+                {
+                    this.Visibility = Visibility.Hidden;
+                }
 
                 // this.UpdateLayout();
             }

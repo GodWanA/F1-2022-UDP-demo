@@ -6,6 +6,8 @@ namespace F1Telemetry.Models.LapDataPacket
 {
     public class LapData : ProtoModel
     {
+        private byte lastPitLap;
+
         /// <summary>
         /// Creates a LapData object from raw byte array.
         /// </summary>
@@ -268,6 +270,58 @@ namespace F1Telemetry.Models.LapDataPacket
             this.IsPitStopServePenalty = valbo;
         }
 
+        internal void SetLastPitLap(byte lastPitLap)
+        {
+            this.lastPitLap = lastPitLap;
+
+            switch (this.PitStatus)
+            {
+                case PitStatuses.Pitting:
+                case PitStatuses.InPitArea:
+                    this.lastPitLap = this.CurrentLapNum;
+                    break;
+            }
+        }
+
+        internal byte GetLastPitLap()
+        {
+            return this.lastPitLap;
+        }
+
+        internal void CalculateStatus(SessionTypes session)
+        {
+            switch (session)
+            {
+                case SessionTypes.TimeTrial:
+                case SessionTypes.Practice1:
+                case SessionTypes.Practice2:
+                case SessionTypes.Practice3:
+                case SessionTypes.Quallifying1:
+                case SessionTypes.Quallifying2:
+                case SessionTypes.Quallifying3:
+                case SessionTypes.OneShotQuallifying:
+                case SessionTypes.ShortQuallifying:
+
+                    if (this.GetLastPitLap() == this.CurrentLapNum) this.DriverStatus = DriverSatuses.OutLap;
+                    else this.DriverStatus = DriverSatuses.FlyingLap;
+
+                    this.SetTime();
+
+                    break;
+            }
+        }
+
+        private void SetTime()
+        {
+            switch (this.PitStatus)
+            {
+                case PitStatuses.Pitting:
+                case PitStatuses.InPitArea:
+                    this.CurrentLapTime = TimeSpan.Zero;
+                    break;
+            }
+        }
+
         /// <summary>
         /// Last lap time.<br/>
         /// Supports:<br/>
@@ -362,7 +416,7 @@ namespace F1Telemetry.Models.LapDataPacket
         /// </summary>
         public float LapDistance { get; private set; }
         /// <summary>
-        /// Indicates current driver status.<br/>
+        /// Total distance travelled in session in metres – could be negative if line hasn’t been crossed yet.<br/>
         /// Supports:<br/>
         ///     - 2018<br/>
         ///     - 2019<br/>

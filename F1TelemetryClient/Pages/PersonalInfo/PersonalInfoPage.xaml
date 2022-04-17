@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="F1TelemetryApp.Pages.PersonalInfo.PersonalInfoPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:F1TelemetryApp.Pages.PersonalInfo" 
+             xmlns:UserControls="clr-namespace:F1TelemetryApp.UserControls"
+             xmlns:InnerDetails="clr-namespace:F1TelemetryApp.Pages.PersonalInfo.InnerDetails"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <UserControls:WeatherDisplayController Margin="2" x:Name="weatherController" VerticalAlignment="Top" Height="175" Grid.Column="1" Grid.Row="0"/>
+
+        <TabControl Padding="0" Grid.Column="1" Margin="2" Grid.Row="1">
+            <TabItem Header="Live status">
+                <InnerDetails:LiveStatusPage x:Name="livestatusdata" Loaded="livestatusdata_Loaded" Unloaded="livestatusdata_Unloaded"/>
+            </TabItem>
+            <TabItem Header="Carsetup" IsEnabled="False"/>
+            <TabItem Header="Telemetry graphs" IsEnabled="False"/>
+            <TabItem Header="Lap history" IsEnabled="False"/>
+        </TabControl>
+    </Grid>
+</UserControl>

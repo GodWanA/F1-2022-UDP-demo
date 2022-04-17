@@ -1,8 +1,10 @@
 ﻿using F1TelemetryApp.Classes;
 using System;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static F1Telemetry.Helpers.Appendences;
 
 namespace F1TelemetryApp.UserControls
 {
@@ -18,6 +20,18 @@ namespace F1TelemetryApp.UserControls
         private double tyreInnerTemperature;
         private double tyreSurfaceTemperature;
         private double pressure;
+
+        private LinearGradientBrush heatMapInnerSoft = null;
+        private LinearGradientBrush heatMapSurfaceSoft = null;
+        private LinearGradientBrush heatMapInnerMedium = null;
+        private LinearGradientBrush heatMapSurfaceMedium = null;
+        private LinearGradientBrush heatMapInnerHard = null;
+        private LinearGradientBrush heatMapSurfaceHard = null;
+        private LinearGradientBrush heatMapInnerInter = null;
+        private LinearGradientBrush heatMapSurfaceInter = null;
+        private LinearGradientBrush heatMapInnerWet = null;
+        private LinearGradientBrush heatMapSurfaceWet = null;
+
         public TyreDataControl()
         {
             InitializeComponent();
@@ -35,6 +49,21 @@ namespace F1TelemetryApp.UserControls
                 {
                     this.tyreConditionForeground = value;
                     this.OnPropertyChanged("TyreConditionForeground");
+                }
+            }
+        }
+
+        private CornerRadius cornerRadius;
+
+        public CornerRadius CornerRadius
+        {
+            get { return this.cornerRadius; }
+            set
+            {
+                if (value != this.cornerRadius)
+                {
+                    this.cornerRadius = value;
+                    this.OnPropertyChanged("CornerRadius");
                 }
             }
         }
@@ -159,10 +188,12 @@ namespace F1TelemetryApp.UserControls
                 {
                     this.tyreInnerTemperature = value;
                     //this.textBlock_inner.Text = this.tyreInnerTemperature.ToString();
+                    this.ColorInnerHeat(value);
                     this.OnPropertyChanged("TyreInnerTemperature");
                 }
             }
         }
+
         public double TyreSurfaceTemperature
         {
             get
@@ -174,6 +205,7 @@ namespace F1TelemetryApp.UserControls
                 if (value != this.tyreSurfaceTemperature)
                 {
                     this.tyreSurfaceTemperature = value;
+                    this.ColorOuterHeat(value);
                     //this.textBlock_surface.Text = this.tyreSurfaceTemperature.ToString();
                     this.OnPropertyChanged("TyreSurfaceTemperature");
                 }
@@ -212,9 +244,12 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-
         public LinearGradientBrush ColorMapTyreConditionBackground { get; set; } = null;
         public LinearGradientBrush ColorMapTyreConditionText { get; set; } = null;
+        public static TyreCompounds TyreSoft { get; internal set; } = TyreCompounds.Unknown;
+        public static TyreCompounds TyreMedium { get; internal set; } = TyreCompounds.Unknown;
+        public static TyreCompounds TyreHard { get; internal set; } = TyreCompounds.Unknown;
+        public static TyreCompounds ActualTyreCpompund { get; internal set; } = TyreCompounds.Unknown;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -259,13 +294,235 @@ namespace F1TelemetryApp.UserControls
                 //colors.Add(new GradientStop(Colors.White, 0.9));
                 //colors.Add(new GradientStop(Colors.White, 1));
 
-                this.ColorMapTyreConditionText = new LinearGradientBrush(colors);
+                var b = new LinearGradientBrush(colors);
+                if (b.CanFreeze) b.Freeze();
+                this.ColorMapTyreConditionText = b;
+            }
+
+            if (this.heatMapInnerSoft == null)
+            {
+                var c = new GradientStopCollection();
+
+                // blue range
+                c.Add(new GradientStop(Color.FromArgb(127, 0, 153, 255), 0));
+                c.Add(new GradientStop(Color.FromArgb(127, 0, 153, 255), 0.8));
+                // green range
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 0.85));
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 1.03));
+                // yellow range
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 217, 0), 1.03));
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 217, 0), 1.06));
+                // red range
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 0, 0), 1.08));
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 0, 0), 2));
+
+                var b = new LinearGradientBrush(c);
+                if (b.CanFreeze) b.Freeze();
+                this.heatMapInnerSoft = b;
+            }
+
+            if (this.heatMapSurfaceSoft == null)
+            {
+                var c = new GradientStopCollection();
+
+                // blue range
+                c.Add(new GradientStop(Color.FromArgb(191, 0, 153, 255), 0));
+                c.Add(new GradientStop(Color.FromArgb(191, 0, 153, 255), 0.65));
+                // green range
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 0.8));
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 1.03));
+                // yellow range
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 217, 0), 1.25));
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 217, 0), 1.35));
+                // red range
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 0, 0), 1.40));
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 0, 0), 2));
+
+                var b = new LinearGradientBrush(c);
+                if (b.CanFreeze) b.Freeze();
+                this.heatMapSurfaceSoft = b;
+            }
+
+            if (this.heatMapInnerMedium == null)
+            {
+                var c = new GradientStopCollection();
+
+                // blue range
+                c.Add(new GradientStop(Color.FromArgb(127, 0, 153, 255), 0));
+                c.Add(new GradientStop(Color.FromArgb(127, 0, 153, 255), 0.83));
+                // green range
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 0.87));
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 1.05));
+                // yellow range
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 217, 0), 1.06));
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 217, 0), 1.10));
+                // red range
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 0, 0), 1.11));
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 0, 0), 2));
+
+                var b = new LinearGradientBrush(c);
+                if (b.CanFreeze) b.Freeze();
+                this.heatMapInnerMedium = b;
+            }
+
+            if (this.heatMapSurfaceMedium == null)
+            {
+                var c = new GradientStopCollection();
+
+                // blue range
+                c.Add(new GradientStop(Color.FromArgb(191, 0, 153, 255), 0));
+                c.Add(new GradientStop(Color.FromArgb(191, 0, 153, 255), 0.65));
+                // green range
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 0.75));
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 1.25));
+                // yellow range
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 217, 0), 1.25));
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 217, 0), 1.35));
+                // red range
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 0, 0), 1.40));
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 0, 0), 2));
+
+                var b = new LinearGradientBrush(c);
+                if (b.CanFreeze) b.Freeze();
+                this.heatMapSurfaceMedium = b;
+            }
+
+            if (this.heatMapInnerHard == null)
+            {
+                var c = new GradientStopCollection();
+
+                // blue range
+                c.Add(new GradientStop(Color.FromArgb(127, 0, 153, 255), 0));
+                c.Add(new GradientStop(Color.FromArgb(127, 0, 153, 255), 0.83));
+                // green range
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 0.85));
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 1.05));
+                // yellow range
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 217, 0), 1.07));
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 217, 0), 1.10));
+                // red range
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 0, 0), 1.11));
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 0, 0), 2));
+
+                var b = new LinearGradientBrush(c);
+                if (b.CanFreeze) b.Freeze();
+                this.heatMapInnerHard = b;
+            }
+
+            if (this.heatMapSurfaceHard == null)
+            {
+                var c = new GradientStopCollection();
+
+                // blue range
+                c.Add(new GradientStop(Color.FromArgb(191, 0, 153, 255), 0));
+                c.Add(new GradientStop(Color.FromArgb(191, 0, 153, 255), 0.65));
+                // green range
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 0.75));
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 1.25));
+                // yellow range
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 217, 0), 1.25));
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 217, 0), 1.35));
+                // red range
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 0, 0), 1.40));
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 0, 0), 2));
+
+                var b = new LinearGradientBrush(c);
+                if (b.CanFreeze) b.Freeze();
+                this.heatMapSurfaceHard = b;
+            }
+
+            if (this.heatMapInnerInter == null)
+            {
+                var c = new GradientStopCollection();
+
+                // blue range
+                c.Add(new GradientStop(Color.FromArgb(127, 0, 153, 255), 0));
+                c.Add(new GradientStop(Color.FromArgb(127, 0, 153, 255), 0.6));
+                // green range
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 0.63));
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 0.88));
+                // yellow range
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 217, 0), 0.89));
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 217, 0), 0.92));
+                // red range
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 0, 0), 0.96));
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 0, 0), 2));
+
+                var b = new LinearGradientBrush(c);
+                if (b.CanFreeze) b.Freeze();
+                this.heatMapInnerInter = b;
+            }
+
+            if (this.heatMapSurfaceInter == null)
+            {
+                var c = new GradientStopCollection();
+
+                // blue range
+                c.Add(new GradientStop(Color.FromArgb(191, 0, 153, 255), 0));
+                c.Add(new GradientStop(Color.FromArgb(191, 0, 153, 255), 0.45));
+                // green range
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 0.5));
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 1.03));
+                // yellow range
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 217, 0), 1.04));
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 217, 0), 1.10));
+                // red range
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 0, 0), 1.20));
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 0, 0), 2));
+
+                var b = new LinearGradientBrush(c);
+                if (b.CanFreeze) b.Freeze();
+                this.heatMapSurfaceInter = b;
+            }
+
+            if (this.heatMapInnerWet == null)
+            {
+                var c = new GradientStopCollection();
+
+                // blue range
+                c.Add(new GradientStop(Color.FromArgb(127, 0, 153, 255), 0));
+                c.Add(new GradientStop(Color.FromArgb(127, 0, 153, 255), 0.5));
+                // green range
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 0.55));
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 0.78));
+                // yellow range
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 217, 0), 0.8));
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 217, 0), 0.85));
+                // red range
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 0, 0), 0.86));
+                c.Add(new GradientStop(Color.FromArgb(127, 255, 0, 0), 2));
+
+                var b = new LinearGradientBrush(c);
+                if (b.CanFreeze) b.Freeze();
+                this.heatMapInnerWet = b;
+            }
+
+            if (this.heatMapSurfaceWet == null)
+            {
+                var c = new GradientStopCollection();
+
+                // blue range
+                c.Add(new GradientStop(Color.FromArgb(191, 0, 153, 255), 0));
+                c.Add(new GradientStop(Color.FromArgb(191, 0, 153, 255), 0.35));
+                // green range
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 0.45));
+                c.Add(new GradientStop(Color.FromArgb(0, 0, 0, 0), 0.68));
+                // yellow range
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 217, 0), 0.70));
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 217, 0), 1.05));
+                // red range
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 0, 0), 1.10));
+                c.Add(new GradientStop(Color.FromArgb(191, 255, 0, 0), 2));
+
+                var b = new LinearGradientBrush(c);
+                if (b.CanFreeze) b.Freeze();
+                this.heatMapSurfaceWet = b;
             }
 
             this.Wear = 0;
         }
 
-        private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             switch (this.ProgressbarSide)
             {
@@ -318,6 +575,38 @@ namespace F1TelemetryApp.UserControls
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        private void ColorInnerHeat(double value)
+        {
+            Color c = Colors.Transparent;
+            value = value / 100;
+
+            if (TyreDataControl.ActualTyreCpompund == TyreDataControl.TyreSoft) c = this.heatMapInnerSoft.GradientStops.GetRelativeColor(value);
+            if (TyreDataControl.ActualTyreCpompund == TyreDataControl.TyreMedium) c = this.heatMapInnerMedium.GradientStops.GetRelativeColor(value);
+            if (TyreDataControl.ActualTyreCpompund == TyreDataControl.TyreHard) c = this.heatMapInnerHard.GradientStops.GetRelativeColor(value);
+            if (TyreDataControl.ActualTyreCpompund == TyreCompounds.Inter) c = this.heatMapInnerInter.GradientStops.GetRelativeColor(value);
+            if (TyreDataControl.ActualTyreCpompund == TyreCompounds.Wet) c = this.heatMapInnerWet.GradientStops.GetRelativeColor(value);
+
+            var b = new SolidColorBrush(c);
+            if (b.CanFreeze) b.Freeze();
+            this.border_heatMap.Background = b;
+        }
+
+        private void ColorOuterHeat(double value)
+        {
+            Color c = Colors.Transparent;
+            value = value / 100;
+
+            if (TyreDataControl.ActualTyreCpompund == TyreDataControl.TyreSoft) c = this.heatMapSurfaceSoft.GradientStops.GetRelativeColor(value);
+            if (TyreDataControl.ActualTyreCpompund == TyreDataControl.TyreMedium) c = this.heatMapSurfaceMedium.GradientStops.GetRelativeColor(value);
+            if (TyreDataControl.ActualTyreCpompund == TyreDataControl.TyreHard) c = this.heatMapSurfaceHard.GradientStops.GetRelativeColor(value);
+            if (TyreDataControl.ActualTyreCpompund == TyreCompounds.Inter) c = this.heatMapSurfaceInter.GradientStops.GetRelativeColor(value);
+            if (TyreDataControl.ActualTyreCpompund == TyreCompounds.Wet) c = this.heatMapSurfaceWet.GradientStops.GetRelativeColor(value);
+
+            var b = new SolidColorBrush(c);
+            if (b.CanFreeze) b.Freeze();
+            this.border_heatMap.BorderBrush = b;
         }
     }
 

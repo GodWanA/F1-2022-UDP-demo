@@ -1,13 +1,16 @@
-﻿using F1Telemetry.Models.CarStatusPacket;
+﻿using F1Telemetry.Helpers;
+using F1Telemetry.Models.CarStatusPacket;
 using F1Telemetry.Models.LapDataPacket;
 using F1Telemetry.Models.MotionPacket;
 using F1Telemetry.Models.SessionPacket;
 using F1TelemetryApp.Classes;
+using F1TelemetryApp.UserControls.TyreDisplay;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
@@ -21,8 +24,8 @@ namespace F1TelemetryApp.Windows
     public partial class TrackLayoutRecorderWindow : Window, IDisposable, IConnectUDP, INotifyPropertyChanged
     {
         internal List<Point> TrackCoords { get; private set; } = new List<Point>();
-        internal Dictionary<Sectors, List<Point>> SectorCoords { get; private set; } = new Dictionary<Sectors, List<Point>>();
-        internal Dictionary<Tuple<int, float>, List<Point>> MarshalZoneCoords { get; private set; } = new Dictionary<Tuple<int, float>, List<Point>>();
+        internal Dictionary<Sectors, List<Tuple<Point, float>>> SectorCoords { get; private set; } = new Dictionary<Sectors, List<Tuple<Point, float>>>();
+        internal Dictionary<Tuple<int, float>, List<Tuple<Point, float>>> MarshalZoneCoords { get; private set; } = new Dictionary<Tuple<int, float>, List<Tuple<Point, float>>>();
         internal Dictionary<int, List<Point>> DRSZones { get; private set; } = new Dictionary<int, List<Point>>();
 
         private static Point zeroPoint = new Point();
@@ -33,7 +36,6 @@ namespace F1TelemetryApp.Windows
         private bool canCarmotion = true;
 
         private bool isTimeTrial;
-
         private bool disposedValue;
 
         private double minY;
@@ -44,12 +46,16 @@ namespace F1TelemetryApp.Windows
         private int lapNumber = 0;
         private Sectors currentSector;
 
-        private string coordinates;
+        private string trackName;
+        private ushort trackLength;
+        private ushort year;
 
-        private int marshalIndex;
+        //private int marshalIndex;
         private int drsIndex = -1;
         private bool lastDRSstatus;
         private TimeSpan laptime;
+
+        private string coordinates;
 
         public string Coordinates
         {
@@ -80,8 +86,6 @@ namespace F1TelemetryApp.Windows
         }
 
         private Tracks trackID;
-        private ushort year;
-        private string trackName;
 
         public Tracks TrackID
         {
@@ -92,6 +96,23 @@ namespace F1TelemetryApp.Windows
                 {
                     this.trackID = value;
                     this.OnPropertyChanged("TrackID");
+                }
+            }
+        }
+
+        private int marshalIndex;
+        private DriverSatuses status;
+        private float distance;
+
+        public int MarshalIndex
+        {
+            get { return this.marshalIndex; }
+            private set
+            {
+                if (this.marshalIndex != value)
+                {
+                    this.marshalIndex = value;
+                    this.OnPropertyChanged("MarshalIndex");
                 }
             }
         }
@@ -115,11 +136,30 @@ namespace F1TelemetryApp.Windows
                     // TODO: dispose managed state (managed objects)
                     this.UnsubscribeUDPEvents();
                     this.Coordinates = null;
+
+                    this.MarshalZoneCoords.Clear();
+                    this.MarshalZoneCoords = null;
+
+                    this.TrackCoords.Clear();
+                    this.TrackCoords = null;
+
+                    this.SectorCoords.Clear();
+                    this.SectorCoords = null;
+
+                    this.DRSZones.Clear();
+                    this.DRSZones = null;
+
+                    this.Map = null;
+
+                    this.trackName = null;
+
+                    this.PropertyChanged = null;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
                 // TODO: set large fields to null
                 this.coordinates = null;
+
                 disposedValue = true;
             }
         }
@@ -165,7 +205,7 @@ namespace F1TelemetryApp.Windows
             var data = sender as PacketCarStatusData;
             var player = data.CarStatusData[data.Header.Player1CarIndex];
 
-            if (this.laptime != TimeSpan.Zero)
+            if (this.laptime != TimeSpan.Zero && this.CanRecord())
             {
                 if (this.lastDRSstatus != player.IsDRSAllowed)
                 {
@@ -193,7 +233,6 @@ namespace F1TelemetryApp.Windows
         {
             var data = sender as PacketMotionData;
             var player = data.CarMotionData[data.Header.Player1CarIndex];
-            var p = new Point(player.WorldPosition.X, player.WorldPosition.Z);
 
             if (this.canCarmotion)
             {
@@ -201,16 +240,13 @@ namespace F1TelemetryApp.Windows
 
                 if (this.CanRecord())
                 {
+                    var p = new Point(player.WorldPosition.X, player.WorldPosition.Z);
+                    var coord = new Tuple<Point, float>(p, this.distance);
+
                     if (!this.TrackCoords.Contains(p)) this.TrackCoords.Add(p);
 
-                    if (!this.SectorCoords.ContainsKey(this.currentSector)) this.SectorCoords.Add(this.currentSector, new List<Point> { p });
-                    else if (!this.SectorCoords[this.currentSector].Contains(p)) this.SectorCoords[this.currentSector].Add(p);
-
-                    if (this.marshalIndex != -1)
-                    {
-                        var array = this.MarshalZoneCoords.Where(x => x.Key.Item1 == this.marshalIndex).FirstOrDefault();
-                        if (array.Value != null && !array.Value.Contains(p)) array.Value.Add(p);
-                    }
+                    if (!this.SectorCoords.ContainsKey(this.currentSector)) this.SectorCoords.Add(this.currentSector, new List<Tuple<Point, float>> { coord });
+                    else if (!this.SectorCoords[this.currentSector].Contains(coord)) this.SectorCoords[this.currentSector].Add(coord);
 
                     if (this.drsIndex != -1 && this.lastDRSstatus != false)
                     {
@@ -224,12 +260,35 @@ namespace F1TelemetryApp.Windows
                             if (!array.Contains(p)) array.Add(p);
                         }
                     }
+
+                    if (this.MarshalIndex != -1)
+                    {
+                        var array = this.MarshalZoneCoords.Where(x => x.Key.Item1 == this.MarshalIndex).FirstOrDefault();
+                        if (array.Value != null && !array.Value.Contains(coord))
+                        {
+                            if (this.currentSector == Sectors.Sector1 && this.marshalIndex == this.MarshalZoneCoords.Count - 1) array.Value.Add(new Tuple<Point, float>(p, this.distance + this.trackLength));
+                            else array.Value.Add(coord);
+                        }
+                    }
                 }
 
                 this.Dispatcher.BeginInvoke(() =>
                 {
                     this.DrawMap(data);
+
                     this.Coordinates = player.WorldPosition.ToString();
+
+                    if (this.CanRecord())
+                    {
+                        this.ellipse_rec.Fill = Brushes.Red;
+                        this.ellipse_rec.Stroke = Brushes.White;
+                    }
+                    else
+                    {
+                        this.ellipse_rec.Fill = Brushes.DimGray;
+                        this.ellipse_rec.Stroke = Brushes.Gray;
+                    }
+
                     this.canCarmotion = true;
                 }, DispatcherPriority.Render);
             }
@@ -249,28 +308,34 @@ namespace F1TelemetryApp.Windows
                 var m = dx;
                 if (m > dy) m = dy;
 
+                ax = this.TrackCoords.Min(x => x.X);
+                ay = this.TrackCoords.Min(x => x.Y);
+
                 this.DrawPath(this.path_baseLine, ax, ay, m, this.TrackCoords);
 
-                if (this.SectorCoords.ContainsKey(Sectors.Sector1)) this.DrawPath(this.path_sector1, ax, ay, m, this.SectorCoords[Sectors.Sector1]);
-                if (this.SectorCoords.ContainsKey(Sectors.Sector2)) this.DrawPath(this.path_sector2, ax, ay, m, this.SectorCoords[Sectors.Sector2]);
-                if (this.SectorCoords.ContainsKey(Sectors.Sector3)) this.DrawPath(this.path_sector3, ax, ay, m, this.SectorCoords[Sectors.Sector3]);
+                if (this.SectorCoords.ContainsKey(Sectors.Sector1)) this.DrawPath(this.path_sector1, ax, ay, m, this.SectorCoords[Sectors.Sector1].OrderBy(x => x.Item2).Select(x => x.Item1));
+                if (this.SectorCoords.ContainsKey(Sectors.Sector2)) this.DrawPath(this.path_sector2, ax, ay, m, this.SectorCoords[Sectors.Sector2].OrderBy(x => x.Item2).Select(x => x.Item1));
+                if (this.SectorCoords.ContainsKey(Sectors.Sector3)) this.DrawPath(this.path_sector3, ax, ay, m, this.SectorCoords[Sectors.Sector3].OrderBy(x => x.Item2).Select(x => x.Item1));
 
-                if (this.marshalIndex > -1)
+                if (this.MarshalIndex > -1)
                 {
                     for (int i = 0; i < this.MarshalZoneCoords.Count; i++)
                     {
                         var path = this.grid_marshalzones.Children[i] as Path;
-                        var items = this.MarshalZoneCoords.Where(x => x.Key.Item1 == i).Select(x => x.Value).FirstOrDefault();
-                        this.DrawPath(path, ax, ay, m, items);
+                        var items = this.MarshalZoneCoords.Where(x => x.Key.Item1 == i).Select(x => x.Value).FirstOrDefault().OrderBy(x => x.Item2).Select(x => x.Item1);
+
+                        if (path != null && items != null) this.DrawPath(path, ax, ay, m, items);
                     }
                 }
 
-                if (this.drsIndex > -1)
+                if (this.drsIndex > -1 && this.grid_drszones.Children.Count > this.drsIndex)
                 {
                     for (int i = 0; i < this.DRSZones.Count; i++)
                     {
                         var path = this.grid_drszones.Children[i] as Path;
-                        this.DrawPath(path, ax, ay, m, this.DRSZones[i]);
+                        var items = this.DRSZones.Where(x => x.Key == i).FirstOrDefault().Value;
+
+                        if (path != null && items != null) this.DrawPath(path, ax, ay, m, items);
                     }
                 }
 
@@ -325,7 +390,7 @@ namespace F1TelemetryApp.Windows
 
         private bool CanRecord()
         {
-            return this.isTimeTrial && this.lapNumber > 0;
+            return this.isTimeTrial && this.lapNumber > 0 && this.status == DriverSatuses.FlyingLap;
         }
 
         private void Connention_SessionPacket(object sender, EventArgs e)
@@ -338,6 +403,7 @@ namespace F1TelemetryApp.Windows
                 {
                     this.year = data.Header.PacketFormat;
                     this.trackName = data.TrackID.ToString();
+                    this.trackLength = data.TrackLength;
                     this.UpdateSession(data);
                     this.canSession = true;
                 }, DispatcherPriority.Render);
@@ -377,7 +443,7 @@ namespace F1TelemetryApp.Windows
 
                 for (int i = 0; i < packetSessionData.NumberOfMarshalZones; i++)
                 {
-                    this.MarshalZoneCoords.Add(new Tuple<int, float>(i, packetSessionData.MarshalZones[i].ZoneStartMeter), new List<Point>());
+                    this.MarshalZoneCoords.Add(new Tuple<int, float>(i, packetSessionData.MarshalZones[i].ZoneStartMeter), new List<Tuple<Point, float>>());
                     this.grid_marshalzones.Children.Add(new Path
                     {
                         Stroke = (i % 2 == 0 ? b1 : b2),
@@ -395,27 +461,38 @@ namespace F1TelemetryApp.Windows
         private void UpdateLapdata(PacketLapData packetLapData)
         {
             var player = packetLapData.Lapdata[packetLapData.Header.Player1CarIndex];
+            this.distance = player.LapDistance;
+            this.status = player.DriverStatus;
 
             if (this.lapNumber != 0 && this.lapNumber != player.CurrentLapNum) this.lapNumber = -1;
 
-            if (player.CurrentLapTime > TimeSpan.Zero && player.DriverStatus == DriverSatuses.FlyingLap && this.lapNumber == 0) this.lapNumber = player.CurrentLapNum;
+            if (
+                player.CurrentLapTime > TimeSpan.Zero
+                && player.DriverStatus == DriverSatuses.FlyingLap
+                && player.LapDistance >= 0
+                && this.lapNumber == 0
+            )
+            {
+                this.lapNumber = player.CurrentLapNum;
+            }
 
             this.currentSector = player.Sector;
-            if (player.LapDistance >= 0 && player.DriverStatus == DriverSatuses.FlyingLap)
-            {
-                var items = this.MarshalZoneCoords.Where(x => x.Key.Item2 <= player.LapDistance).Select(x => x.Key);
+            //if (player.LapDistance >= 0 && player.DriverStatus == DriverSatuses.FlyingLap)
+            //{
+            var items = this.MarshalZoneCoords.Where(x => x.Key.Item2 <= player.LapDistance).Select(x => x.Key);
 
-                if (items != null)
-                {
-                    var index = items.Where(x => x.Item2 == items.Max(x => x.Item2)).FirstOrDefault();
-                    if (index != null) this.marshalIndex = index.Item1;
-                }
-                else this.marshalIndex = 0;
-            }
-            else
+            if (items != null)
             {
-                this.marshalIndex = -1;
+                var index = items.Where(x => x.Item2 == items.Max(x => x.Item2)).FirstOrDefault();
+                if (index != null) this.MarshalIndex = index.Item1;
+                else this.MarshalIndex = 0;
             }
+            else this.MarshalIndex = 0;
+            //}
+            //else
+            //{
+            //    this.MarshalIndex = this.MarshalZoneCoords.Count - 1;
+            //}
 
             if (player.PitStatus != PitStatuses.None)
             {
@@ -427,6 +504,23 @@ namespace F1TelemetryApp.Windows
         private void Window_Initialized(object sender, EventArgs e)
         {
             this.SubscribeUDPEvents();
+
+            TyreCompounds[] compounds = Enum.GetValues(TyreCompounds.Medium.GetType()).Cast<TyreCompounds>().ToArray();
+
+            //foreach (TyreCompounds tyre in tyres)
+            for (int i = 0; i < compounds.Length; i++)
+            {
+                TyreCompounds tyre = compounds[i];
+
+                this.combobox_soft.Items.Add(new TyreIcon(tyre));
+                this.combobox_medium.Items.Add(new TyreIcon(tyre));
+                this.combobox_hard.Items.Add(new TyreIcon(tyre));
+            }
+
+            this.combobox_soft.SelectedIndex = (int)TyreCompounds.C5;
+            this.combobox_medium.SelectedIndex = (int)TyreCompounds.C4;
+            this.combobox_hard.SelectedIndex = (int)TyreCompounds.C3;
+
             //this.DialogResult = false;
         }
 
@@ -443,9 +537,19 @@ namespace F1TelemetryApp.Windows
             this.Map = new TrackLayout(this.year, this.trackName);
             this.Map.SetBaseline(this.TrackCoords);
 
+            var soft = TyreCompounds.Unknown;
+            var medium = TyreCompounds.Unknown;
+            var hard = TyreCompounds.Unknown;
+
+            if (this.combobox_soft.SelectedItem != null) soft = (this.combobox_soft.SelectedItem as TyreIcon).Tyre;
+            if (this.combobox_medium.SelectedItem != null) medium = (this.combobox_medium.SelectedItem as TyreIcon).Tyre;
+            if (this.combobox_hard.SelectedItem != null) hard = (this.combobox_hard.SelectedItem as TyreIcon).Tyre;
+
+            this.Map.SetTyres(soft, medium, hard);
+
             foreach (var item in this.DRSZones) this.Map.AppendDRS(item.Value);
-            foreach (var item in this.MarshalZoneCoords) this.Map.AppendMarshal(item.Value);
-            foreach (var item in this.SectorCoords) this.Map.AppendSector(item.Value);
+            foreach (var item in this.MarshalZoneCoords) this.Map.AppendMarshal(item.Value.OrderBy(x => x.Item2).Select(x => x.Item1).ToList());
+            foreach (var item in this.SectorCoords) this.Map.AppendSector(item.Value.OrderBy(x => x.Item2).Select(x => x.Item1).ToList());
 
             this.Close();
         }
@@ -514,10 +618,12 @@ namespace F1TelemetryApp.Windows
             this.path_sector2.Data = null;
             this.path_sector3.Data = null;
 
+            this.MarshalIndex = -1;
             this.grid_marshalzones.Children.Clear();
 
             this.drsIndex = -1;
             this.DRSZones.Clear();
+            this.lastDRSstatus = false;
 
             this.grid_drszones.Children.Clear();
         }

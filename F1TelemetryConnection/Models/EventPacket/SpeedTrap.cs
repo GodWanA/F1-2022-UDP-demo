@@ -52,25 +52,27 @@ namespace F1Telemetry.Models.EventPacket
         {
             byte valb;
             float valf;
-            bool valbo;
 
             //uint8 vehicleIdx;       // Vehicle index of the vehicle triggering speed trap
             this.Index += ByteReader.ToUInt8(array, this.Index, out valb);
             this.VehicleIndex = valb;
             //float speed;            // Top speed achieved in kilometres per hour
             this.Index += ByteReader.ToFloat(array, this.Index, out valf);
-            this.Speed = valf;
+            this.Speed = valf;            
+        }
+
+        protected override void Reader2021(byte[] array)
+        {
+            bool valbo;
+         
+            this.Reader2020(array);
+            
             //uint8 overallFastestInSession;   // Overall fastest speed in session = 1, otherwise 0
             this.Index += ByteReader.ToBoolFromUint8(array, this.Index, out valbo);
             this.IsOverallFastestInSession = valbo;
             //uint8 driverFastestInSession;    // Fastest speed for driver in session = 1, otherwise 0
             this.Index += ByteReader.ToBoolFromUint8(array, this.Index, out valbo);
             this.IsDriverFastestInSession = valbo;
-        }
-
-        protected override void Reader2021(byte[] array)
-        {
-            this.Reader2020(array);
         }
     }
 }

@@ -1,42 +1,29 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace F1TelemetryApp.Windows
 {
     /// <summary>
-    /// Interaction logic for AboutWindow.xaml
+    /// Interaction logic for PreferencesWindow.xaml
     /// </summary>
-    public partial class AboutWindow : Window, IDisposable
+    public partial class PreferencesWindow : Window, IDisposable
     {
         private bool disposedValue;
 
-        public AboutWindow()
+        public PreferencesWindow()
         {
             InitializeComponent();
-            this.textblock_gameVersion.Text = Assembly.GetCallingAssembly().GetName().Version.ToString();
-            this.textblock_dllVersion.Text = F1Telemetry.F1UDP.DLLVersion.ToString();
-        }
-
-        private void Window_Initialized(object sender, EventArgs e)
-        {
-        }
-
-        private void Hyperlink_Click(object sender, RoutedEventArgs e)
-        {
-            var link = sender as Hyperlink;
-            Process.Start(new ProcessStartInfo { FileName = link.NavigateUri.AbsoluteUri });
-        }
-
-        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
-        {
-            var url = e.Uri.ToString();
-            Process.Start(new ProcessStartInfo(url)
-            {
-                UseShellExecute = true
-            });
         }
 
         protected virtual void Dispose(bool disposing)
@@ -45,7 +32,7 @@ namespace F1TelemetryApp.Windows
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects)                    
+                    // TODO: dispose managed state (managed objects)
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
@@ -55,7 +42,7 @@ namespace F1TelemetryApp.Windows
         }
 
         // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
-        // ~AboutWindow()
+        // ~PreferencesWindow()
         // {
         //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
         //     Dispose(disposing: false);

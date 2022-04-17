@@ -40,7 +40,7 @@
                         <TextBlock TextAlignment="Left" Text="Laps" Grid.Column="4" Grid.Row="0" Margin="5,0,0,0" VerticalAlignment="Center"/>
                     </Grid>
                 </Border>
-                <UserControls:TyreDataControl x:Name="tyredata_fl" Grid.Row="1" Grid.Column="0" ProgressbarSide="Right">
+                <UserControls:TyreDataControl x:Name="tyredata_fl" Grid.Row="1" Grid.Column="0" ProgressbarSide="Right" CornerRadius="5,0,0,0">
                     <UserControls:TyreDataControl.ColorMapTyreConditionText>
                         <LinearGradientBrush>
                             <GradientStop Color="White"/>
@@ -50,7 +50,7 @@
                         </LinearGradientBrush>
                     </UserControls:TyreDataControl.ColorMapTyreConditionText>
                 </UserControls:TyreDataControl>
-                <UserControls:TyreDataControl x:Name="tyredata_fr" Grid.Row="1" Grid.Column="1" ProgressbarSide="Left">
+                <UserControls:TyreDataControl x:Name="tyredata_fr" Grid.Row="1" Grid.Column="1" ProgressbarSide="Left" CornerRadius="0,5,0,0">
                     <UserControls:TyreDataControl.ColorMapTyreConditionText>
                         <LinearGradientBrush>
                             <GradientStop Color="White"/>
@@ -60,7 +60,7 @@
                         </LinearGradientBrush>
                     </UserControls:TyreDataControl.ColorMapTyreConditionText>
                 </UserControls:TyreDataControl>
-                <UserControls:TyreDataControl x:Name="tyredata_rl" Grid.Row="2" Grid.Column="0" ProgressbarSide="Right">
+                <UserControls:TyreDataControl x:Name="tyredata_rl" Grid.Row="2" Grid.Column="0" ProgressbarSide="Right" CornerRadius="0,0,0,5">
                     <UserControls:TyreDataControl.ColorMapTyreConditionText>
                         <LinearGradientBrush>
                             <GradientStop Color="White"/>
@@ -70,7 +70,7 @@
                         </LinearGradientBrush>
                     </UserControls:TyreDataControl.ColorMapTyreConditionText>
                 </UserControls:TyreDataControl>
-                <UserControls:TyreDataControl x:Name="tyredata_rr" Grid.Row="2" Grid.Column="1" ProgressbarSide="Left">
+                <UserControls:TyreDataControl x:Name="tyredata_rr" Grid.Row="2" Grid.Column="1" ProgressbarSide="Left" CornerRadius="0,0,5,0">
                     <UserControls:TyreDataControl.ColorMapTyreConditionText>
                         <LinearGradientBrush>
                             <GradientStop Color="White"/>

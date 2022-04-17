@@ -1,18 +1,18 @@
-﻿using F1Telemetry.Helpers;
-using F1Telemetry.Models.LapDataPacket;
-using F1Telemetry.Models.MotionPacket;
-using F1Telemetry.Models.SessionPacket;
+﻿using F1Telemetry.Models.SessionPacket;
 using F1TelemetryApp.Classes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Shapes;
-using System.Windows.Threading;
 using static F1Telemetry.Helpers.Appendences;
+using System.Windows.Threading;
+using System.Windows.Shapes;
+using System.Linq;
+using F1Telemetry.Models.ParticipantsPacket;
+using F1Telemetry.Models.MotionPacket;
+using F1Telemetry.Models.CarStatusPacket;
+using F1Telemetry.Models.LapDataPacket;
 
 namespace F1TelemetryApp.UserControls
 {
@@ -21,11 +21,21 @@ namespace F1TelemetryApp.UserControls
     /// </summary>
     public partial class Map : UserControl, IConnectUDP, IDisposable
     {
+        internal Tracks TrackID { get; set; } = Tracks.Unknown;
+        internal TrackLayout RawTrack { get; private set; }
+
         private bool disposedValue;
         private bool isSessionRunning;
-        private Tracks trackID = Tracks.Unknown;
         private static Point zeroPoint = new Point();
-        private static Brush drsColor = new SolidColorBrush(Color.FromArgb(60, 30, 200, 20));
+        private static Brush drsColor = new SolidColorBrush(Color.FromArgb(130, 0, 255, 0));
+        private bool isParticipantsRunning;
+        private bool isCarmotionRunning;
+        private double maxWidth;
+        private double midX;
+        private double midY;
+        private double multiply;
+        private bool isStatusRunning;
+        private bool isLapdataRunning;
 
         public Map()
         {
@@ -37,6 +47,10 @@ namespace F1TelemetryApp.UserControls
             if (u.Connention != null)
             {
                 u.Connention.SessionPacket += Connention_SessionPacket;
+                u.Connention.ParticipantsPacket += Connention_ParticipantsPacket;
+                u.Connention.CarMotionPacket += Connention_CarMotionPacket;
+                u.Connention.CarStatusPacket += Connention_CarStatusPacket;
+                u.Connention.LapDataPacket += Connention_LapDataPacket;
             }
         }
 
@@ -45,6 +59,151 @@ namespace F1TelemetryApp.UserControls
             if (u.Connention != null)
             {
                 u.Connention.SessionPacket -= Connention_SessionPacket;
+                u.Connention.ParticipantsPacket -= Connention_ParticipantsPacket;
+                u.Connention.CarMotionPacket -= Connention_CarMotionPacket;
+                u.Connention.CarStatusPacket -= Connention_CarStatusPacket;
+                u.Connention.LapDataPacket -= Connention_LapDataPacket;
+            }
+        }
+
+        private void Connention_LapDataPacket(object sender, EventArgs e)
+        {
+            if (!this.isLapdataRunning && sender != null)
+            {
+                this.isLapdataRunning = true;
+                this.Dispatcher.BeginInvoke(() =>
+                {
+                    var data = sender as PacketLapData;
+                    this.UpdateLapdata(data);
+                    this.isLapdataRunning = false;
+                }, DispatcherPriority.Render);
+            }
+        }
+
+        private void UpdateLapdata(PacketLapData data)
+        {
+            var gridCars = this.grid_cars.Children;
+            if (gridCars.Count == data.Lapdata.Length)
+            {
+                for (int i = 0; i < gridCars.Count; i++)
+                {
+                    var e = gridCars[i] as Ellipse;
+                    var c = data.Lapdata[i];
+
+                    switch (c.ResultStatus)
+                    {
+                        default:
+                            e.Visibility = Visibility.Visible;
+                            break;
+                        case ResultSatuses.Disqualified:
+                        case ResultSatuses.DidNotFinish:
+                        case ResultSatuses.Finished:
+                        case ResultSatuses.Retired:
+                        case ResultSatuses.NotClassiFied:
+                            e.Visibility = Visibility.Hidden;
+                            break;
+                    }
+                }
+            }
+        }
+
+        private void Connention_CarStatusPacket(object sender, EventArgs e)
+        {
+            if (!this.isStatusRunning && sender != null)
+            {
+                this.isStatusRunning = true;
+                this.Dispatcher.BeginInvoke(() =>
+                {
+                    var data = sender as PacketCarStatusData;
+                    this.UpdateCarStatus(data);
+                    this.isStatusRunning = false;
+                }, DispatcherPriority.Render);
+            }
+        }
+
+        private void UpdateCarStatus(PacketCarStatusData data)
+        {
+            var gridCars = this.grid_cars.Children;
+            if (gridCars.Count == data.CarStatusData.Length)
+            {
+                for (int i = 0; i < gridCars.Count; i++)
+                {
+                    var e = gridCars[i] as Ellipse;
+                    var c = data.CarStatusData[i];
+
+                    e.Stroke = u.FlagColors[c.VehicleFIAFlag];
+                }
+            }
+        }
+
+        private void Connention_CarMotionPacket(object sender, EventArgs e)
+        {
+            if (!this.isCarmotionRunning && sender != null)
+            {
+                this.isCarmotionRunning = true;
+                this.Dispatcher.BeginInvoke(() =>
+                {
+                    var data = sender as PacketMotionData;
+                    this.UpdateMotion(data);
+                    this.isCarmotionRunning = false;
+                }
+                , DispatcherPriority.Render);
+            }
+        }
+
+        private void UpdateMotion(PacketMotionData data)
+        {
+            var gridCars = this.grid_cars.Children;
+            if (gridCars.Count == data.CarMotionData.Length)
+            {
+                for (int i = 0; i < data.CarMotionData.Length; i++)
+                {
+                    var item = data.CarMotionData[i];
+
+                    var x = item.WorldPosition.X;
+                    var y = item.WorldPosition.Z;
+                    var p = this.CalcPoint(new Point(x, y));
+
+                    var e = gridCars[i] as Ellipse;
+                    e.Margin = new Thickness
+                    {
+                        Left = p.X - e.ActualWidth / 2,
+                        Top = p.Y - e.ActualHeight / 2,
+                    };
+                }
+            }
+        }
+
+        private void Connention_ParticipantsPacket(object sender, EventArgs e)
+        {
+            if (!this.isParticipantsRunning && sender != null)
+            {
+                this.isParticipantsRunning = true;
+                this.Dispatcher.BeginInvoke(() =>
+                {
+                    var data = sender as PacketParticipantsData;
+                    this.UpdateParticipants(data);
+                    this.isParticipantsRunning = false;
+                }, DispatcherPriority.Render);
+            }
+        }
+
+        private void UpdateParticipants(PacketParticipantsData data)
+        {
+            var carsGrid = this.grid_cars.Children;
+
+            if (data.Participants.Length != carsGrid.Count) carsGrid.Clear();
+
+            if (carsGrid.Count == 0)
+            {
+                Brush b = Brushes.Transparent;
+
+                if (b.CanFreeze) b.Freeze();
+
+                foreach (var p in data.Participants)
+                {
+                    carsGrid.Add(Map.CreateEllipse(u.PickTeamColor(p.TeamID), b));
+                }
             }
         }
 
@@ -64,52 +223,53 @@ namespace F1TelemetryApp.UserControls
 
         private void UpdateSession(PacketSessionData data)
         {
-            if (data.TrackID != this.trackID)
+            if (data.TrackID != this.TrackID)
             {
-                this.trackID = data.TrackID;
-                var t = TrackLayout.FindNearestMap(this.trackID.ToString(), data.Header.PacketFormat);
+                this.TrackID = data.TrackID;
+                this.RawTrack = TrackLayout.FindNearestMap(this.TrackID.ToString(), data.Header.PacketFormat);
 
-                if (t != null)
+                if (RawTrack != null && RawTrack.BaseLine?.Count != 0)
                 {
-                    var minX = t.BaseLine.Min(x => x.X);
-                    var maxX = t.BaseLine.Max(x => x.X);
-                    var minY = t.BaseLine.Min(x => x.Y);
-                    var maxY = t.BaseLine.Max(x => x.Y);
+                    this.maxWidth = this.path_baseline.ActualWidth - 10;
 
                     double ax, ay;
-                    var dx = u.ImageMiltiplier(t.BaseLine.Select(x => x.X), this.path_baseline.ActualWidth, out ax);
-                    var dy = u.ImageMiltiplier(t.BaseLine.Select(x => x.Y), this.path_baseline.ActualHeight, out ay);
+                    var dx = u.ImageMiltiplier(RawTrack.BaseLine.Select(x => x.X), this.maxWidth, out ax);
+                    var dy = u.ImageMiltiplier(RawTrack.BaseLine.Select(x => x.Y), this.maxWidth, out ay);
 
                     var m = dx;
                     if (m > dy) m = dy;
 
-                    Map.DrawPath(this.path_baseline, ax, ay, m, minX, maxX, minY, maxY, t.BaseLine, 235);
+                    this.multiply = m;
+                    this.midX = ax;
+                    this.midY = ay;
 
-                    Map.DrawPath(this.path_s1, ax, ay, m, minX, maxX, minY, maxY, t.SectorZones[0], 235);
-                    Map.DrawPath(this.path_s2, ax, ay, m, minX, maxX, minY, maxY, t.SectorZones[1], 235);
-                    Map.DrawPath(this.path_s3, ax, ay, m, minX, maxX, minY, maxY, t.SectorZones[2], 235);
+                    this.DrawPath(this.path_baseline, RawTrack.BaseLine);
 
-                    if (t.MarshalZones.Count > 0)
+                    this.DrawPath(this.path_s1, RawTrack.SectorZones[0]);
+                    this.DrawPath(this.path_s2, RawTrack.SectorZones[1]);
+                    this.DrawPath(this.path_s3, RawTrack.SectorZones[2]);
+
+                    if (RawTrack.MarshalZones.Count > 0)
                     {
-                        this.grid_drs.Children.Clear();
+                        this.grid_marshal.Children.Clear();
 
-                        foreach (var item in t.DRSZones.Values)
+                        foreach (var item in RawTrack.MarshalZones.Values)
                         {
                             var p = Map.CreatePath(null);
-                            this.grid_drs.Children.Add(p);
-                            Map.DrawPath(p, ax, ay, m, minX, maxX, minY, maxY, item, 235);
+                            this.grid_marshal.Children.Add(p);
+                            this.DrawPath(p, item);
                         }
                     }
 
-                    if (t.DRSZones.Count > 0)
+                    if (RawTrack.DRSZones.Count > 0)
                     {
                         this.grid_drs.Children.Clear();
 
-                        foreach (var item in t.DRSZones.Values)
+                        foreach (var item in RawTrack.DRSZones.Values)
                         {
                             var p = Map.CreatePath(Map.drsColor);
                             this.grid_drs.Children.Add(p);
-                            Map.DrawPath(p, ax, ay, m, minX, maxX, minY, maxY, item, 235);
+                            this.DrawPath(p, item);
                         }
                     }
                 }
@@ -122,28 +282,38 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
+        private static Ellipse CreateEllipse(Brush fill, Brush stroke)
+        {
+            return new Ellipse
+            {
+                Fill = fill,
+                Stroke = stroke,
+                StrokeThickness = 3,
+                StrokeStartLineCap = PenLineCap.Round,
+                StrokeEndLineCap = PenLineCap.Round,
+                StrokeDashCap = PenLineCap.Round,
+                Width = 20,
+                Height = 20,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+            };
+        }
+
         private static Path CreatePath(Brush brush)
         {
             return new Path
             {
                 Stroke = brush,
+                StrokeThickness = 3,
                 StrokeStartLineCap = PenLineCap.Round,
                 StrokeEndLineCap = PenLineCap.Round,
                 StrokeDashCap = PenLineCap.Round,
             };
         }
 
-        private static void DrawPath(
+        private void DrawPath(
             Path p,
-            double ax,
-            double ay,
-            double m,
-            double minX,
-            double maxX,
-            double minY,
-            double maxY,
-            IEnumerable<Point> c,
-            double maxWidth
+            IEnumerable<Point> c
         )
         {
             p.Data = Geometry.Empty;
@@ -155,8 +325,8 @@ namespace F1TelemetryApp.UserControls
                 if (last != zeroPoint)
                 {
                     var tmp = new LineGeometry(
-                            Map.CalcPoint(last, ax, ay, m, minX, maxX, minY, maxY, maxWidth),
-                            Map.CalcPoint(v, ax, ay, m, minX, maxX, minY, maxY, maxWidth)
+                            this.CalcPoint(last),
+                            this.CalcPoint(v)
                         );
                     if (tmp.CanFreeze) tmp.Freeze();
                     geometry.AddGeometry(tmp);
@@ -169,25 +339,12 @@ namespace F1TelemetryApp.UserControls
             p.Data = geometry;
         }
 
-        private static Point CalcPoint(
-            Point v,
-            double midX,
-            double midY,
-            double multiply,
-            double minX,
-            double maxX,
-            double minY,
-            double maxY,
-            double maxWidth
-        )
+        private Point CalcPoint(Point v)
         {
-            var x = 5 + (v.X - midX) * multiply;
-            var y = 5 + (v.Y - midY) * multiply;
-
-            var ax = (minX + maxX) / 2;
-            var ay = (minY + maxY) / 2;
-
-            return new Point(x + maxWidth / 2 - ax, y + maxWidth / 2 - ay);
+            var d = maxWidth / 2;
+            var x = (v.X + midX * -1) * multiply + d;
+            var y = (v.Y + midY * -1) * multiply + d;
+            return new Point(5 + x, 5 + y);
         }
 
         private void UserControl_Initialized(object sender, EventArgs e)

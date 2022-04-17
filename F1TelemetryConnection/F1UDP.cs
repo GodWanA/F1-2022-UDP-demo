@@ -249,8 +249,11 @@ namespace F1Telemetry
             this.Port = port;
             this.IsConnecting = true;
             this.EndPoint = new IPEndPoint(IPAddress.Parse(this.IPAdress), this.Port);
-            this.Connection = new UdpClient(this.EndPoint);
             this.CancelToken = new CancellationTokenSource();
+
+            this.Connection = new UdpClient(this.EndPoint);
+            //this.Connection.Client.ReceiveTimeout = 5;
+            //this.Connection.Client.SendTimeout = 5;
 
             try
             {
@@ -269,8 +272,11 @@ namespace F1Telemetry
                 IPEndPoint RemoteIpEndPoint = this.EndPoint;
                 byte[] received = this.Connection.EndReceive(res, ref RemoteIpEndPoint);
 
-                if (!this.IsAsyncPacketProcessEnabled) this.ByteArrayProcess(received);
-                else Task.Run(() => ByteArrayProcess(received), this.CancelToken.Token);
+                if (received != null)
+                {
+                    if (!this.IsAsyncPacketProcessEnabled) this.ByteArrayProcess((byte[])received.Clone());
+                    else Task.Run(() => ByteArrayProcess((byte[])received.Clone()), this.CancelToken.Token);
+                }
 
                 this.Connection.BeginReceive(new AsyncCallback(recv), null);
             }
@@ -365,10 +371,10 @@ namespace F1Telemetry
                     break;
             }
 
-            if (DateTime.Now - start > TimeSpan.FromSeconds(0.3))
-            {
-                this.OnDataReadError(new Exception("LASSÚ!\r\n" + header.PacketID));
-            }
+            //if (DateTime.Now - start > TimeSpan.FromSeconds(0.1))
+            //{
+            //    this.OnDataReadError(new Exception("LASSÚ!\r\n" + header.PacketID + "\r\n" + DateTime.Now));
+            //}
         }
 
         private void CarMotion(byte[] array, PacketHeader head)
@@ -622,6 +628,19 @@ namespace F1Telemetry
 
         protected virtual void OnLapDataPacket(PacketLapData sender)
         {
+            if (sender.Header.PacketFormat < 2021 && this.LastSessionDataPacket != null && this.LastLapDataPacket != null)
+            {
+                for (int i = 0; i < sender.Lapdata.Length; i++)
+                {
+                    var c = sender.Lapdata[i];
+                    var l = this.LastLapDataPacket.Lapdata[i];
+
+                    c.SetLastPitLap(l.GetLastPitLap());
+                    c.CalculateStatus(this.LastSessionDataPacket.SessionType);
+                }
+            }
+
+
             this.LastLapDataPacket = sender;
             if (this.NumberOfPacketPerSecond == 0 || DateTime.Now - this.LastTime_LapData >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond))
             {

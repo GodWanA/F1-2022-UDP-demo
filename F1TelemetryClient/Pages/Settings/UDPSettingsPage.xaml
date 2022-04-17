@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="F1TelemetryApp.Pages.Settings.UDPSettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:F1TelemetryApp.Pages.Settings"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel>
+        <Border CornerRadius="5" Background="Black" Margin="0,0,0,5" Padding="5">
+            <TextBlock Foreground="White" FontStyle="Italic">
+                 <Run>In this section the user can edit UDP connection paramteres of the software.</Run>
+            </TextBlock>
+        </Border>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="IP address and port:" HorizontalAlignment="Right" Margin="0,0,0,2" VerticalAlignment="Center"/>
+            <Grid Grid.Row="0" Grid.Column="1" Margin="5,0,0,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBox Grid.Column="0" Grid.Row="0" TextAlignment="Center" MaxLength="3"/>
+                <TextBlock Text="." Grid.Column="1" Grid.Row="0" Margin="5,0,5,2"/>
+                <TextBox Grid.Column="2" Grid.Row="0" TextAlignment="Center" MaxLength="3"/>
+                <TextBlock Text="." Grid.Column="3" Grid.Row="0" Margin="5,0,5,2"/>
+                <TextBox Grid.Column="4" Grid.Row="0" TextAlignment="Center" MaxLength="3"/>
+                <TextBlock Text="." Grid.Column="5" Grid.Row="0" Margin="5,0,5,2"/>
+                <TextBox Grid.Column="6" Grid.Row="0" TextAlignment="Center" MaxLength="3"/>
+                <TextBlock Text=":" Grid.Column="7" Grid.Row="0" Margin="5,0,5,2"/>
+                <TextBox Grid.Column="8" Grid.Row="0" TextAlignment="Center" MaxLength="5"/>
+            </Grid>
+            <TextBlock Text="Note: This is the IP address where the software tryes to connect." TextWrapping="WrapWithOverflow" Grid.Column="1" Grid.Row="1" Margin="5" FontStyle="Italic" />
+            <TextBlock Text="Error message" TextWrapping="WrapWithOverflow" Grid.Column="1" Grid.Row="2" Margin="5" Foreground="#FFD40000"/>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Maximum packets per second:" HorizontalAlignment="Right" Margin="0,0,0,2"/>
+            <Grid Grid.Row="3" Grid.Column="1" Margin="5,0,0,2" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+                <Slider x:Name="slider_maxpacket" Minimum="0" Maximum="60" SmallChange="1" LargeChange="5" Grid.Column="0" IsSnapToTickEnabled="True"/>
+                <TextBlock Text="{Binding Value, ElementName=slider_maxpacket}" Grid.Column="1" Margin="5,0,0,2" TextAlignment="Center" />
+            </Grid>
+            <TextBlock TextWrapping="WrapWithOverflow" Grid.Column="1" Grid.Row="4" Margin="5" FontStyle="Italic" >
+                <Run>Note: Some of the packets rise events 60Hz which cause heavy CPU usings.</Run><LineBreak/>
+                <Run>To reduce CPU usage, user can set a render limit.</Run>
+            </TextBlock>
+
+            <CheckBox x:Name="checkbox_multicore" Content="Allow multi core processing" Grid.Row="5" Grid.Column="1" Margin="5,0,0,2"/>
+            <TextBlock TextWrapping="WrapWithOverflow" Grid.Column="1" Grid.Row="6" Margin="5" FontStyle="Italic" >
+                <Run>Note: On some F1 games (F1 2021), the UDP clients can cause lags.</Run><LineBreak/>
+                <Run>To reduce chance for lags user can enable multi-core processing 
+                    what reduce active connection time per package.</Run><LineBreak/>
+                <Run>Can cause higher CPU usage.</Run>
+            </TextBlock>
+        </Grid>
+    </StackPanel>
+</UserControl>

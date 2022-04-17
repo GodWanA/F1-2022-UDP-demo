@@ -36,11 +36,14 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
+                    <Ellipse x:Name="ellipse_rec" Width="16" Height="16" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.RowSpan="3" Fill="DimGray" Stroke="Gray" StrokeThickness="3" Margin="5"/>
                     <TextBlock Text="{Binding TrackID, FallbackValue=TrackID}" Grid.Row="0" Foreground="white" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5"/>
                     <TextBlock Text="{Binding PacketFormat, FallbackValue=XXXX}" Grid.Row="1" Foreground="white" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,0"/>
-                    <TextBlock Text="{Binding Coordinates, FallbackValue=xxx\,xxx\,xxx}" Grid.Row="3" Foreground="white" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5"/>
+                    <TextBlock Text="{Binding MarshalIndex, FallbackValue=-1}" Grid.Row="3" Foreground="white" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5"/>
+                    <TextBlock Text="{Binding Coordinates, FallbackValue=xxx\,xxx\,xxx}" Grid.Row="4" Foreground="white" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5"/>
                 </Grid>
             </Grid>
         </Border>
@@ -54,14 +57,36 @@
                     <Run>To detect DRS zones, don't activate them on yout trackig lap.</Run>
                     </TextBlock>
                 </Border>
-                <Button x:Name="button_clear" Content="Clear map" Margin="0,2" ToolTip="Clears/Erases the current map." Click="button_clear_Click"/>
+                <Button x:Name="button_clear" Content="Clear map" Margin="0,2" Padding="5" ToolTip="Clears/Erases the current map." Click="button_clear_Click"/>
                 <Separator Margin="2"/>
-                <CheckBox x:Name="checkbox_drs" Content="Show DRS zones" IsChecked="True" Foreground="White" Click="checkbox_drs_Click"/>
-                <CheckBox x:Name="checkbox_marhsal" Content="Show marhsal zones" IsChecked="True" Foreground="White" Click="checkbox_marhsal_Click"/>
-                <CheckBox x:Name="checkbox_sectors" Content="Show sectors" IsChecked="True" Foreground="White" Click="checkbox_sectors_Click"/>
+                <CheckBox x:Name="checkbox_drs" Content="Show DRS zones" IsChecked="True" Foreground="White" Click="checkbox_drs_Click" ToolTip="Enables to render DRS zones in preview."/>
+                <CheckBox x:Name="checkbox_marhsal" Content="Show marhsal zones" IsChecked="True" Foreground="White" Click="checkbox_marhsal_Click" ToolTip="Enables to render marshal zones in preview."/>
+                <CheckBox x:Name="checkbox_sectors" Content="Show sectors" IsChecked="True" Foreground="White" Click="checkbox_sectors_Click" ToolTip="Enables to render sectors in preview."/>
+
                 <Separator Margin="2"/>
-                <Button x:Name="button_save" Content="Save" Margin="0,2" Click="button_save_Click" ToolTip="Closing window, then saves new map."/>
-                <Button x:Name="button_cancel" Content="Cancel" Margin="0,2" Click="button_cancel_Click" ToolTip="Closing window."/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Soft tyre" Grid.Column="0" Grid.Row="0" Margin="5"/>
+                    <ComboBox x:Name="combobox_soft" Height="28" Grid.Column="1" Grid.Row="0" ToolTip="Visual type of soft tyre"/>
+                    <TextBlock Text="Medium tyre" Grid.Column="0" Grid.Row="1" Margin="5"/>
+                    <ComboBox x:Name="combobox_medium" Height="28" Grid.Column="1" Grid.Row="1" ToolTip="Visual type of medium tyre"/>
+                    <TextBlock Text="Hard tyre" Grid.Column="0" Grid.Row="2" Margin="5"/>
+                    <ComboBox x:Name="combobox_hard" Height="28" Grid.Column="1" Grid.Row="2" ToolTip="Visual type of hard tyre"/>
+                </Grid>
+
+                <Separator Margin="2"/>
+
+                <Button x:Name="button_save" Content="Save" Margin="0,2" Padding="5" Click="button_save_Click" ToolTip="Closing window, then saves new map."/>
+                <Button x:Name="button_cancel" Content="Cancel" Margin="0,2" Padding="5" Click="button_cancel_Click" ToolTip="Closing window."/>
             </StackPanel>
         </GroupBox>
 

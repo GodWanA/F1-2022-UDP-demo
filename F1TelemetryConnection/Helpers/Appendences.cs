@@ -212,6 +212,8 @@ namespace F1Telemetry.Helpers
             AntonioFuoco = 57,
             CharlesLeclerc = 58,
             PierreGasly = 59,
+            BrandonHartley = 60,
+            SergeiSirotkin = 61,
             AlexanderAlbon = 62,
             NicholasLatifi = 63,
             DorianBoccolacci = 64,

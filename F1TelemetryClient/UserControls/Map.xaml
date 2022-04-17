@@ -7,16 +7,17 @@
              mc:Ignorable="d" 
              Height="265" Width="265" Initialized="UserControl_Initialized">
     <Grid>
-        <Border Background="Black" CornerRadius="5" Padding="5">
+        <Border Background="Black" CornerRadius="5">
             <Grid>
-                <Path x:Name="path_baseline" Stroke="Gray" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" Height="255" Width="255" />
+                <Path x:Name="path_baseline" Margin="5" Stroke="Gray" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
-                <Path x:Name="path_s1" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" Height="255" Width="255" />
-                <Path x:Name="path_s2" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" Height="255" Width="255" />
-                <Path x:Name="path_s3" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" Height="255" Width="255" />
+                <Path x:Name="path_s1" Margin="5" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <Path x:Name="path_s2" Margin="5" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <Path x:Name="path_s3" Margin="5" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
-                <Grid x:Name="grid_marshal" Height="255" Width="255" />
-                <Grid x:Name="grid_drs" Height="255" Width="255" />
+                <Grid x:Name="grid_drs" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <Grid x:Name="grid_marshal" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <Grid x:Name="grid_cars" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
             </Grid>
         </Border>
     </Grid>

@@ -577,36 +577,38 @@ namespace F1TelemetryApp.UserControls
 
                 this.Dispatcher.BeginInvoke(() =>
                 {
-                    var current = lapData.Lapdata[this.ArrayIndex];
-                    this.CarPosition = current.CarPosition;
-
-                    if (current.CarPosition > 0)
+                    if (this.arrayIndex < lapData.Lapdata.Length)
                     {
-                        float p = current.LapDistance / u.TrackLength * 100.0f;
+                        var current = lapData.Lapdata[this.ArrayIndex];
+                        this.CarPosition = current.CarPosition;
 
-                        this.CurrentLapTime = current.CurrentLapTime;
-                        this.TrackLengthPercent = p;
-                        //if (current.Warnings > 0) Debug.WriteLine("HELLÓÓÓ");
-                        this.WarningNumber = current.Warnings;
-
-                        if (current.Penalties > TimeSpan.Zero) this.PenaltyTime = current.Penalties;
-                        else this.PenaltyTime = null;
-
-                        this.ResultStatus = current.ResultStatus;
-                        this.SetPitStatues(current.PitStatus, current.PitStopTimer);
-
-                        if (current.IsCurrentLapInvalid)
+                        if (current.CarPosition > 0)
                         {
-                            this.TimerForeground = Brushes.Red;
-                            this.TrackPercentForeground = Brushes.Red;
-                        }
-                        else
-                        {
-                            this.TimerForeground = Brushes.White;
-                            this.TrackPercentForeground = Brushes.LimeGreen;
+                            float p = current.LapDistance / u.TrackLength * 100.0f;
+
+                            this.CurrentLapTime = current.CurrentLapTime;
+                            this.TrackLengthPercent = p;
+                            //if (current.Warnings > 0) Debug.WriteLine("HELLÓÓÓ");
+                            this.WarningNumber = current.Warnings;
+
+                            if (current.Penalties > TimeSpan.Zero) this.PenaltyTime = current.Penalties;
+                            else this.PenaltyTime = null;
+
+                            this.ResultStatus = current.ResultStatus;
+                            this.SetPitStatues(current.PitStatus, current.PitStopTimer);
+
+                            if (current.IsCurrentLapInvalid)
+                            {
+                                this.TimerForeground = Brushes.Red;
+                                this.TrackPercentForeground = Brushes.Red;
+                            }
+                            else
+                            {
+                                this.TimerForeground = Brushes.White;
+                                this.TrackPercentForeground = Brushes.LimeGreen;
+                            }
                         }
                     }
-
                     //// this.UpdateLayout();
                     this.isLapdata = false;
                 }, DispatcherPriority.Render);

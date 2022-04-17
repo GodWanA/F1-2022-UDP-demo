@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:F1TelemetryClient"
+        xmlns:cmd="clr-namespace:F1TelemetryApp.Classes.Commands" xmlns:personalinfo="clr-namespace:F1TelemetryApp.Pages.PersonalInfo"
         mc:Ignorable="d"
         Title="Jeff+ | Telemetry" Height="450" Width="800" Initialized="Window_Initialized" SizeChanged="Window_SizeChanged" Closing="Window_Closing" LocationChanged="Window_LocationChanged" StateChanged="Window_StateChanged" Loaded="Window_Loaded">
     <Window.Background>
@@ -12,6 +13,14 @@
             <GradientStop Color="#FF757575" Offset="1"/>
         </LinearGradientBrush>
     </Window.Background>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="cmd:CustomCommands.Exit" x:Name="cmdExit" CanExecute="cmdExit_CanExecute" Executed="cmdExit_Executed"/>
+        <CommandBinding Command="cmd:CustomCommands.OpenAbout" x:Name="cmdOpenAbout" CanExecute="cmdOpenAbout_CanExecute" Executed="cmdOpenAbout_Executed"/>
+        <CommandBinding Command="cmd:CustomCommands.OpenMapTool" x:Name="cmdOpenMapTool" CanExecute="cmdOpenMapTool_CanExecute" Executed="cmdOpenMapTool_Executed"/>
+        <CommandBinding Command="cmd:CustomCommands.OpenPreferences" x:Name="cmdOpenPreferences" CanExecute="cmdOpenPreferences_CanExecute" Executed="cmdOpenPreferences_Executed"/>
+    </Window.CommandBindings>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -20,24 +29,64 @@
         </Grid.RowDefinitions>
         <DockPanel>
             <Menu DockPanel.Dock="Top" Padding="2">
-                <MenuItem Header="File" Padding="5,2">
-                    <MenuItem Header="Save" IsEnabled="False"/>
-                    <MenuItem Header="Load" IsEnabled="False"/>
+                <MenuItem Header="_File" Padding="5,2">
+                    <MenuItem Header="_Save" IsEnabled="False">
+                        <MenuItem.Icon>
+                            <Image Source="/Images/MenuIcons/save.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="_Load" IsEnabled="False">
+                        <MenuItem.Icon>
+                            <Image Source="/Images/MenuIcons/load.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
                     <Separator />
-                    <MenuItem Header="Export" IsEnabled="False"/>
+                    <MenuItem Header="_Export" IsEnabled="False">
+                        <MenuItem.Icon>
+                            <Image Source="/Images/MenuIcons/export.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
                     <Separator />
-                    <MenuItem Header="Preferences" IsEnabled="False"/>
+                    <MenuItem x:Name="menuitem_preferences" Header="_Preferences" Command="cmd:CustomCommands.OpenPreferences">
+                        <MenuItem.Icon>
+                            <Image Source="/Images/MenuIcons/settings.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
                     <Separator />
-                    <MenuItem x:Name="menuitem_exit" Header="Exit" IsEnabled="True" Click="menuitem_exit_Click"/>
+                    <MenuItem x:Name="menuitem_exit" Header="E_xit" Command="cmd:CustomCommands.Exit">
+                        <MenuItem.Icon>
+                            <Image Source="/Images/MenuIcons/exit.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Tools" Padding="5,2">
-                    <MenuItem x:Name="menuitem_trackLayout" Header="Create track layout" Click="menuitem_trackLayout_Click"/>
-                    <MenuItem Header="Share live data" IsEnabled="False"/>
+                <MenuItem Header="_Tools" Padding="5,2">
+                    <MenuItem x:Name="menuitem_trackLayout" Header="_Create track layout" Command="cmd:CustomCommands.OpenMapTool">
+                        <MenuItem.Icon>
+                            <Image Source="/Images/MenuIcons/map.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Sh_are live data" IsEnabled="False">
+                        <MenuItem.Icon>
+                            <Image Source="/Images/MenuIcons/share.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </MenuItem>
-                <MenuItem Header="Help" Padding="5,2">
-                    <MenuItem Header="Help" IsEnabled="False" />
-                    <MenuItem Header="Send feedback" IsEnabled="False" />
-                    <MenuItem x:Name="menitem_about" Header="About" IsEnabled="True" Click="menitem_about_Click"/>
+                <MenuItem Header="_Help" Padding="5,2">
+                    <MenuItem Header="He_lp" IsEnabled="False" >
+                        <MenuItem.Icon>
+                            <Image Source="/Images/MenuIcons/help.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Sen_d feedback" IsEnabled="False" >
+                        <MenuItem.Icon>
+                            <Image Source="/Images/MenuIcons/feedback.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem x:Name="menitem_about" Header="_About" Command="cmd:CustomCommands.OpenAbout">
+                        <MenuItem.Icon>
+                            <Image Source="/Images/MenuIcons/about.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </MenuItem>
             </Menu>
         </DockPanel>
@@ -97,6 +146,7 @@
             </Grid>
             <TabControl Margin="2.5,5,5,2.5" Padding="0" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
                 <TabItem Header="Personal info">
+                    <!--
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
@@ -293,6 +343,8 @@
                             <TabItem Header="Lap history" IsEnabled="False"/>
                         </TabControl>
                     </Grid>
+                    -->
+                    <personalinfo:PersonalInfoPage x:Name="personalInfo"/>
                 </TabItem>
                 <TabItem Header="Events log" IsEnabled="False"/>
             </TabControl>

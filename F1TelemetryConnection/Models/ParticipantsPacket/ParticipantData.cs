@@ -222,7 +222,16 @@ namespace F1Telemetry.Models.ParticipantsPacket
             {
                 default:
                     var elements = Regex.Split(driver.ToString(), "(?=[A-Z])", RegexOptions.IgnorePatternWhitespace);
-                    this.ShortName = elements[elements.Length - 1].Substring(0, 3).ToUpper();
+
+                    if (
+                        elements != null
+                        && elements.Length > 0
+                        && elements[elements.Length - 1].Length >= 3
+                    )
+                    {
+                        this.ShortName = elements[elements.Length - 1].Substring(0, 3).ToUpper();
+                    }
+
                     break;
                 case Drivers.MickSchumacher:
                 case Drivers.MichaelSchumacher:

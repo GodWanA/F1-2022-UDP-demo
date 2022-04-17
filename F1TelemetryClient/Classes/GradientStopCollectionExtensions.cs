@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
+﻿using System.Linq;
 using System.Windows.Media;
 
 namespace F1TelemetryApp.Classes
@@ -10,7 +7,7 @@ namespace F1TelemetryApp.Classes
     {
         public static Color GetRelativeColor(this GradientStopCollection gsc, double offset)
         {
-            var point = gsc.SingleOrDefault(f => f.Offset == offset);
+            var point = gsc.FirstOrDefault(f => f.Offset == offset);
             if (point != null) return point.Color;
 
             GradientStop before = gsc.Where(w => w.Offset == gsc.Min(m => m.Offset)).FirstOrDefault();

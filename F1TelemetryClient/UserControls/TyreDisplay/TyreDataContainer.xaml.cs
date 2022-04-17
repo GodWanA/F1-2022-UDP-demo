@@ -45,7 +45,6 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
             }
         }
 
-
         private bool canUpdate;
         private int driverIndex;
         private bool disposedValue;
@@ -80,20 +79,29 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
         {
             if (demage != null)
             {
-                this.tyredata_fl.Wear = demage.TyreWear["FrontLeft"];
-                this.tyredata_fr.Wear = demage.TyreWear["FrontRight"];
-                this.tyredata_rl.Wear = demage.TyreWear["RearLeft"];
-                this.tyredata_rr.Wear = demage.TyreWear["RearRight"];
+                if (demage.TyreWear != null)
+                {
+                    this.tyredata_fl.Wear = demage.TyreWear["FrontLeft"];
+                    this.tyredata_fr.Wear = demage.TyreWear["FrontRight"];
+                    this.tyredata_rl.Wear = demage.TyreWear["RearLeft"];
+                    this.tyredata_rr.Wear = demage.TyreWear["RearRight"];
+                }
 
-                this.tyredata_fl.Demage = demage.TyreDemage["FrontLeft"];
-                this.tyredata_fr.Demage = demage.TyreDemage["FrontRight"];
-                this.tyredata_rl.Demage = demage.TyreDemage["RearLeft"];
-                this.tyredata_rr.Demage = demage.TyreDemage["RearRight"];
+                if (demage.TyreDemage != null)
+                {
+                    this.tyredata_fl.Demage = demage.TyreDemage["FrontLeft"];
+                    this.tyredata_fr.Demage = demage.TyreDemage["FrontRight"];
+                    this.tyredata_rl.Demage = demage.TyreDemage["RearLeft"];
+                    this.tyredata_rr.Demage = demage.TyreDemage["RearRight"];
+                }
 
-                this.tyredata_fl.BrakeDemage = demage.BrakesDemage["FrontLeft"];
-                this.tyredata_fr.BrakeDemage = demage.BrakesDemage["FrontRight"];
-                this.tyredata_rl.BrakeDemage = demage.BrakesDemage["RearLeft"];
-                this.tyredata_rr.BrakeDemage = demage.BrakesDemage["RearRight"];
+                if (demage.BrakesDemage != null)
+                {
+                    this.tyredata_fl.BrakeDemage = demage.BrakesDemage["FrontLeft"];
+                    this.tyredata_fr.BrakeDemage = demage.BrakesDemage["FrontRight"];
+                    this.tyredata_rl.BrakeDemage = demage.BrakesDemage["RearLeft"];
+                    this.tyredata_rr.BrakeDemage = demage.BrakesDemage["RearRight"];
+                }
 
                 // this.UpdateLayout();
             }
@@ -229,6 +237,24 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        internal void UpdateTyres(TrackLayout rawTrack)
+        {
+            if (rawTrack != null)
+            {
+                TyreDataControl.TyreSoft = rawTrack.TyreSoft;
+                TyreDataControl.TyreMedium = rawTrack.TyreMedium;
+                TyreDataControl.TyreHard = rawTrack.TyreHard;
+            }
+            else
+            {
+                TyreDataControl.TyreSoft = TyreCompounds.Unknown;
+                TyreDataControl.TyreMedium = TyreCompounds.Unknown;
+                TyreDataControl.TyreHard = TyreCompounds.Unknown;
+            }
+
+            TyreDataControl.ActualTyreCpompund = this.ActualTyreCpompund;
         }
     }
 }
