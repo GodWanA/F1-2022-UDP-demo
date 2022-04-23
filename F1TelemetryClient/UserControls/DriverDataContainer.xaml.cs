@@ -1100,7 +1100,7 @@ namespace F1TelemetryApp.UserControls
 
         private void OnUpdateEvent(Action method)
         {
-            this.Dispatcher.BeginInvoke(() =>
+            this.Dispatcher.Invoke(() =>
             {
                 if (this.canUpdate && this.IsLoaded)
                 {

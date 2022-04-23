@@ -1,16 +1,9 @@
-﻿using F1Telemetry;
-using F1Telemetry.Models.CarDamagePacket;
-using F1Telemetry.Models.CarStatusPacket;
-using F1Telemetry.Models.LapDataPacket;
-using F1Telemetry.Models.ParticipantsPacket;
-using F1Telemetry.Models.SessionHistoryPacket;
+﻿using F1Telemetry.Models.CarStatusPacket;
 using F1Telemetry.Models.SessionPacket;
 using F1TelemetryApp.Classes;
-using F1TelemetryApp.UserControls;
 using F1TelemetryApp.Windows;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -33,20 +26,7 @@ namespace F1TelemetryClient
     {
         private DispatcherTimer lockTimer = new DispatcherTimer();
         private DispatcherTimer cleanTimer = new DispatcherTimer();
-        private ObservableCollection<PlayerListItemData> participantsList;
-
-        public ObservableCollection<PlayerListItemData> ParticipantsList
-        {
-            get { return participantsList; }
-            set
-            {
-                if (value != participantsList)
-                {
-                    participantsList = value;
-                    this.OnPropertyChanged("ParticipantsList");
-                }
-            }
-        }
+        private string regPath;
 
         public GridSizes PrevRes { get; private set; }
 
@@ -64,35 +44,25 @@ namespace F1TelemetryClient
         {
             InitializeComponent();
             this.DataContext = this;
-            this.participantsList = new ObservableCollection<PlayerListItemData>();
         }
 
         private void Window_Initialized(object sender, EventArgs e)
         {
-            //this.udp = new F1UDP("192.168.0.112", 20777);
+            this.regPath = this.CreateRegPath();
+            this.LoadWindowPosition(this.regPath);
             this.SubscribeUDPEvents();
-
-            this.listBox_drivers.Items.SortDescriptions.Add(new SortDescription("CarPosition", ListSortDirection.Ascending));
-
-            this.listBox_drivers.Items.IsLiveSorting = true;
-            this.listBox_drivers.Items.IsLiveFiltering = true;
 
             this.lockTimer.Interval = TimeSpan.FromMilliseconds(500);
             this.lockTimer.Tick += LockTimer_Tick;
 
-            this.cleanTimer.Interval = TimeSpan.FromSeconds(0.5);
-            this.cleanTimer.Tick += CleanTimer_Tick;
+            this.cleanTimer.Interval = TimeSpan.FromSeconds(30);
+            //this.cleanTimer.Tick += CleanTimer_Tick;
         }
 
         public void SubscribeUDPEvents()
         {
             u.Connention.SessionPacket += this.Upp_SessionPacket;
-            //u.Connention.LapDataPacket += this.Udp_LapDataPacket;
-            u.Connention.ParticipantsPacket += this.Udp_ParticipantsPacket;
-            //u.Connention.DemagePacket += this.Udp_DemagePacket;
             u.Connention.CarStatusPacket += Udp_CarStatusPacket;
-            //u.Connention.CarTelemetryPacket += Udp_CarTelemetryPacket;
-            u.Connention.SessionHistoryPacket += Udp_SessionHistoryPacket;
             u.Connention.DataReadError += Connention_DataReadError;
             u.Connention.ConnectionError += Connention_ConnectionError;
 
@@ -102,33 +72,11 @@ namespace F1TelemetryClient
         public void UnsubscribeUDPEvents()
         {
             u.Connention.SessionPacket -= this.Upp_SessionPacket;
-            //u.Connention.LapDataPacket -= this.Udp_LapDataPacket;
-            u.Connention.ParticipantsPacket -= this.Udp_ParticipantsPacket;
-            //u.Connention.DemagePacket -= this.Udp_DemagePacket;
             u.Connention.CarStatusPacket -= Udp_CarStatusPacket;
-            //u.Connention.CarTelemetryPacket -= Udp_CarTelemetryPacket;
-            u.Connention.SessionHistoryPacket -= Udp_SessionHistoryPacket;
             u.Connention.DataReadError -= Connention_DataReadError;
             u.Connention.ConnectionError -= Connention_ConnectionError;
 
             //this.cleanTimer.Stop();
-        }
-
-        private DateTime LastClean;
-
-        private void Udp_LapDataPacket(object sender, EventArgs e)
-        {
-            if (u.CanDoUdp && !this.isWorking_LapData && DateTime.Now - this.LastClean > TimeSpan.FromSeconds(0.5))
-            {
-                this.isWorking_LapData = true;
-                LastClean = DateTime.Now;
-
-                this.Dispatcher.BeginInvoke(() =>
-                {
-                    this.CleanUpList();
-                    this.isWorking_LapData = false;
-                }, DispatcherPriority.Render);
-            }
         }
 
         private void Connention_ConnectionError(object sender, EventArgs e)
@@ -143,7 +91,7 @@ namespace F1TelemetryClient
 
         private void ShowError(Exception ex)
         {
-            this.Dispatcher.BeginInvoke(() =>
+            this.Dispatcher.Invoke(() =>
             {
                 var res = MessageBox.Show(
                     ex.Message,
@@ -160,11 +108,15 @@ namespace F1TelemetryClient
         {
             this.cleanTimer.Stop();
 
-            if (u.CanDoUdp)
-            {
-                this.CleanUpList();
-            }
+            //if (u.CanDoUdp)
+            //{
+            //    this.CleanUpList();
+            //}
             //this.listBox_drivers.Items.DeferRefresh();
+            GC.WaitForFullGCApproach();
+            GC.WaitForFullGCComplete();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
 
             this.cleanTimer.Start();
         }
@@ -180,101 +132,12 @@ namespace F1TelemetryClient
             u.CanDoUdp = true;
         }
 
-        private bool ListFilter(object o)
-        {
-            if (o is PlayerListItemData && (o as PlayerListItemData).CarPosition > 0) return true;
-            else return false;
-        }
-
-        private void Udp_SessionHistoryPacket(object sender, EventArgs e)
-        {
-            //this.Dispatcher.BeginInvoke(() => this.CleanUpList(), DispatcherPriority.Render);
-
-            if (u.CanDoUdp)
-            {
-                this.Dispatcher.BeginInvoke(() =>
-                {
-                    var curHistory = sender as PacketSessionHistoryData;
-
-                    var arrayHistory = u.Connention.LastSessionHistoryPacket;
-                    var lapData = u.Connention.LastLapDataPacket;
-
-                    var itemSource = this.listBox_drivers.ItemsSource?.Cast<PlayerListItemData>();
-                    var curItem = itemSource?.Where(x => x.ArrayIndex == curHistory.CarIndex).FirstOrDefault();
-                    Brush fontColor = Brushes.White;
-
-                    if (curItem != null)
-                    {
-                        if (curItem.CarPosition == 1)
-                        {
-                            curItem.IntervalTime = "interval";
-                            curItem.LeaderIntervalTime = "leader";
-                            curItem.TextColor = fontColor;
-                        }
-                        else if (!curItem.IsOut)
-                        {
-                            curItem.IntervalTime = "";
-                            curItem.LeaderIntervalTime = "";
-                            var curLapdata = lapData?.Lapdata[curItem.ArrayIndex];
-
-                            var prevItem = itemSource.Where(x => x.CarPosition == curItem.CarPosition - 1).FirstOrDefault();
-                            if (prevItem != null)
-                            {
-                                var prevHistory = arrayHistory.Where(x => x?.CarIndex == prevItem.ArrayIndex).FirstOrDefault();
-                                string s = u.CalculateDelta(lapData, curHistory, prevHistory, out fontColor);
-                                if (s != null && s != "") curItem.IntervalTime = s;
-                                curItem.TextColor = fontColor;
-                                prevItem = null;
-                                prevItem = null;
-                            }
-
-                            var firstItem = itemSource.Where(x => x.CarPosition == 1).FirstOrDefault();
-                            if (firstItem != null)
-                            {
-                                var firstHistory = arrayHistory.Where(x => x?.CarIndex == firstItem.ArrayIndex).FirstOrDefault();
-                                string s = u.CalculateDelta(lapData, curHistory, firstHistory, out fontColor);
-                                if (s != null && s != "") curItem.LeaderIntervalTime = s;
-                                firstItem = null;
-                                firstHistory = null;
-                            }
-                        }
-                        else
-                        {
-                            curItem.IntervalTime = "";
-                            curItem.setStateText();
-                            curItem.TextColor = Brushes.White;
-                        }
-                    }
-
-                    //this.CleanUpList();
-                }, DispatcherPriority.Render);
-            }
-        }
-
-        private void CleanUpList()
-        {
-            if (!this.isCleaning)
-            {
-                this.isCleaning = true;
-
-                //this.listBox_drivers.Items.Filter = this.ListFilter;
-                if (this.participantsList.Count > 0) this.listBox_drivers.Items.Refresh();
-
-                //GC.WaitForFullGCApproach();
-                //GC.WaitForFullGCComplete();
-                //GC.WaitForPendingFinalizers();
-                //GC.Collect();
-
-                this.isCleaning = false;
-            }
-        }
-
         private void Udp_CarStatusPacket(object sender, EventArgs e)
         {
             if (!this.isWorking_CarStatusData && u.CanDoUdp)
             {
                 this.isWorking_CarStatusData = true;
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     var status = sender as PacketCarStatusData;
 
@@ -288,56 +151,12 @@ namespace F1TelemetryClient
             }
         }
 
-        //private void Udp_DemagePacket(object sender, EventArgs e)
-        //{
-        //    if (!this.isWorking_DemageData && this.canDoUdp)
-        //    {
-        //        this.isWorking_DemageData = true;
-        //        this.Dispatcher.BeginInvoke(() =>
-        //        {
-        //            //this.LoadWear();
-        //            int i = this.listBox_drivers.SelectedIndex;
-        //            var data = sender as PacketCarDamageData;
-        //            if (i > -1) this.UpdateDemageInfo(data.CarDamageData[i]);
-
-        //            this.isWorking_DemageData = false;
-        //        }, DispatcherPriority.Render);
-        //    }
-        //}
-
-        private void Udp_ParticipantsPacket(object sender, EventArgs e)
-        {
-            if (!this.isWorking_ParticipantsData && u.CanDoUdp)
-            {
-                this.isWorking_ParticipantsData = true;
-                this.Dispatcher.BeginInvoke(() =>
-                {
-                    int index = this.listBox_drivers.SelectedIndex;
-
-                    var participants = sender as PacketParticipantsData;
-                    this.PlayerList(participants.Participants.Length);
-
-                    if (index != -1) this.listBox_drivers.SelectedIndex = index;
-                    else if (participants.Header.Player1CarIndex != 255) this.listBox_drivers.SelectedItem = this.participantsList[participants.Header.Player1CarIndex];
-
-                    if (this.listBox_drivers.SelectedItem != null)
-                    {
-                        this.listBox_drivers.ScrollIntoView(this.listBox_drivers.SelectedItem);
-                    }
-
-                    //this.CleanUpList();
-                    //this.listBox_drivers.Items.Filter = this.ListFilter;
-                    this.isWorking_ParticipantsData = false;
-                }, DispatcherPriority.Render);
-            }
-        }
-
         private void Upp_SessionPacket(object sender, EventArgs e)
         {
             if (!this.isWorking_SessionData && u.CanDoUdp)
             {
                 this.isWorking_SessionData = true;
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     var sessionData = sender as PacketSessionData;
                     var lapData = u.Connention.LastLapDataPacket;
@@ -392,57 +211,10 @@ namespace F1TelemetryClient
             }
         }
 
-        private void listBox_drivers_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            u.SelectedIndex = this.listBox_drivers.SelectedIndex;
-            u.SelectedItem = this.listBox_drivers.SelectedItem;
-
-            if (this.IsLoaded)
-            {
-                if (this.listBox_drivers.SelectedIndex > -1)
-                {
-                    var selected = this.listBox_drivers.SelectedItem as PlayerListItemData;
-
-                    if (selected.CarPosition > 0)
-                    {
-                        foreach (var item in this.participantsList) item.IsSelected = false;
-
-                        selected.IsSelected = true;
-                        this.personalInfo.LoadWear();
-                    }
-                    else
-                    {
-                        this.listBox_drivers.SelectedItem = null;
-                    }
-                }
-            }
-        }
-
-        private void PlayerList(int numberOfPlayers)
-        {
-            if (this.participantsList.Count != numberOfPlayers)
-            {
-                this.participantsList.Clear();
-
-                for (int i = 0; i < numberOfPlayers; i++)
-                {
-                    var data = new PlayerListItemData();
-                    data.ArrayIndex = i;
-                    this.participantsList.Add(data);
-                }
-            }
-
-            //this.CleanUpList();
-        }
-
         private void OnPropertyChanged(string propertyName)
         {
             if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
-
-
-
-
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -527,6 +299,7 @@ namespace F1TelemetryClient
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             u.Connention.Close();
+            this.SaveWindowPosition(this.regPath);
         }
 
         private void Window_LocationChanged(object sender, EventArgs e)
@@ -549,6 +322,7 @@ namespace F1TelemetryClient
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             this.CalculateView();
+            this.cleanTimer.Start();
         }
 
         private void cmdExit_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -615,6 +389,16 @@ namespace F1TelemetryClient
             {
                 window.ShowDialog();
             }
+        }
+
+        private void Window_Unloaded(object sender, RoutedEventArgs e)
+        {
+            this.cleanTimer.Stop();
+        }
+
+        private void SessionTower_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            this.personalInfo.LoadWear();
         }
     }
 }

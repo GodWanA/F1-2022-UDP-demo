@@ -1,4 +1,5 @@
-﻿using System;
+﻿using F1TelemetryApp.Classes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,10 +21,17 @@ namespace F1TelemetryApp.Windows
     public partial class PreferencesWindow : Window, IDisposable
     {
         private bool disposedValue;
+        private string regPath;
 
         public PreferencesWindow()
         {
             InitializeComponent();
+        }
+
+        private void Window_Initialized(object sender, EventArgs e)
+        {
+            this.regPath = this.CreateRegPath();
+            this.LoadWindowPosition(this.regPath);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -33,6 +41,7 @@ namespace F1TelemetryApp.Windows
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects)
+                    this.regPath = null;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
@@ -53,6 +62,11 @@ namespace F1TelemetryApp.Windows
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.SaveWindowPosition(this.regPath);
         }
     }
 }

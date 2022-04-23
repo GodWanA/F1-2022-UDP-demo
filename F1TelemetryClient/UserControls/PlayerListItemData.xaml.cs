@@ -532,7 +532,7 @@ namespace F1TelemetryApp.UserControls
             if (status != null && !this.isStatus)
             {
                 this.isStatus = true;
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     var current = status.CarStatusData[this.ArrayIndex];
                     this.TyreCompund = current.VisualTyreCompound;
@@ -550,7 +550,7 @@ namespace F1TelemetryApp.UserControls
             {
                 this.isParticipants = true;
 
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     var current = participants.Participants[this.ArrayIndex];
                     this.DriverName = current.Name;
@@ -575,7 +575,7 @@ namespace F1TelemetryApp.UserControls
             {
                 this.isLapdata = true;
 
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     if (this.arrayIndex < lapData.Lapdata.Length)
                     {

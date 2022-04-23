@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows.Media;
 
 namespace F1TelemetryApp.Classes
@@ -34,6 +35,20 @@ namespace F1TelemetryApp.Classes
             };
 
             return color;
+        }
+    }
+
+    public static class ColorExtensions
+    {
+        public static bool IsLightColor(this Color c)
+        {
+            var brightness = Math.Sqrt(c.R * c.R * .241 + c.G * c.G * .691 + c.B * c.B * .068);
+
+            if (brightness > 127) return true;
+            else return false;
+
+            //if (c.R > 127 && c.G > 127 && c.B > 127) return true;
+            //else return false;
         }
     }
 }

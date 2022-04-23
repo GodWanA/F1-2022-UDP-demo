@@ -148,7 +148,7 @@ namespace F1TelemetryApp.Classes
             var min = x.Min();
             var max = x.Max();
 
-            a = x.Average();
+            a = (min + max) / 2;
 
             return forWhat / Math.Abs(max - min);
         }

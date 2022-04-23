@@ -26,19 +26,19 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
 
         private void tyrecontainer_Unloaded(object sender, RoutedEventArgs e)
         {
-            this.SubscribeUDPEvents();
+            this.UnsubscribeUDPEvents();
         }
 
         private void tyrecontainer_Loaded(object sender, RoutedEventArgs e)
         {
-            this.UnsubscribeUDPEvents();
+            this.SubscribeUDPEvents();
         }
 
         public void SubscribeUDPEvents()
         {
             if (u.Connention != null)
             {
-                u.Connention.SessionPacket += Connention_SessionPacket;
+                //u.Connention.SessionPacket += Connention_SessionPacket;
                 u.Connention.DemagePacket += Connention_DemagePacket;
             }
         }
@@ -47,7 +47,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
         {
             if (u.Connention != null)
             {
-                u.Connention.SessionPacket -= Connention_SessionPacket;
+                //u.Connention.SessionPacket -= Connention_SessionPacket;
                 u.Connention.DemagePacket -= Connention_DemagePacket;
             }
         }
@@ -57,36 +57,39 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
             if (!this.isWorking_DemageData && u.CanDoUdp)
             {
                 this.isWorking_DemageData = true;
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
-                    //this.LoadWear();
-                    //int i = this.listBox_drivers.SelectedIndex;
-                    int i = u.SelectedIndex;
-                    var data = sender as PacketCarDamageData;
-                    if (i > -1) this.UpdateDemageInfo(data.CarDamageData[i]);
+                    if (u.SelectedItem != null)
+                    {
+                        //this.LoadWear();
+                        //int i = this.listBox_drivers.SelectedIndex;
+                        int i = (u.SelectedItem as PlayerListItemData).ArrayIndex;
+                        var data = sender as PacketCarDamageData;
+                        if (i > -1) this.UpdateDemageInfo(data.CarDamageData[i]);
+                    }
 
                     this.isWorking_DemageData = false;
                 }, DispatcherPriority.Render);
             }
         }
 
-        private void Connention_SessionPacket(object sender, EventArgs e)
-        {
-            if (!this.isWorking_SessionData && u.CanDoUdp)
-            {
-                this.isWorking_SessionData = true;
-                this.Dispatcher.BeginInvoke(() =>
-                {
-                    var sessionData = sender as PacketSessionData;
-                    var map = TrackLayout.FindNearestMap(sessionData.TrackID.ToString(), sessionData.Header.PacketFormat);
-                    //this.tyrecontainer.UpdateTyres(this.map.RawTrack);
-                    this.tyrecontainer.UpdateTyres(map);
+        //private void Connention_SessionPacket(object sender, EventArgs e)
+        //{
+        //    if (!this.isWorking_SessionData && u.CanDoUdp)
+        //    {
+        //        this.isWorking_SessionData = true;
+        //        this.Dispatcher.Invoke(() =>
+        //        {
+        //            var sessionData = sender as PacketSessionData;
+        //            var map = TrackLayout.FindNearestMap(sessionData.TrackID.ToString(), sessionData.Header.PacketFormat);
+        //            //this.tyrecontainer.UpdateTyres(this.map.RawTrack);
+        //            TyreDataControl.UpdateTyres(map);
 
-                    this.isWorking_SessionData = false;
+        //            this.isWorking_SessionData = false;
 
-                }, DispatcherPriority.Render);
-            }
-        }
+        //        }, DispatcherPriority.Render);
+        //    }
+        //}
 
         internal void CalculateView(GridSizes res)
         {

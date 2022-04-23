@@ -1,4 +1,5 @@
-﻿using System;
+﻿using F1TelemetryApp.UserControls;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -341,6 +342,8 @@ namespace F1TelemetryApp.Classes
 
             ret = TrackLayout.Tracks?.Where(x => Regex.IsMatch(x.TrackName, trackName, RegexOptions.IgnoreCase))
                 .OrderBy(x => MathF.Abs(x.Year - season)).FirstOrDefault();
+
+            TyreDataControl.UpdateTyres(ret);
 
             return ret;
         }

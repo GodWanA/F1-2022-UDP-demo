@@ -272,7 +272,7 @@ namespace F1TelemetryApp.Windows
                     }
                 }
 
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     this.DrawMap(data);
 
@@ -399,7 +399,7 @@ namespace F1TelemetryApp.Windows
             {
                 this.canSession = false;
                 var data = sender as PacketSessionData;
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     this.year = data.Header.PacketFormat;
                     this.trackName = data.TrackID.ToString();
@@ -418,7 +418,7 @@ namespace F1TelemetryApp.Windows
                 var data = sender as PacketLapData;
 
                 this.laptime = data.Lapdata[data.Header.Player1CarIndex].CurrentLapTime;
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     this.UpdateLapdata(data);
                     this.canLapdata = true;

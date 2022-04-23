@@ -53,7 +53,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo
             if (!this.isWorking_SessionData && u.CanDoUdp)
             {
                 this.isWorking_SessionData = true;
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     var sessionData = sender as PacketSessionData;
                     this.weatherController.SetActualWeather(sessionData.Weather, sessionData.SessionType, sessionData.TrackTemperature, sessionData.AirTemperature);

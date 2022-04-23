@@ -71,7 +71,7 @@ namespace F1TelemetryApp.UserControls
             if (!this.isLapdataRunning && sender != null)
             {
                 this.isLapdataRunning = true;
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     var data = sender as PacketLapData;
                     this.UpdateLapdata(data);
@@ -90,17 +90,26 @@ namespace F1TelemetryApp.UserControls
                     var e = gridCars[i] as Ellipse;
                     var c = data.Lapdata[i];
 
-                    switch (c.ResultStatus)
+                    switch (c.DriverStatus)
                     {
-                        default:
-                            e.Visibility = Visibility.Visible;
-                            break;
-                        case ResultSatuses.Disqualified:
-                        case ResultSatuses.DidNotFinish:
-                        case ResultSatuses.Finished:
-                        case ResultSatuses.Retired:
-                        case ResultSatuses.NotClassiFied:
+                        case DriverSatuses.Unknown:
+                        case DriverSatuses.InGarage:
                             e.Visibility = Visibility.Hidden;
+                            break;
+                        default:
+                            switch (c.ResultStatus)
+                            {
+                                default:
+                                    e.Visibility = Visibility.Visible;
+                                    break;
+                                case ResultSatuses.Disqualified:
+                                case ResultSatuses.DidNotFinish:
+                                case ResultSatuses.Finished:
+                                case ResultSatuses.Retired:
+                                case ResultSatuses.NotClassiFied:
+                                    e.Visibility = Visibility.Hidden;
+                                    break;
+                            }
                             break;
                     }
                 }
@@ -112,7 +121,7 @@ namespace F1TelemetryApp.UserControls
             if (!this.isStatusRunning && sender != null)
             {
                 this.isStatusRunning = true;
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     var data = sender as PacketCarStatusData;
                     this.UpdateCarStatus(data);
@@ -130,8 +139,12 @@ namespace F1TelemetryApp.UserControls
                 {
                     var e = gridCars[i] as Ellipse;
                     var c = data.CarStatusData[i];
+                    var b = u.FlagColors[c.VehicleFIAFlag] as SolidColorBrush;
 
-                    e.Stroke = u.FlagColors[c.VehicleFIAFlag];
+                    if (b.Color == Brushes.Transparent.Color) b = Map.BorderColor((SolidColorBrush)e.Fill);
+
+                    if (b.CanFreeze) b.Freeze();
+                    e.Stroke = b;
                 }
             }
         }
@@ -141,7 +154,7 @@ namespace F1TelemetryApp.UserControls
             if (!this.isCarmotionRunning && sender != null)
             {
                 this.isCarmotionRunning = true;
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     var data = sender as PacketMotionData;
                     this.UpdateMotion(data);
@@ -179,7 +192,7 @@ namespace F1TelemetryApp.UserControls
             if (!this.isParticipantsRunning && sender != null)
             {
                 this.isParticipantsRunning = true;
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     var data = sender as PacketParticipantsData;
                     this.UpdateParticipants(data);
@@ -202,7 +215,12 @@ namespace F1TelemetryApp.UserControls
 
                 foreach (var p in data.Participants)
                 {
-                    carsGrid.Add(Map.CreateEllipse(u.PickTeamColor(p.TeamID), b));
+                    var teamBrush = u.PickTeamColor(p.TeamID);
+                    b = Map.BorderColor((SolidColorBrush)teamBrush);
+
+                    var e = Map.CreateEllipse(teamBrush, b);
+                    e.ToolTip = p.Name + " | " + p.RaceNumber + "\r\n" + u.PickTeamName(p.TeamID);
+                    carsGrid.Add(e);
                 }
             }
         }
@@ -212,7 +230,7 @@ namespace F1TelemetryApp.UserControls
             if (!this.isSessionRunning && sender != null)
             {
                 this.isSessionRunning = true;
-                this.Dispatcher.BeginInvoke(() =>
+                this.Dispatcher.Invoke(() =>
                 {
                     var data = sender as PacketSessionData;
                     this.UpdateSession(data);
@@ -230,7 +248,7 @@ namespace F1TelemetryApp.UserControls
 
                 if (RawTrack != null && RawTrack.BaseLine?.Count != 0)
                 {
-                    this.maxWidth = this.path_baseline.ActualWidth - 10;
+                    this.maxWidth = this.ActualWidth - 30;
 
                     double ax, ay;
                     var dx = u.ImageMiltiplier(RawTrack.BaseLine.Select(x => x.X), this.maxWidth, out ax);
@@ -341,10 +359,41 @@ namespace F1TelemetryApp.UserControls
 
         private Point CalcPoint(Point v)
         {
+            //if (v.X == this.maxx) ;
+
             var d = maxWidth / 2;
             var x = (v.X + midX * -1) * multiply + d;
             var y = (v.Y + midY * -1) * multiply + d;
-            return new Point(5 + x, 5 + y);
+            return new Point(10 + x, 10 + y);
+        }
+
+        private static SolidColorBrush BorderColor(SolidColorBrush brush)
+        {
+            SolidColorBrush ret = null;
+            const byte alpha = 255;
+            const byte val = 40;
+
+            byte r = brush.Color.R;
+            byte g = brush.Color.G;
+            byte b = brush.Color.B;
+
+            if (brush.Color.IsLightColor())
+            {
+                if (r - val > 0) r -= val;
+                if (g - val > 0) g -= val;
+                if (b - val > 0) b -= val;
+            }
+            else
+            {
+                if (r + val < 255) r += val;
+                if (g + val < 255) g += val;
+                if (b + val < 255) b += val;
+            }
+
+            ret = new SolidColorBrush(Color.FromArgb(alpha, r, g, b));
+            if (ret != null && ret.CanFreeze) ret.Freeze();
+
+            return ret;
         }
 
         private void UserControl_Initialized(object sender, EventArgs e)

@@ -27,6 +27,7 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
                 if (value != actualTyreCpompund)
                 {
                     actualTyreCpompund = value;
+                    TyreDataControl.ActualTyreCpompund = value;
                     this.image_tyre.Source = u.TyreCompoundToImage(this.actualTyreCpompund);
                 }
             }
@@ -183,7 +184,7 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
 
         private void OnUpdateEvent(Action method)
         {
-            this.Dispatcher.BeginInvoke(() =>
+            this.Dispatcher.Invoke(() =>
             {
                 if (this.canUpdate && this.IsLoaded)
                 {
@@ -237,24 +238,6 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
-        }
-
-        internal void UpdateTyres(TrackLayout rawTrack)
-        {
-            if (rawTrack != null)
-            {
-                TyreDataControl.TyreSoft = rawTrack.TyreSoft;
-                TyreDataControl.TyreMedium = rawTrack.TyreMedium;
-                TyreDataControl.TyreHard = rawTrack.TyreHard;
-            }
-            else
-            {
-                TyreDataControl.TyreSoft = TyreCompounds.Unknown;
-                TyreDataControl.TyreMedium = TyreCompounds.Unknown;
-                TyreDataControl.TyreHard = TyreCompounds.Unknown;
-            }
-
-            TyreDataControl.ActualTyreCpompund = this.ActualTyreCpompund;
         }
     }
 }

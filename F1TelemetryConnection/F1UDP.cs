@@ -278,7 +278,8 @@ namespace F1Telemetry
                     else Task.Run(() => ByteArrayProcess((byte[])received.Clone()), this.CancelToken.Token);
                 }
 
-                this.Connection.BeginReceive(new AsyncCallback(recv), null);
+                received = null;
+                this?.Connection?.BeginReceive(new AsyncCallback(recv), null);
             }
         }
 
@@ -412,7 +413,7 @@ namespace F1Telemetry
             }
             catch (Exception ex)
             {
-                this.OnDataReadError(ex);
+                if (ex.GetType() != typeof(TaskCanceledException)) this.OnDataReadError(ex);
             }
         }
 
