@@ -1,4 +1,5 @@
-﻿using System;
+﻿using F1TelemetryApp.Classes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,7 +40,7 @@ namespace F1TelemetryApp.Pages.Settings
             else return false;
         }
 
-        private void IsValidIP()
+        private bool IsValidIP()
         {
             ushort n;
 
@@ -52,10 +53,12 @@ namespace F1TelemetryApp.Pages.Settings
             )
             {
                 this.textblock_error.Text = "";
+                return true;
             }
             else
             {
                 this.textblock_error.Text = "Not a valid IP adress";
+                return false;
             }
         }
 
@@ -67,6 +70,62 @@ namespace F1TelemetryApp.Pages.Settings
         private void textbox_port_TextChanged(object sender, TextChangedEventArgs e)
         {
             this.IsValidIP();
+        }
+
+        internal void LoadData()
+        {
+            if (u.Connention != null)
+            {
+                var tmp = u.Connention.IPAdress.Split('.', StringSplitOptions.TrimEntries);
+
+                if (tmp != null)
+                {
+                    this.textbox_ip0.Text = tmp[0];
+                    this.textbox_ip1.Text = tmp[1];
+                    this.textbox_ip2.Text = tmp[2];
+                    this.textbox_ip3.Text = tmp[3];
+
+                    this.textbox_port.Text = u.Connention.Port.ToString();
+                }
+
+                this.slider_maxpacket.Value = u.Connention.NumberOfPacketPerSecond;
+                this.checkbox_multicore.IsChecked = u.Connention.IsAsyncPacketProcessEnabled;
+            }
+        }
+
+        internal void SaveData()
+        {
+            if (u.Connention != null)
+            {
+                if (this.IsValidIP())
+                {
+                    string oIP = u.Connention.IPAdress;
+                    int oPort = u.Connention.Port;
+
+                    try
+                    {
+                        u.Connention.Close();
+
+                        StringBuilder ip = new StringBuilder()
+                            .Append(this.textbox_ip0.Text).Append(".")
+                            .Append(this.textbox_ip1.Text).Append(".")
+                            .Append(this.textbox_ip2.Text).Append(".")
+                            .Append(this.textbox_ip3.Text);
+
+                        int port = int.Parse(this.textbox_port.Text);
+
+                        u.Connention.Connect(ip.ToString(), port);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        u.Connention.Connect(oIP, oPort);
+                    }
+                }
+
+                u.Connention.NumberOfPacketPerSecond = this.slider_maxpacket.Value;
+                u.Connention.IsAsyncPacketProcessEnabled = this.checkbox_multicore.IsChecked.Value;
+            }
         }
     }
 }

@@ -101,7 +101,7 @@ namespace F1TelemetryClient
                 );
 
                 if (res == MessageBoxResult.OK) Application.Current?.Shutdown();
-            }, DispatcherPriority.Render);
+            }, DispatcherPriority.Background);
         }
 
         private void CleanTimer_Tick(object sender, EventArgs e)
@@ -147,7 +147,7 @@ namespace F1TelemetryClient
                     //this.CleanUpList();
 
                     this.isWorking_CarStatusData = false;
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 
@@ -181,7 +181,7 @@ namespace F1TelemetryClient
                     this.isWorking_SessionData = false;
                     //this.CleanUpList();
 
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 
@@ -342,16 +342,11 @@ namespace F1TelemetryClient
 
         private void cmdOpenPreferences_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            using (var window = new PreferencesWindow
-            {
-                Owner = this,
-                Width = 600,
-                Height = 450,
-            })
+            using (var window = new PreferencesWindow(this))
             {
                 if (window.ShowDialog() == true)
                 {
-
+                    MessageBox.Show("Müxik");
                 }
             }
         }
@@ -363,12 +358,7 @@ namespace F1TelemetryClient
 
         private void cmdOpenMapTool_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            using (var window = new TrackLayoutRecorderWindow
-            {
-                Owner = this,
-                Width = 630,
-                Height = 450,
-            })
+            using (var window = new TrackLayoutRecorderWindow(this))
             {
                 if (window.ShowDialog() == true)
                 {

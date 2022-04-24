@@ -245,18 +245,19 @@ namespace F1Telemetry
         /// <param name="port">UDP data sender's port</param>
         public void Connect(string ip, int port)
         {
-            this.IPAdress = ip;
-            this.Port = port;
-            this.IsConnecting = true;
-            this.EndPoint = new IPEndPoint(IPAddress.Parse(this.IPAdress), this.Port);
-            this.CancelToken = new CancellationTokenSource();
-
-            this.Connection = new UdpClient(this.EndPoint);
-            //this.Connection.Client.ReceiveTimeout = 5;
-            //this.Connection.Client.SendTimeout = 5;
 
             try
             {
+                this.IPAdress = ip;
+                this.Port = port;
+                this.IsConnecting = true;
+                this.EndPoint = new IPEndPoint(IPAddress.Parse(this.IPAdress), this.Port);
+                this.CancelToken = new CancellationTokenSource();
+
+                this.Connection = new UdpClient(this.EndPoint);
+                this.Connection.Client.ReceiveTimeout = int.MaxValue;
+                this.Connection.Client.SendTimeout = int.MaxValue;
+
                 this.Connection.BeginReceive(new AsyncCallback(recv), null);
             }
             catch (Exception e)

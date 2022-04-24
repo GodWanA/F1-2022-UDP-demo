@@ -19,12 +19,12 @@
         </Grid.RowDefinitions>
         <TabControl x:Name="tabcontrol" TabStripPlacement="Left" Margin="5,5,5,0" Padding="5">
             <TabItem Header="UDP settings">
-                <Settings:UDPSettingsPage />
+                <Settings:UDPSettingsPage x:Name="udpsettings" />
             </TabItem>
         </TabControl>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="5,2,5,5" HorizontalAlignment="Right">
-            <Button x:Name="button_save" Content="Save" Padding="20,5" Margin="2,0"/>
-            <Button x:Name="button_cancel" Content="Cancel" Padding="20,5"/>
+            <Button x:Name="button_save" Content="Save" Padding="20,5" Margin="2,0" Click="button_save_Click"/>
+            <Button x:Name="button_cancel" Content="Cancel" Padding="20,5" Click="button_cancel_Click"/>
         </StackPanel>
     </Grid>
 </Window>

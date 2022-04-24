@@ -20,6 +20,9 @@ namespace F1TelemetryApp.UserControls.Session
         private ObservableCollection<PlayerListItemData> participantsList;
 
         private bool isWorking_ParticipantsData;
+        private bool isWorking_sessionHistory;
+
+        private DispatcherTimer timer = new DispatcherTimer();
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event SelectionChangedEventHandler SelectionChanged;
@@ -44,6 +47,23 @@ namespace F1TelemetryApp.UserControls.Session
             this.DataContext = this;
             this.participantsList = new ObservableCollection<PlayerListItemData>();
             this.listBox_drivers.Items.SortDescriptions.Add(new SortDescription("CarPosition", ListSortDirection.Ascending));
+
+            //this.timer.Tick += Timer_Tick;
+            //this.timer.Interval = TimeSpan.FromSeconds(2);
+            //this.timer.Start();
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            this.timer.Stop();
+
+            if (this.IsLoaded)
+            {
+                this.listBox_drivers.Items.Refresh();
+                GC.Collect();
+            }
+
+            this.timer.Start();
         }
 
         public void SubscribeUDPEvents()
@@ -81,7 +101,7 @@ namespace F1TelemetryApp.UserControls.Session
                     var data = sender as PacketParticipantsData;
                     this.UpdateParticipants(data);
                     this.isWorking_ParticipantsData = false;
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 
@@ -110,22 +130,27 @@ namespace F1TelemetryApp.UserControls.Session
                 this.listBox_drivers.ScrollIntoView(this.listBox_drivers.SelectedItem);
             }
 
+            //if (PlayerListItemData.PosChange)
+            //{
             this.listBox_drivers.Items.Refresh();
-            GC.Collect();
+            //    GC.Collect();
+            //    PlayerListItemData.PosChange = false;
+            //}
         }
 
 
         private void Connention_SessionHistoryPacket(object sender, EventArgs e)
         {
-            if (u.CanDoUdp)
+            if (u.CanDoUdp && !this.isWorking_sessionHistory)
             {
+                this.isWorking_sessionHistory = true;
                 this.Dispatcher.Invoke(() =>
                 {
                     var curHistory = sender as PacketSessionHistoryData;
                     this.UpdateSessionHistory(curHistory);
-
-                    //this.CleanUpList();
-                }, DispatcherPriority.Render);
+                    //GC.Collect();
+                    this.isWorking_sessionHistory = false;
+                }, DispatcherPriority.Background);
             }
         }
 

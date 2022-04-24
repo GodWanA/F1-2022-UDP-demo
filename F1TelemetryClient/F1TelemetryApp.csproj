@@ -22,6 +22,9 @@
 		<FileVersion>2021.0.*</FileVersion>
 		<Deterministic>false</Deterministic>
 		<PackageTags>Telemetry, UDP, F1, Racing, Codemasters, Csernay,</PackageTags>
+		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+		<DocumentationFile></DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

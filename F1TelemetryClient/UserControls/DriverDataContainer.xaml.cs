@@ -1108,7 +1108,7 @@ namespace F1TelemetryApp.UserControls
                     if (this.driverIndex > -1) method();
                     this.canUpdate = true;
                 }
-            }, DispatcherPriority.Render);
+            }, DispatcherPriority.Background);
         }
 
         public void SubscribeUDPEvents()

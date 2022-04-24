@@ -192,7 +192,7 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
                     if (this.driverIndex > -1) method.Invoke();
                     this.canUpdate = true;
                 }
-            }, DispatcherPriority.Render);
+            }, DispatcherPriority.Background);
         }
 
         public void SubscribeUDPEvents()

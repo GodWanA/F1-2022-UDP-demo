@@ -21,17 +21,22 @@ namespace F1TelemetryApp.Windows
     public partial class PreferencesWindow : Window, IDisposable
     {
         private bool disposedValue;
-        private string regPath;
+        private readonly string regPath;
 
-        public PreferencesWindow()
+        public PreferencesWindow(Window owner)
         {
             InitializeComponent();
+
+            this.DataContext = this;
+            this.Owner = owner;
+
+            this.regPath = this.CreateRegPath();
+            this.LoadWindowPosition(this.regPath);
         }
 
         private void Window_Initialized(object sender, EventArgs e)
         {
-            this.regPath = this.CreateRegPath();
-            this.LoadWindowPosition(this.regPath);
+            this.udpsettings.LoadData();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -41,7 +46,7 @@ namespace F1TelemetryApp.Windows
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects)
-                    this.regPath = null;
+                    //this.regPath = null;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
@@ -67,6 +72,18 @@ namespace F1TelemetryApp.Windows
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             this.SaveWindowPosition(this.regPath);
+        }
+
+        private void button_save_Click(object sender, RoutedEventArgs e)
+        {
+            this.DialogResult = true;
+            this.udpsettings.SaveData();
+            this.Close();
+        }
+
+        private void button_cancel_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

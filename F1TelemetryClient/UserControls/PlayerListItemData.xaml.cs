@@ -539,7 +539,7 @@ namespace F1TelemetryApp.UserControls
 
                     //// this.UpdateLayout();
                     this.isStatus = false;
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 
@@ -564,7 +564,7 @@ namespace F1TelemetryApp.UserControls
 
                     //if (this.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
                     //else this.Visibility = Visibility.Visible;
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 
@@ -611,7 +611,7 @@ namespace F1TelemetryApp.UserControls
                     }
                     //// this.UpdateLayout();
                     this.isLapdata = false;
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 

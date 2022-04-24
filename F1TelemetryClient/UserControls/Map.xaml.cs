@@ -76,7 +76,7 @@ namespace F1TelemetryApp.UserControls
                     var data = sender as PacketLapData;
                     this.UpdateLapdata(data);
                     this.isLapdataRunning = false;
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 
@@ -87,7 +87,7 @@ namespace F1TelemetryApp.UserControls
             {
                 for (int i = 0; i < gridCars.Count; i++)
                 {
-                    var e = gridCars[i] as Ellipse;
+                    var e = gridCars[i] as Border;
                     var c = data.Lapdata[i];
 
                     switch (c.DriverStatus)
@@ -126,7 +126,7 @@ namespace F1TelemetryApp.UserControls
                     var data = sender as PacketCarStatusData;
                     this.UpdateCarStatus(data);
                     this.isStatusRunning = false;
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 
@@ -137,14 +137,14 @@ namespace F1TelemetryApp.UserControls
             {
                 for (int i = 0; i < gridCars.Count; i++)
                 {
-                    var e = gridCars[i] as Ellipse;
+                    var e = gridCars[i] as Border;
                     var c = data.CarStatusData[i];
                     var b = u.FlagColors[c.VehicleFIAFlag] as SolidColorBrush;
 
-                    if (b.Color == Brushes.Transparent.Color) b = Map.BorderColor((SolidColorBrush)e.Fill);
+                    if (b.Color == Brushes.Transparent.Color) b = Map.BorderColor((SolidColorBrush)e.Background);
 
                     if (b.CanFreeze) b.Freeze();
-                    e.Stroke = b;
+                    e.BorderBrush = b;
                 }
             }
         }
@@ -160,7 +160,7 @@ namespace F1TelemetryApp.UserControls
                     this.UpdateMotion(data);
                     this.isCarmotionRunning = false;
                 }
-                , DispatcherPriority.Render);
+                , DispatcherPriority.Background);
             }
         }
 
@@ -177,7 +177,7 @@ namespace F1TelemetryApp.UserControls
                     var y = item.WorldPosition.Z;
                     var p = this.CalcPoint(new Point(x, y));
 
-                    var e = gridCars[i] as Ellipse;
+                    var e = gridCars[i] as Border;
                     e.Margin = new Thickness
                     {
                         Left = p.X - e.ActualWidth / 2,
@@ -197,7 +197,7 @@ namespace F1TelemetryApp.UserControls
                     var data = sender as PacketParticipantsData;
                     this.UpdateParticipants(data);
                     this.isParticipantsRunning = false;
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 
@@ -209,18 +209,23 @@ namespace F1TelemetryApp.UserControls
 
             if (carsGrid.Count == 0)
             {
-                Brush b = Brushes.Transparent;
-
-                if (b.CanFreeze) b.Freeze();
-
                 foreach (var p in data.Participants)
                 {
                     var teamBrush = u.PickTeamColor(p.TeamID);
-                    b = Map.BorderColor((SolidColorBrush)teamBrush);
+                    var b = Map.BorderColor(teamBrush);
 
-                    var e = Map.CreateEllipse(teamBrush, b);
+                    var e = Map.CreateEllipse(teamBrush, b, p.RaceNumber);
                     e.ToolTip = p.Name + " | " + p.RaceNumber + "\r\n" + u.PickTeamName(p.TeamID);
                     carsGrid.Add(e);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < carsGrid.Count; i++)
+                {
+                    var teamBrush = u.PickTeamColor(data.Participants[i].TeamID);
+                    var b = Map.BorderColor(teamBrush);
+                    ((Border)carsGrid[i]).ToolTip = data.Participants[i].Name + " | " + data.Participants[i].RaceNumber + "\r\n" + u.PickTeamName(data.Participants[i].TeamID);
                 }
             }
         }
@@ -235,7 +240,7 @@ namespace F1TelemetryApp.UserControls
                     var data = sender as PacketSessionData;
                     this.UpdateSession(data);
                     this.isSessionRunning = false;
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 
@@ -300,20 +305,27 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private static Ellipse CreateEllipse(Brush fill, Brush stroke)
+        private static Border CreateEllipse(Brush fill, Brush stroke, int raceNumber)
         {
-            return new Ellipse
+            return new Border
             {
-                Fill = fill,
-                Stroke = stroke,
-                StrokeThickness = 3,
-                StrokeStartLineCap = PenLineCap.Round,
-                StrokeEndLineCap = PenLineCap.Round,
-                StrokeDashCap = PenLineCap.Round,
+                Background = fill,
+                BorderBrush = stroke,
+                BorderThickness = new Thickness(3),
+                CornerRadius = new CornerRadius(10),
                 Width = 20,
                 Height = 20,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
+                Child = new TextBlock
+                {
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Text = raceNumber.ToString(),
+                    Foreground = fill.Negative(),
+                    TextWrapping = TextWrapping.NoWrap,
+                    FontSize = 7,
+                }
             };
         }
 

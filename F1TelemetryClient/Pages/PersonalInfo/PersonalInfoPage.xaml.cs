@@ -62,7 +62,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo
 
                     this.isWorking_SessionData = false;
 
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 

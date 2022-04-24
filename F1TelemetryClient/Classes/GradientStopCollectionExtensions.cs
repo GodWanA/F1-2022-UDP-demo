@@ -51,4 +51,24 @@ namespace F1TelemetryApp.Classes
             //else return false;
         }
     }
+
+    public static class BrushExtension
+    {
+        public static Brush Negative(this Brush b)
+        {
+            Brush ret = null;
+            const byte m = 255;
+
+            if (b is SolidColorBrush)
+            {
+                Color c = (b as SolidColorBrush).Color;
+                var tmp = new SolidColorBrush(Color.FromArgb(c.A, (byte)(m - c.R), (byte)(m - c.G), (byte)(m - c.B)));
+
+                if (tmp.CanFreeze) tmp.Freeze();
+                ret = tmp;
+            }
+
+            return ret;
+        }
+    }
 }

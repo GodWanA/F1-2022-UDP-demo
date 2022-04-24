@@ -52,36 +52,39 @@ namespace F1TelemetryApp.Classes
 
         internal static void LoadWindowPosition(this Window window, string regPath)
         {
-            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(regPath))
+            if (window != null && regPath != null)
             {
-                if (key != null)
+                using (RegistryKey key = Registry.CurrentUser.CreateSubKey(regPath))
                 {
-                    var maxW = SystemParameters.VirtualScreenWidth;
-                    var maxH = SystemParameters.VirtualScreenHeight;
-                    var w = CastDouble(key.GetValue("width"));
-                    var h = CastDouble(key.GetValue("height"));
-                    var l = CastDouble(key.GetValue("left"));
-                    var t = CastDouble(key.GetValue("top"));
-                    var s = CastWindowState(key.GetValue("state"));
-
-                    if (w > maxW) w = maxW;
-                    if (h > maxH) h = maxH;
-
-                    if (window.WindowStartupLocation == WindowStartupLocation.Manual)
+                    if (key != null)
                     {
-                        if (l < 0) l = 0;
-                        if (l + w > maxW) l = maxW - w;
+                        var maxW = SystemParameters.VirtualScreenWidth;
+                        var maxH = SystemParameters.VirtualScreenHeight;
+                        var w = CastDouble(key.GetValue("width"));
+                        var h = CastDouble(key.GetValue("height"));
+                        var l = CastDouble(key.GetValue("left"));
+                        var t = CastDouble(key.GetValue("top"));
+                        var s = CastWindowState(key.GetValue("state"));
 
-                        if (t < 0) t = 0;
-                        if (t + h > maxH) t = maxH - h;
+                        if (w > maxW) w = maxW;
+                        if (h > maxH) h = maxH;
 
-                        window.Top = t;
-                        window.Left = l;
+                        if (window.WindowStartupLocation == WindowStartupLocation.Manual)
+                        {
+                            if (l < 0) l = 0;
+                            if (l + w > maxW) l = maxW - w;
+
+                            if (t < 0) t = 0;
+                            if (t + h > maxH) t = maxH - h;
+
+                            window.Top = t;
+                            window.Left = l;
+                        }
+
+                        window.Height = h;
+                        window.Width = w;
+                        window.WindowState = s;
                     }
-
-                    window.Height = h;
-                    window.Width = w;
-                    window.WindowState = s;
                 }
             }
         }

@@ -103,6 +103,7 @@ namespace F1TelemetryApp.Windows
         private int marshalIndex;
         private DriverSatuses status;
         private float distance;
+        private readonly string regPath;
 
         public int MarshalIndex
         {
@@ -121,10 +122,15 @@ namespace F1TelemetryApp.Windows
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public TrackLayoutRecorderWindow()
+        public TrackLayoutRecorderWindow(Window owner)
         {
             InitializeComponent();
+
             this.DataContext = this;
+            this.Owner = owner;
+
+            this.regPath = this.CreateRegPath();
+            this.LoadWindowPosition(this.regPath);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -224,7 +230,7 @@ namespace F1TelemetryApp.Windows
                             StrokeEndLineCap = PenLineCap.Round,
                             StrokeDashCap = PenLineCap.Round,
                         });
-                    }, DispatcherPriority.Render);
+                    }, DispatcherPriority.Background);
                 }
             }
         }
@@ -290,7 +296,7 @@ namespace F1TelemetryApp.Windows
                     }
 
                     this.canCarmotion = true;
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 
@@ -406,7 +412,7 @@ namespace F1TelemetryApp.Windows
                     this.trackLength = data.TrackLength;
                     this.UpdateSession(data);
                     this.canSession = true;
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 
@@ -422,7 +428,7 @@ namespace F1TelemetryApp.Windows
                 {
                     this.UpdateLapdata(data);
                     this.canLapdata = true;
-                }, DispatcherPriority.Render);
+                }, DispatcherPriority.Background);
             }
         }
 
@@ -522,10 +528,12 @@ namespace F1TelemetryApp.Windows
             this.combobox_hard.SelectedIndex = (int)TyreCompounds.C3;
 
             //this.DialogResult = false;
+
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
+            this.SaveWindowPosition(this.regPath);
             //this.DialogResult = false;
         }
 
