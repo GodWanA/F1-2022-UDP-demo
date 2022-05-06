@@ -11,6 +11,16 @@ namespace F1Telemetry.Models
         public int Index { get; protected set; }
         //public bool Supported { get; protected set; } = true;
 
+        /// <summary>
+        /// RawData of the packet.
+        /// /// Supported:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        /// </summary>
+        public byte[] RawData { get; private set; }
+
         public object Clone()
         {
             return this.MemberwiseClone();
@@ -24,6 +34,7 @@ namespace F1Telemetry.Models
         /// <param name="array">raw data</param>
         protected void PickReader(int format, byte[] array)
         {
+            this.RawData = array;
             //try
             //{
             //this.Supported = true;

@@ -40,9 +40,12 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
             get { return lapAges; }
             set
             {
-                lapAges = value;
-                //this.textBlock_tyreAge.Text = this.lapAges.ToString();
-                this.OnPropertyChanged("LapAges");
+                if (value != lapAges)
+                {
+                    lapAges = value;
+                    //this.textBlock_tyreAge.Text = this.lapAges.ToString();
+                    this.OnPropertyChanged("LapAges");
+                }
             }
         }
 
@@ -67,16 +70,16 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
 
             this.driverIndex = index;
 
-            this.UpdateStatus(status);
-            this.UpdateTelemetry(telemetry);
-            this.UpdateDemage(demage);
+            this.UpdateStatus(ref status);
+            this.UpdateTelemetry(ref telemetry);
+            this.UpdateDemage(ref demage);
 
             // this.UpdateLayout();
 
             this.canUpdate = true;
         }
 
-        private void UpdateDemage(CarDamageData demage)
+        private void UpdateDemage(ref CarDamageData demage)
         {
             if (demage != null)
             {
@@ -108,7 +111,7 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
             }
         }
 
-        private void UpdateTelemetry(CarTelemetryData telemetry)
+        private void UpdateTelemetry(ref CarTelemetryData telemetry)
         {
             if (telemetry != null)
             {
@@ -136,7 +139,7 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
             }
         }
 
-        private void UpdateStatus(CarStatusData status)
+        private void UpdateStatus(ref CarStatusData status)
         {
             if (status != null)
             {
@@ -155,30 +158,27 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
             }
         }
 
-        private void Connention_DemagePacket(object sender, EventArgs e)
+        private void Connention_DemagePacket(PacketCarDamageData packet, EventArgs e)
         {
             this.OnUpdateEvent(() =>
             {
-                var data = sender as PacketCarDamageData;
-                this.UpdateDemage(data.CarDamageData[this.driverIndex]);
+                this.UpdateDemage(ref packet.CarDamageData[this.driverIndex]);
             });
         }
 
-        private void Connention_CarTelemetryPacket(object sender, EventArgs e)
+        private void Connention_CarTelemetryPacket(PacketCarTelemetryData packet, EventArgs e)
         {
             this.OnUpdateEvent(() =>
             {
-                var data = sender as PacketCarTelemetryData;
-                this.UpdateTelemetry(data.CarTelemetryData[this.driverIndex]);
+                this.UpdateTelemetry(ref packet.CarTelemetryData[this.driverIndex]);
             });
         }
 
-        private void Connention_CarStatusPacket(object sender, EventArgs e)
+        private void Connention_CarStatusPacket(PacketCarStatusData packet, EventArgs e)
         {
             this.OnUpdateEvent(() =>
             {
-                var data = sender as PacketCarStatusData;
-                this.UpdateStatus(data.CarStatusData[this.driverIndex]);
+                this.UpdateStatus(ref packet.CarStatusData[this.driverIndex]);
             });
         }
 
@@ -199,14 +199,14 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
         {
             u.Connention.CarStatusPacket += Connention_CarStatusPacket;
             u.Connention.CarTelemetryPacket += Connention_CarTelemetryPacket;
-            u.Connention.DemagePacket += Connention_DemagePacket;
+            u.Connention.CarDemagePacket += Connention_DemagePacket;
         }
 
         public void UnsubscribeUDPEvents()
         {
             u.Connention.CarStatusPacket -= Connention_CarStatusPacket;
             u.Connention.CarTelemetryPacket -= Connention_CarTelemetryPacket;
-            u.Connention.DemagePacket -= Connention_DemagePacket;
+            u.Connention.CarDemagePacket -= Connention_DemagePacket;
         }
 
         protected virtual void Dispose(bool disposing)

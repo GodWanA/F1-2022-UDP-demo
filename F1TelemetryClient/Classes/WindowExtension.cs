@@ -1,8 +1,12 @@
 ﻿using Microsoft.Win32;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace F1TelemetryApp.Classes
 {
@@ -103,6 +107,29 @@ namespace F1TelemetryApp.Classes
 
             if (s == null || s == "") return WindowState.Normal;
             else return (WindowState)int.Parse(s, NumberStyles.Any);
+        }
+
+        public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj == null) yield return (T)Enumerable.Empty<T>();
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+            {
+                DependencyObject ithChild = VisualTreeHelper.GetChild(depObj, i);
+                if (ithChild == null) continue;
+                if (ithChild is T t) yield return t;
+                foreach (T childOfChild in FindVisualChildren<T>(ithChild)) yield return childOfChild;
+            }
+        }
+
+        public static void FreezeColors(this Window window)
+        {
+            foreach (Control c in FindVisualChildren<Control>(window))
+            {
+                if (c.BorderBrush != null && c.BorderBrush.CanFreeze) c.BorderBrush.Freeze();
+                if (c.Background != null && c.Background.CanFreeze) c.Background.Freeze();
+                if (c.Foreground != null && c.Foreground.CanFreeze) c.Foreground.Freeze();
+                if (c.OpacityMask != null && c.OpacityMask.CanFreeze) c.OpacityMask.Freeze();
+            }
         }
     }
 }

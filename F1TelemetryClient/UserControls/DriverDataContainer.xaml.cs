@@ -41,7 +41,7 @@ namespace F1TelemetryApp.UserControls
             get { return carPosition; }
             set
             {
-                if (carPosition != value)
+                if (value != carPosition)
                 {
                     carPosition = value;
                     this.OnPropertyChanged("CarPosition");
@@ -56,7 +56,7 @@ namespace F1TelemetryApp.UserControls
             get { return teamColor; }
             set
             {
-                if (teamColor != value)
+                if (value != teamColor)
                 {
                     teamColor = value;
                     this.OnPropertyChanged("TeamColor");
@@ -71,7 +71,7 @@ namespace F1TelemetryApp.UserControls
             get { return driverName; }
             set
             {
-                if (driverName != value)
+                if (value != driverName)
                 {
                     driverName = value;
                     this.OnPropertyChanged("DriverName");
@@ -86,7 +86,7 @@ namespace F1TelemetryApp.UserControls
             get { return raceNumber; }
             set
             {
-                if (raceNumber != value)
+                if (value != raceNumber)
                 {
                     raceNumber = value;
                     this.OnPropertyChanged("RaceNumber");
@@ -101,7 +101,7 @@ namespace F1TelemetryApp.UserControls
             get { return teamName; }
             set
             {
-                if (teamName != value)
+                if (value != teamName)
                 {
                     teamName = value;
                     this.OnPropertyChanged("TeamName");
@@ -116,7 +116,7 @@ namespace F1TelemetryApp.UserControls
             get { return currentLapTime; }
             set
             {
-                if (currentLapTime != value)
+                if (value != currentLapTime)
                 {
                     currentLapTime = value;
                     this.OnPropertyChanged("CurrentLapTime");
@@ -131,7 +131,7 @@ namespace F1TelemetryApp.UserControls
             get { return currentStatus; }
             set
             {
-                if (currentStatus != value)
+                if (value != currentStatus)
                 {
                     currentStatus = value;
                     this.OnPropertyChanged("CurrentStatus");
@@ -146,7 +146,7 @@ namespace F1TelemetryApp.UserControls
             get { return bestLapTime; }
             set
             {
-                if (bestLapTime != value)
+                if (value != bestLapTime)
                 {
                     bestLapTime = value;
                     this.OnPropertyChanged("BestLapTime");
@@ -161,7 +161,7 @@ namespace F1TelemetryApp.UserControls
             get { return prevDriver; }
             set
             {
-                if (prevDriver != value)
+                if (value != prevDriver)
                 {
                     prevDriver = value;
                     this.OnPropertyChanged("PrevDriver");
@@ -176,7 +176,7 @@ namespace F1TelemetryApp.UserControls
             get { return nextDriver; }
             set
             {
-                if (nextDriver != value)
+                if (value != nextDriver)
                 {
                     nextDriver = value;
                     this.OnPropertyChanged("NextDriver");
@@ -191,7 +191,7 @@ namespace F1TelemetryApp.UserControls
             get { return prevDelta; }
             set
             {
-                if (prevDelta != value)
+                if (value != prevDelta)
                 {
                     prevDelta = value;
                     this.OnPropertyChanged("PrevDelta");
@@ -206,7 +206,7 @@ namespace F1TelemetryApp.UserControls
             get { return nextDelta; }
             set
             {
-                if (nextDelta != value)
+                if (value != nextDelta)
                 {
                     nextDelta = value;
                     this.OnPropertyChanged("NextDelta");
@@ -221,7 +221,7 @@ namespace F1TelemetryApp.UserControls
             get { return lapPercent; }
             set
             {
-                if (lapPercent != value)
+                if (value != lapPercent)
                 {
                     lapPercent = value;
                     this.OnPropertyChanged("LapPercent");
@@ -236,7 +236,7 @@ namespace F1TelemetryApp.UserControls
             get { return timePenaltis; }
             set
             {
-                if (timePenaltis != value)
+                if (value != timePenaltis)
                 {
                     timePenaltis = value;
                     this.OnPropertyChanged("TimePenaltis");
@@ -251,7 +251,7 @@ namespace F1TelemetryApp.UserControls
             get { return driveThrough; }
             set
             {
-                if (driveThrough != value)
+                if (value != driveThrough)
                 {
                     driveThrough = value;
                     this.OnPropertyChanged("DriveThrough");
@@ -266,7 +266,7 @@ namespace F1TelemetryApp.UserControls
             get { return stopGo; }
             set
             {
-                if (stopGo != value)
+                if (value != stopGo)
                 {
                     stopGo = value;
                     this.OnPropertyChanged("StopGo");
@@ -281,7 +281,7 @@ namespace F1TelemetryApp.UserControls
             get { return warning; }
             set
             {
-                if (warning != value)
+                if (value != warning)
                 {
                     warning = value;
                     this.OnPropertyChanged("Warning");
@@ -296,7 +296,7 @@ namespace F1TelemetryApp.UserControls
             get { return fuelPercent; }
             set
             {
-                if (fuelPercent != value)
+                if (value != fuelPercent)
                 {
                     fuelPercent = value;
                     this.OnPropertyChanged("FuelPercent");
@@ -311,7 +311,7 @@ namespace F1TelemetryApp.UserControls
             get { return fuelInTank; }
             set
             {
-                if (fuelInTank != value)
+                if (value != fuelInTank)
                 {
                     fuelInTank = value;
                     this.OnPropertyChanged("FuelInTank");
@@ -326,7 +326,7 @@ namespace F1TelemetryApp.UserControls
             get { return fuelCapacity; }
             set
             {
-                if (fuelCapacity != value)
+                if (value != fuelCapacity)
                 {
                     fuelCapacity = value;
                     this.OnPropertyChanged("FuelCapacity");
@@ -341,7 +341,7 @@ namespace F1TelemetryApp.UserControls
             get { return fuelRemaining; }
             set
             {
-                if (fuelRemaining != value)
+                if (value != fuelRemaining)
                 {
                     fuelRemaining = value;
                     this.OnPropertyChanged("FuelRemaining");
@@ -356,7 +356,7 @@ namespace F1TelemetryApp.UserControls
             get { return remainingColor; }
             set
             {
-                if (remainingColor != value)
+                if (value != remainingColor)
                 {
                     remainingColor = value;
                     if (remainingColor.CanFreeze) this.remainingColor.Freeze();
@@ -372,7 +372,7 @@ namespace F1TelemetryApp.UserControls
             get { return isAi; }
             set
             {
-                if (isAi != value)
+                if (value != isAi)
                 {
                     isAi = value;
                     BitmapImage img = null;
@@ -393,7 +393,7 @@ namespace F1TelemetryApp.UserControls
             get { return colorABS; }
             set
             {
-                if (colorABS != value)
+                if (value != colorABS)
                 {
                     colorABS = value;
                     this.OnPropertyChanged("ColorABS");
@@ -408,7 +408,7 @@ namespace F1TelemetryApp.UserControls
             get { return colorTC; }
             set
             {
-                if (colorTC != value)
+                if (value != colorTC)
                 {
                     colorTC = value;
                     if (this.remainingColor != null && this.remainingColor.CanFreeze) this.remainingColor.Freeze();
@@ -424,7 +424,7 @@ namespace F1TelemetryApp.UserControls
             get { return fuelMix; }
             set
             {
-                if (fuelMix != value)
+                if (value != fuelMix)
                 {
                     fuelMix = value;
                     this.OnPropertyChanged("FuelMix");
@@ -439,7 +439,7 @@ namespace F1TelemetryApp.UserControls
             get { return ersEnergy; }
             set
             {
-                if (ersEnergy != value)
+                if (value != ersEnergy)
                 {
                     ersEnergy = value;
                     this.OnPropertyChanged("ERSEnergy");
@@ -454,7 +454,7 @@ namespace F1TelemetryApp.UserControls
             get { return ersDeployable; }
             set
             {
-                if (ersDeployable != value)
+                if (value != ersDeployable)
                 {
                     ersDeployable = value;
                     this.OnPropertyChanged("ERSDeployable");
@@ -469,7 +469,7 @@ namespace F1TelemetryApp.UserControls
             get { return ersMGUK; }
             set
             {
-                if (ersMGUK != value)
+                if (value != ersMGUK)
                 {
                     ersMGUK = value;
                     this.OnPropertyChanged("ERSMGUK");
@@ -484,7 +484,7 @@ namespace F1TelemetryApp.UserControls
             get { return ersMGUH; }
             set
             {
-                if (ersMGUH != value)
+                if (value != ersMGUH)
                 {
                     ersMGUH = value;
                     this.OnPropertyChanged("ERSMGUH");
@@ -499,7 +499,7 @@ namespace F1TelemetryApp.UserControls
             get { return ersMode; }
             set
             {
-                if (ersMode != value)
+                if (value != ersMode)
                 {
                     ersMode = value;
                     this.OnPropertyChanged("ERSMode");
@@ -514,7 +514,7 @@ namespace F1TelemetryApp.UserControls
             get { return brakeBias; }
             set
             {
-                if (brakeBias != value)
+                if (value != brakeBias)
                 {
                     brakeBias = value;
                     this.OnPropertyChanged("BrakeBias");
@@ -529,7 +529,7 @@ namespace F1TelemetryApp.UserControls
             get { return gForce; }
             set
             {
-                if (gForce != value)
+                if (value != gForce)
                 {
                     gForce = value;
                     this.OnPropertyChanged("GForce");
@@ -544,7 +544,7 @@ namespace F1TelemetryApp.UserControls
             get { return throttle; }
             set
             {
-                if (throttle != value)
+                if (value != throttle)
                 {
                     throttle = value;
                     this.OnPropertyChanged("Throttle");
@@ -559,7 +559,7 @@ namespace F1TelemetryApp.UserControls
             get { return brake; }
             set
             {
-                if (brake != value)
+                if (value != brake)
                 {
                     brake = value;
                     this.OnPropertyChanged("Brake");
@@ -574,7 +574,7 @@ namespace F1TelemetryApp.UserControls
             get { return clutch; }
             set
             {
-                if (clutch != value)
+                if (value != clutch)
                 {
                     clutch = value;
                     this.OnPropertyChanged("Clutch");
@@ -589,7 +589,7 @@ namespace F1TelemetryApp.UserControls
             get { return speedKPH; }
             set
             {
-                if (speedKPH != value)
+                if (value != speedKPH)
                 {
                     speedKPH = value;
                     this.OnPropertyChanged("SpeedKPH");
@@ -604,7 +604,7 @@ namespace F1TelemetryApp.UserControls
             get { return speedMPH; }
             set
             {
-                if (speedMPH != value)
+                if (value != speedMPH)
                 {
                     speedMPH = value;
                     this.OnPropertyChanged("SpeedMPH");
@@ -619,7 +619,7 @@ namespace F1TelemetryApp.UserControls
             get { return steer; }
             set
             {
-                if (steer != value)
+                if (value != steer)
                 {
                     steer = value;
                     this.OnPropertyChanged("Steer");
@@ -634,7 +634,7 @@ namespace F1TelemetryApp.UserControls
             get { return rpm; }
             set
             {
-                if (rpm != value)
+                if (value != rpm)
                 {
                     rpm = value;
                     this.OnPropertyChanged("RPM");
@@ -649,7 +649,7 @@ namespace F1TelemetryApp.UserControls
             get { return gear; }
             set
             {
-                if (gear != value)
+                if (value != gear)
                 {
                     gear = value;
                     this.OnPropertyChanged("Gear");
@@ -718,7 +718,7 @@ namespace F1TelemetryApp.UserControls
             if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void UpdateLapdata(PacketLapData lapdata)
+        private void UpdateLapdata(ref PacketLapData lapdata)
         {
             if (lapdata != null)
             {
@@ -757,19 +757,19 @@ namespace F1TelemetryApp.UserControls
 
             this.driverIndex = playerIndex;
 
-            this.UpdateLapdata(lapdata);
-            this.UpdateParticipants(participants);
-            this.UpdateHistory(history);
-            this.UpdateStatus(status);
+            this.UpdateLapdata(ref lapdata);
+            this.UpdateParticipants(ref participants);
+            this.UpdateHistory(ref history);
+            this.UpdateStatus(ref status);
             this.UpdateGForce(gForce);
-            this.UpdateTelemetry(telemetry);
+            this.UpdateTelemetry(ref telemetry);
 
             // this.UpdateLayout();
 
             this.canUpdate = true;
         }
 
-        private void UpdateTelemetry(CarTelemetryData telemetry)
+        private void UpdateTelemetry(ref CarTelemetryData telemetry)
         {
             if (telemetry != null)
             {
@@ -846,7 +846,7 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private void UpdateStatus(CarStatusData status)
+        private void UpdateStatus(ref CarStatusData status)
         {
             if (status != null)
             {
@@ -907,7 +907,7 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private void UpdateParticipants(PacketParticipantsData participantsData)
+        private void UpdateParticipants(ref PacketParticipantsData participantsData)
         {
             if (participantsData != null)
             {
@@ -936,7 +936,7 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private void UpdateHistory(PacketSessionHistoryData history)
+        private void UpdateHistory(ref PacketSessionHistoryData history)
         {
             if (history != null)
             {
@@ -998,7 +998,7 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private void UpdateSession(PacketSessionData session)
+        private void UpdateSession(ref PacketSessionData session)
         {
             bool ok = session != null && session.Header.Player1CarIndex == this.driverIndex;
 
@@ -1035,66 +1035,59 @@ namespace F1TelemetryApp.UserControls
             };
         }
 
-        private void Connention_LapDataPacket(object sender, EventArgs e)
+        private void Connention_LapDataPacket(PacketLapData packet, EventArgs e)
         {
             this.OnUpdateEvent(() =>
             {
-                var data = sender as PacketLapData;
-                this.UpdateLapdata(data);
+                this.UpdateLapdata(ref packet);
             });
         }
 
-        private void Connention_CarMotionPacket(object sender, EventArgs e)
+        private void Connention_CarMotionPacket(PacketMotionData packet, EventArgs e)
         {
             this.OnUpdateEvent(() =>
             {
-                var data = sender as PacketMotionData;
-                if (data != null) this.UpdateGForce(data.CarMotionData[this.driverIndex].GForce);
+                if (packet != null) this.UpdateGForce(packet.CarMotionData[this.driverIndex].GForce);
             });
         }
 
-        private void Connention_CarStatusPacket(object sender, EventArgs e)
+        private void Connention_CarStatusPacket(PacketCarStatusData packet, EventArgs e)
         {
             this.OnUpdateEvent(() =>
             {
-                var data = sender as PacketCarStatusData;
-                this.UpdateStatus(data.CarStatusData[this.driverIndex]);
+                this.UpdateStatus(ref packet.CarStatusData[this.driverIndex]);
             });
         }
 
-        private void Connention_CarTelemetryPacket(object sender, EventArgs e)
+        private void Connention_CarTelemetryPacket(PacketCarTelemetryData packet, EventArgs e)
         {
             this.OnUpdateEvent(() =>
             {
-                var data = sender as PacketCarTelemetryData;
-                this.UpdateTelemetry(data.CarTelemetryData[this.driverIndex]);
+                this.UpdateTelemetry(ref packet.CarTelemetryData[this.driverIndex]);
             });
         }
 
-        private void Connention_SessionHistoryPacket(object sender, EventArgs e)
+        private void Connention_SessionHistoryPacket(PacketSessionHistoryData packet, EventArgs e)
         {
             this.OnUpdateEvent(() =>
             {
-                var data = sender as PacketSessionHistoryData;
-                if (data.CarIndex == this.driverIndex) this.UpdateHistory(data);
+                if (packet.CarIndex == this.driverIndex) this.UpdateHistory(ref packet);
             });
         }
 
-        private void Connention_ParticipantsPacket(object sender, EventArgs e)
+        private void Connention_ParticipantsPacket(PacketParticipantsData packet, EventArgs e)
         {
             this.OnUpdateEvent(() =>
             {
-                var data = sender as PacketParticipantsData;
-                this.UpdateParticipants(data);
+                this.UpdateParticipants(ref packet);
             });
         }
 
-        private void Connention_SessionPacket(object sender, EventArgs e)
+        private void Connention_SessionPacket(PacketSessionData packet, EventArgs e)
         {
             this.OnUpdateEvent(() =>
             {
-                var data = sender as PacketSessionData;
-                this.UpdateSession(data);
+                this.UpdateSession(ref packet);
             });
         }
 

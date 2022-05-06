@@ -39,7 +39,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
             if (u.Connention != null)
             {
                 //u.Connention.SessionPacket += Connention_SessionPacket;
-                u.Connention.DemagePacket += Connention_DemagePacket;
+                u.Connention.CarDemagePacket += Connention_DemagePacket;
             }
         }
 
@@ -48,7 +48,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
             if (u.Connention != null)
             {
                 //u.Connention.SessionPacket -= Connention_SessionPacket;
-                u.Connention.DemagePacket -= Connention_DemagePacket;
+                u.Connention.CarDemagePacket -= Connention_DemagePacket;
             }
         }
 

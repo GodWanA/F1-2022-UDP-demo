@@ -119,114 +119,171 @@ namespace F1Telemetry
         public DateTime LastTime_CarStatus { get; private set; }
 
         // udp events:
+
+        public delegate void ErrorEvent(object sender, Exception ex, EventArgs e);
+
         /// <summary>
         /// Occours on UDP connection error. Sender is an Exception object.
         /// </summary>
-        public event EventHandler ConnectionError;
+        public event ErrorEvent ConnectionError;
         /// <summary>
         /// Occours on Packet read error. Sender is an Exception object.
         /// </summary>
-        public event EventHandler DataReadError;
+        public event ErrorEvent DataReadError;
         /// <summary>
         /// Occours after UDP connection closed. Sender is current F1UFP object.
         /// </summary>
         public event EventHandler ClosedConnection;
 
         // main packet envets:
+
+        public delegate void RawHandler(byte[] rawData, EventArgs e);
+
+        public delegate void CarMotionHandler(PacketMotionData packet, EventArgs e);
+        public delegate void SessionHandler(PacketSessionData packet, EventArgs e);
+        public delegate void LapDataHandler(PacketLapData packet, EventArgs e);
+        public delegate void ParticipantsHandler(PacketParticipantsData packet, EventArgs e);
+        public delegate void CarSetupsHandler(PacketCarSetupData packet, EventArgs e);
+        public delegate void CarTelemetryHandler(PacketCarTelemetryData packet, EventArgs e);
+        public delegate void CarStatusHandler(PacketCarStatusData packet, EventArgs e);
+        public delegate void FinalClassificationHandler(PacketFinalClassificationData packet, EventArgs e);
+        public delegate void LobbyInfoHandler(PacketLobbyInfoData packet, EventArgs e);
+        public delegate void SessionHistoryHandler(PacketSessionHistoryData packet, EventArgs e);
+        public delegate void CarDemageHandler(PacketCarDamageData packet, EventArgs e);
+
+        public delegate void BasicEventHandler(PacketEventData packet, EventArgs e);
+        public delegate void FastestLapEventHandler(FastestLap packet, EventArgs e);
+        public delegate void RetirementEventHandler(Retirement packet, EventArgs e);
+        public delegate void TeamMateInPitsEventHandler(TeamMateInPits packet, EventArgs e);
+        public delegate void RaceWinnerEventHandler(RaceWinner packet, EventArgs e);
+        public delegate void PenaltyEventHandler(Penalty packet, EventArgs e);
+        public delegate void SpeedTrapEventHandler(SpeedTrap packet, EventArgs e);
+        public delegate void StartLightsEventHandler(StartLights packet, EventArgs e);
+        public delegate void DriveThroughPenaltyServedEventHandler(DriveThroughPenaltyServed packet, EventArgs e);
+        public delegate void StopGoPenaltyServedEventHandler(StopGoPenaltyServed packet, EventArgs e);
+        public delegate void FlashbackEventHandler(Flashback packet, EventArgs e);
+        public delegate void ButtonsEventHandler(Buttons packet, EventArgs e);
+
+        /// <summary>
+        /// Raw recieved byte array.
+        /// </summary>
+        public event RawHandler RawDataRecieved;
+
         /// <summary>
         /// Occours on carmotion packet read. Sender is a PacketMotionData object.
         /// </summary>
-        public event EventHandler CarMotionPacket;
+        public event CarMotionHandler CarMotionPacket;
+
         /// <summary>
         /// Occours on session packet read. Sender is a PacketSessionData object.
         /// </summary>
-        public event EventHandler SessionPacket;
+        public event SessionHandler SessionPacket;
+
         /// <summary>
         /// Occours on lap data packet read. Sender is a PacketLapData object.
         /// </summary>
-        public event EventHandler LapDataPacket;
+        public event LapDataHandler LapDataPacket;
+
         /// <summary>
         /// Occours on lap data packet read. Sender is a PacketParticipantsData object.
         /// </summary>
-        public event EventHandler ParticipantsPacket;
+        public event ParticipantsHandler ParticipantsPacket;
+
         /// <summary>
         /// Occours on lap data packet read. Sender is a PacketCarSetupData object.
         /// </summary>
-        public event EventHandler CarSetupsPacket;
+        public event CarSetupsHandler CarSetupsPacket;
+
         /// <summary>
         /// Occours on lap data packet read. Sender is a PacketCarTelemetryData object.
         /// </summary>        
-        public event EventHandler CarTelemetryPacket;
+        public event CarTelemetryHandler CarTelemetryPacket;
+
         /// <summary>
         /// Occours on lap data packet read. Sender is a PacketCarStatusData object.
         /// </summary>
-        public event EventHandler CarStatusPacket;
+        public event CarStatusHandler CarStatusPacket;
+
         /// <summary>
         /// Occours on lap data packet read. Sender is a PacketFinalClassificationData object.
         /// </summary>
-        public event EventHandler FinalClassificationPacket;
+        public event FinalClassificationHandler FinalClassificationPacket;
+
         /// <summary>
         /// Occours on lap data packet read. Sender is a PacketLobbyInfoData object.
         /// </summary>
-        public event EventHandler LobbyInfoPacket;
+        public event LobbyInfoHandler LobbyInfoPacket;
+
         /// <summary>
         /// Occours on lap data packet read. Sender is a PacketSessionHistoryData object.
         /// </summary>
-        public event EventHandler SessionHistoryPacket;
+        public event SessionHistoryHandler SessionHistoryPacket;
+
         /// <summary>
         /// Occours on lap data packet read. Sender is a PacketFinalClassificationData object.
         /// </summary>
-        public event EventHandler DemagePacket;
+        public event CarDemageHandler CarDemagePacket;
 
         // special event packet events:
         /// <summary>
         /// Occours on any undefined event. Sender is a PacketEventData object.
         /// </summary>
-        public event EventHandler EventPacket;
+        public event BasicEventHandler EventPacket;
+
         /// <summary>
         /// Occours on any undefined event. Sender is a FastestLap object.
         /// </summary>
-        public event EventHandler EventPacketFastestLap;
+        public event FastestLapEventHandler EventPacketFastestLap;
+
         /// <summary>
         /// Occours on any undefined event. Sender is a Retirement object.
         /// </summary>
-        public event EventHandler EventPacketRetirement;
+        public event RetirementEventHandler EventPacketRetirement;
+
         /// <summary>
         /// Occours on any undefined event. Sender is a TeamMateInPits object.
         /// </summary>
-        public event EventHandler EventPacketTeamMateInPits;
+        public event TeamMateInPitsEventHandler EventPacketTeamMateInPits;
+
         /// <summary>
         /// Occours on any undefined event. Sender is a RaceWinner object.
         /// </summary>
-        public event EventHandler EventPacketRaceWinner;
+        public event RaceWinnerEventHandler EventPacketRaceWinner;
+
         /// <summary>
         /// Occours on any undefined event. Sender is a Penalty object.
         /// </summary>
-        public event EventHandler EventPacketPenalty;
+        public event PenaltyEventHandler EventPacketPenalty;
+
         /// <summary>
         /// Occours on any undefined event. Sender is a SpeedTrap object.
         /// </summary>
-        public event EventHandler EventPacketSpeedTrap;
+        public event SpeedTrapEventHandler EventPacketSpeedTrap;
+
         /// <summary>
         /// Occours on any undefined event. Sender is a StartLights object.
         /// </summary>
-        public event EventHandler EventPacketStartLights;
+        public event StartLightsEventHandler EventPacketStartLights;
+
         /// <summary>
         /// Occours on any undefined event. Sender is a DriveThroughPenaltyServed object.
         /// </summary>
-        public event EventHandler EventPacketDriveThroughPenaltyServed;
+        public event DriveThroughPenaltyServedEventHandler EventPacketDriveThroughPenaltyServed;
+
         /// <summary>
         /// Occours on any undefined event. Sender is a StopGoPenaltyServed object.
         /// </summary>
-        public event EventHandler EventPacketStopGoPenaltyServed;
+        public event StopGoPenaltyServedEventHandler EventPacketStopGoPenaltyServed;
+
         /// <summary>
         /// Occours on any undefined event. Sender is a Flashback object.
         /// </summary>
-        public event EventHandler EventPacketFlashback;
+        public event FlashbackEventHandler EventPacketFlashback;
+
         /// <summary>
         /// Occours on any undefined event. Sender is a Buttons object.
         /// </summary>
-        public event EventHandler EventPacketButtons;
+        public event ButtonsEventHandler EventPacketButtons;
 
         /// <summary>
         /// Create and connects to Codemaster's F1 games UDP service.
@@ -245,7 +302,6 @@ namespace F1Telemetry
         /// <param name="port">UDP data sender's port</param>
         public void Connect(string ip, int port)
         {
-
             try
             {
                 this.IPAdress = ip;
@@ -275,8 +331,19 @@ namespace F1Telemetry
 
                 if (received != null)
                 {
-                    if (!this.IsAsyncPacketProcessEnabled) this.ByteArrayProcess((byte[])received.Clone());
-                    else Task.Run(() => ByteArrayProcess((byte[])received.Clone()), this.CancelToken.Token);
+                    if (!this.IsAsyncPacketProcessEnabled)
+                    {
+                        this.OnRawDataRecive(received);
+                        this.ByteArrayProcess((byte[])received.Clone());
+                    }
+                    else
+                    {
+                        Task.Run(() =>
+                        {
+                            this.OnRawDataRecive(received);
+                            this.ByteArrayProcess((byte[])received.Clone());
+                        }, this.CancelToken.Token);
+                    }
                 }
 
                 received = null;
@@ -591,18 +658,18 @@ namespace F1Telemetry
             }
         }
 
-        protected virtual void OnConnectionError(Exception sender)
+        protected virtual void OnConnectionError(Exception error)
         {
-            Debug.WriteLine(sender.Message);
-            Debug.WriteLine(sender.StackTrace);
-            if (this.ConnectionError != null) this.ConnectionError(sender, new EventArgs());
+            Debug.WriteLine(error.Message);
+            Debug.WriteLine(error.StackTrace);
+            if (this.ConnectionError != null) this.ConnectionError(this, error, new EventArgs());
         }
 
-        protected virtual void OnDataReadError(Exception sender)
+        protected virtual void OnDataReadError(Exception error)
         {
-            Debug.WriteLine(sender.Message);
-            Debug.WriteLine(sender.StackTrace);
-            if (this.DataReadError != null) this.DataReadError(sender, new EventArgs());
+            Debug.WriteLine(error.Message);
+            Debug.WriteLine(error.StackTrace);
+            if (this.DataReadError != null) this.DataReadError(this, error, new EventArgs());
         }
 
         protected virtual void OnClosedConnection(object sender)
@@ -613,6 +680,8 @@ namespace F1Telemetry
 
         protected virtual void OnCarMotionPacket(PacketMotionData sender)
         {
+            //this.LastMotionPacket?.Dispose();
+            //this.LastMotionPacket = null;
             this.LastMotionPacket = sender;
 
             if (this.NumberOfPacketPerSecond == 0 || DateTime.Now - this.LastTime_CarMotion >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond))
@@ -624,6 +693,8 @@ namespace F1Telemetry
 
         protected virtual void OnSessionPacket(PacketSessionData sender)
         {
+            //this.LastSessionDataPacket?.Dispose();
+            //this.LastSessionDataPacket = null;
             this.LastSessionDataPacket = sender;
             if (this.SessionPacket != null) this.SessionPacket(sender, new EventArgs());
         }
@@ -642,7 +713,8 @@ namespace F1Telemetry
                 }
             }
 
-
+            //this.LastLapDataPacket?.Dispose();
+            //this.LastLapDataPacket = null;
             this.LastLapDataPacket = sender;
             if (this.NumberOfPacketPerSecond == 0 || DateTime.Now - this.LastTime_LapData >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond))
             {
@@ -653,18 +725,24 @@ namespace F1Telemetry
 
         protected virtual void OnParticipantsPacket(PacketParticipantsData sender)
         {
+            //this.LastParticipantsPacket?.Dispose();
+            //this.LastParticipantsPacket = null;
             this.LastParticipantsPacket = sender;
             if (this.ParticipantsPacket != null) this.ParticipantsPacket(sender, new EventArgs());
         }
 
         protected virtual void OnCarSetupsPacket(PacketCarSetupData sender)
         {
+            //this.LastCarSetupPacket?.Dispose();
+            //this.LastCarSetupPacket = null;
             this.LastCarSetupPacket = sender;
             if (this.CarSetupsPacket != null) this.CarSetupsPacket(sender, new EventArgs());
         }
 
         protected virtual void OnCarTelemetryPacket(PacketCarTelemetryData sender)
         {
+            //this.LastCarTelmetryPacket?.Dispose();
+            //this.LastCarTelmetryPacket = null;
             this.LastCarTelmetryPacket = sender;
 
             if (this.NumberOfPacketPerSecond == 0 || DateTime.Now - this.LastTime_Cartelemetry >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond))
@@ -676,6 +754,8 @@ namespace F1Telemetry
 
         protected virtual void OnCarStatusPacket(PacketCarStatusData sender)
         {
+            //this.LastCarStatusDataPacket?.Dispose();
+            //this.LastCarStatusDataPacket = null;
             this.LastCarStatusDataPacket = sender;
 
             if (this.NumberOfPacketPerSecond == 0 || DateTime.Now - this.LastTime_CarStatus >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond))
@@ -687,26 +767,34 @@ namespace F1Telemetry
 
         protected virtual void OnFinalClassificationPacket(PacketFinalClassificationData sender)
         {
+            //this.LastFinalClassificationPacket?.Dispose();
+            //this.LastFinalClassificationPacket = null;
             this.LastFinalClassificationPacket = sender;
             if (this.FinalClassificationPacket != null) this.FinalClassificationPacket(sender, new EventArgs());
         }
 
         protected virtual void OnLobbyInfoPacket(PacketLobbyInfoData sender)
         {
+            this.LastLobbyInfoPacket?.Dispose();
+            this.LastLobbyInfoPacket = null;
             this.LastLobbyInfoPacket = sender;
             if (this.LobbyInfoPacket != null) this.LobbyInfoPacket(sender, new EventArgs());
         }
 
         protected virtual void OnSessionHistoryPacket(PacketSessionHistoryData sender)
         {
+            //this.LastSessionHistoryPacket[sender.CarIndex]?.Dispose();
+            //this.LastSessionHistoryPacket[sender.CarIndex] = null;
             this.LastSessionHistoryPacket[sender.CarIndex] = sender;
             if (this.SessionHistoryPacket != null) this.SessionHistoryPacket(sender, new EventArgs());
         }
 
         protected virtual void OnCarDemagePacket(PacketCarDamageData sender)
         {
+            //this.LastCarDemagePacket?.Dispose();
+            //this.LastCarDemagePacket = null;
             this.LastCarDemagePacket = sender;
-            if (this.DemagePacket != null) this.DemagePacket(sender, new EventArgs());
+            if (this.CarDemagePacket != null) this.CarDemagePacket(sender, new EventArgs());
         }
 
         protected virtual void OnEventPacket(PacketEventData sender)
@@ -767,6 +855,11 @@ namespace F1Telemetry
         protected virtual void OnEventPacketButtons(Buttons sender)
         {
             if (this.EventPacketButtons != null) this.EventPacketButtons(sender, new EventArgs());
+        }
+
+        protected virtual void OnRawDataRecive(byte[] sender)
+        {
+            if (this.RawDataRecieved != null) this.RawDataRecieved(sender, new EventArgs());
         }
     }
 }

@@ -206,10 +206,9 @@ namespace F1TelemetryApp.Windows
             }
         }
 
-        private void Connention_CarStatusPacket(object sender, EventArgs e)
+        private void Connention_CarStatusPacket(PacketCarStatusData packet, EventArgs e)
         {
-            var data = sender as PacketCarStatusData;
-            var player = data.CarStatusData[data.Header.Player1CarIndex];
+            var player = packet.CarStatusData[packet.Header.Player1CarIndex];
 
             if (this.laptime != TimeSpan.Zero && this.CanRecord())
             {
@@ -235,10 +234,9 @@ namespace F1TelemetryApp.Windows
             }
         }
 
-        private void Connention_CarMotionPacket(object sender, EventArgs e)
+        private void Connention_CarMotionPacket(PacketMotionData packet, EventArgs e)
         {
-            var data = sender as PacketMotionData;
-            var player = data.CarMotionData[data.Header.Player1CarIndex];
+            var player = packet.CarMotionData[packet.Header.Player1CarIndex];
 
             if (this.canCarmotion)
             {
@@ -280,7 +278,7 @@ namespace F1TelemetryApp.Windows
 
                 this.Dispatcher.Invoke(() =>
                 {
-                    this.DrawMap(data);
+                    this.DrawMap(ref packet);
 
                     this.Coordinates = player.WorldPosition.ToString();
 
@@ -300,7 +298,7 @@ namespace F1TelemetryApp.Windows
             }
         }
 
-        private void DrawMap(PacketMotionData data)
+        private void DrawMap(ref PacketMotionData data)
         {
             if (this.TrackCoords.Count > 1)
             {
@@ -399,40 +397,38 @@ namespace F1TelemetryApp.Windows
             return this.isTimeTrial && this.lapNumber > 0 && this.status == DriverSatuses.FlyingLap;
         }
 
-        private void Connention_SessionPacket(object sender, EventArgs e)
+        private void Connention_SessionPacket(PacketSessionData packet, EventArgs e)
         {
             if (this.canSession)
             {
                 this.canSession = false;
-                var data = sender as PacketSessionData;
                 this.Dispatcher.Invoke(() =>
                 {
-                    this.year = data.Header.PacketFormat;
-                    this.trackName = data.TrackID.ToString();
-                    this.trackLength = data.TrackLength;
-                    this.UpdateSession(data);
+                    this.year = packet.Header.PacketFormat;
+                    this.trackName = packet.TrackID.ToString();
+                    this.trackLength = packet.TrackLength;
+                    this.UpdateSession(ref packet);
                     this.canSession = true;
                 }, DispatcherPriority.Background);
             }
         }
 
-        private void Connention_LapDataPacket(object sender, EventArgs e)
+        private void Connention_LapDataPacket(PacketLapData packet, EventArgs e)
         {
             if (this.canLapdata)
             {
                 this.canLapdata = false;
-                var data = sender as PacketLapData;
 
-                this.laptime = data.Lapdata[data.Header.Player1CarIndex].CurrentLapTime;
+                this.laptime = packet.Lapdata[packet.Header.Player1CarIndex].CurrentLapTime;
                 this.Dispatcher.Invoke(() =>
                 {
-                    this.UpdateLapdata(data);
+                    this.UpdateLapdata(ref packet);
                     this.canLapdata = true;
                 }, DispatcherPriority.Background);
             }
         }
 
-        private void UpdateSession(PacketSessionData packetSessionData)
+        private void UpdateSession(ref PacketSessionData packetSessionData)
         {
             if (packetSessionData.SessionType == SessionTypes.TimeTrial) this.isTimeTrial = true;
             else this.isTimeTrial = false;
@@ -464,7 +460,7 @@ namespace F1TelemetryApp.Windows
             }
         }
 
-        private void UpdateLapdata(PacketLapData packetLapData)
+        private void UpdateLapdata(ref PacketLapData packetLapData)
         {
             var player = packetLapData.Lapdata[packetLapData.Header.Player1CarIndex];
             this.distance = player.LapDistance;

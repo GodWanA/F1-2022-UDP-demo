@@ -7,7 +7,7 @@ namespace F1Telemetry.Models
     /// <summary>
     /// Header of the packets.
     /// </summary>
-    public class PacketHeader : ProtoModel
+    public class PacketHeader : ProtoModel, IDisposable
     {
         /// <summary>
         /// Creates PacketHeader object from raw byte array.
@@ -20,6 +20,7 @@ namespace F1Telemetry.Models
             //    uint16    m_packetFormat;            // 2021
             this.Index += ByteReader.ToUInt16(array, 0, out ui16);
             this.PacketFormat = ui16;
+            //this.RawData = array;
 
             this.PickReader(this.PacketFormat, array);
         }
@@ -125,6 +126,12 @@ namespace F1Telemetry.Models
             //                                  // 255 if no second player
             this.Index += ByteReader.ToUInt8(array, this.Index, out ui8);
             this.Player2CarIndex = ui8;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            //this.RawData = null;
+            base.Dispose(disposing);
         }
 
         /// <summary>

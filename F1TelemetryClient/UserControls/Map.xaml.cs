@@ -66,21 +66,20 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private void Connention_LapDataPacket(object sender, EventArgs e)
+        private void Connention_LapDataPacket(PacketLapData packet, EventArgs e)
         {
-            if (!this.isLapdataRunning && sender != null)
+            if (!this.isLapdataRunning && packet != null)
             {
                 this.isLapdataRunning = true;
                 this.Dispatcher.Invoke(() =>
                 {
-                    var data = sender as PacketLapData;
-                    this.UpdateLapdata(data);
+                    this.UpdateLapdata(ref packet);
                     this.isLapdataRunning = false;
                 }, DispatcherPriority.Background);
             }
         }
 
-        private void UpdateLapdata(PacketLapData data)
+        private void UpdateLapdata(ref PacketLapData data)
         {
             var gridCars = this.grid_cars.Children;
             if (gridCars.Count == data.Lapdata.Length)
@@ -116,21 +115,20 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private void Connention_CarStatusPacket(object sender, EventArgs e)
+        private void Connention_CarStatusPacket(PacketCarStatusData packet, EventArgs e)
         {
-            if (!this.isStatusRunning && sender != null)
+            if (!this.isStatusRunning && packet != null)
             {
                 this.isStatusRunning = true;
                 this.Dispatcher.Invoke(() =>
                 {
-                    var data = sender as PacketCarStatusData;
-                    this.UpdateCarStatus(data);
+                    this.UpdateCarStatus(ref packet);
                     this.isStatusRunning = false;
                 }, DispatcherPriority.Background);
             }
         }
 
-        private void UpdateCarStatus(PacketCarStatusData data)
+        private void UpdateCarStatus(ref PacketCarStatusData data)
         {
             var gridCars = this.grid_cars.Children;
             if (gridCars.Count == data.CarStatusData.Length)
@@ -149,22 +147,21 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private void Connention_CarMotionPacket(object sender, EventArgs e)
+        private void Connention_CarMotionPacket(PacketMotionData packet, EventArgs e)
         {
-            if (!this.isCarmotionRunning && sender != null)
+            if (!this.isCarmotionRunning && packet != null)
             {
                 this.isCarmotionRunning = true;
                 this.Dispatcher.Invoke(() =>
                 {
-                    var data = sender as PacketMotionData;
-                    this.UpdateMotion(data);
+                    this.UpdateMotion(ref packet);
                     this.isCarmotionRunning = false;
                 }
                 , DispatcherPriority.Background);
             }
         }
 
-        private void UpdateMotion(PacketMotionData data)
+        private void UpdateMotion(ref PacketMotionData data)
         {
             var gridCars = this.grid_cars.Children;
             if (gridCars.Count == data.CarMotionData.Length)
@@ -187,21 +184,20 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private void Connention_ParticipantsPacket(object sender, EventArgs e)
+        private void Connention_ParticipantsPacket(PacketParticipantsData packet, EventArgs e)
         {
-            if (!this.isParticipantsRunning && sender != null)
+            if (!this.isParticipantsRunning && packet != null)
             {
                 this.isParticipantsRunning = true;
                 this.Dispatcher.Invoke(() =>
                 {
-                    var data = sender as PacketParticipantsData;
-                    this.UpdateParticipants(data);
+                    this.UpdateParticipants(ref packet);
                     this.isParticipantsRunning = false;
                 }, DispatcherPriority.Background);
             }
         }
 
-        private void UpdateParticipants(PacketParticipantsData data)
+        private void UpdateParticipants(ref PacketParticipantsData data)
         {
             var carsGrid = this.grid_cars.Children;
 
@@ -230,21 +226,20 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private void Connention_SessionPacket(object sender, EventArgs e)
+        private void Connention_SessionPacket(PacketSessionData packet, EventArgs e)
         {
-            if (!this.isSessionRunning && sender != null)
+            if (!this.isSessionRunning && packet != null)
             {
                 this.isSessionRunning = true;
                 this.Dispatcher.Invoke(() =>
                 {
-                    var data = sender as PacketSessionData;
-                    this.UpdateSession(data);
+                    this.UpdateSession(ref packet);
                     this.isSessionRunning = false;
                 }, DispatcherPriority.Background);
             }
         }
 
-        private void UpdateSession(PacketSessionData data)
+        private void UpdateSession(ref PacketSessionData data)
         {
             if (data.TrackID != this.TrackID)
             {

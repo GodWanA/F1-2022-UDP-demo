@@ -1,4 +1,5 @@
-﻿using F1Telemetry.Models.ParticipantsPacket;
+﻿using F1Telemetry.Models.LapDataPacket;
+using F1Telemetry.Models.ParticipantsPacket;
 using F1Telemetry.Models.SessionHistoryPacket;
 using F1TelemetryApp.Classes;
 using System;
@@ -21,8 +22,7 @@ namespace F1TelemetryApp.UserControls.Session
 
         private bool isWorking_ParticipantsData;
         private bool isWorking_sessionHistory;
-
-        private DispatcherTimer timer = new DispatcherTimer();
+        private bool isWorking_LapdataEvent;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event SelectionChangedEventHandler SelectionChanged;
@@ -32,7 +32,7 @@ namespace F1TelemetryApp.UserControls.Session
             get { return participantsList; }
             set
             {
-                if (value != participantsList)
+                //if (value != participantsList)
                 {
                     participantsList = value;
                     this.OnPropertyChanged("ParticipantsList");
@@ -47,23 +47,6 @@ namespace F1TelemetryApp.UserControls.Session
             this.DataContext = this;
             this.participantsList = new ObservableCollection<PlayerListItemData>();
             this.listBox_drivers.Items.SortDescriptions.Add(new SortDescription("CarPosition", ListSortDirection.Ascending));
-
-            //this.timer.Tick += Timer_Tick;
-            //this.timer.Interval = TimeSpan.FromSeconds(2);
-            //this.timer.Start();
-        }
-
-        private void Timer_Tick(object sender, EventArgs e)
-        {
-            this.timer.Stop();
-
-            if (this.IsLoaded)
-            {
-                this.listBox_drivers.Items.Refresh();
-                GC.Collect();
-            }
-
-            this.timer.Start();
         }
 
         public void SubscribeUDPEvents()
@@ -72,7 +55,7 @@ namespace F1TelemetryApp.UserControls.Session
             {
                 u.Connention.SessionHistoryPacket += Connention_SessionHistoryPacket;
                 u.Connention.ParticipantsPacket += Connention_ParticipantsPacket;
-                u.Connention.SessionPacket += Connention_SessionPacket;
+                u.Connention.LapDataPacket += Connention_LapDataPacket;
             }
         }
 
@@ -82,30 +65,37 @@ namespace F1TelemetryApp.UserControls.Session
             {
                 u.Connention.SessionHistoryPacket -= Connention_SessionHistoryPacket;
                 u.Connention.ParticipantsPacket -= Connention_ParticipantsPacket;
-                u.Connention.SessionPacket -= Connention_SessionPacket;
+                u.Connention.LapDataPacket -= Connention_LapDataPacket;
             }
         }
 
-        private void Connention_SessionPacket(object sender, EventArgs e)
+        private void Connention_LapDataPacket(PacketLapData packet, EventArgs e)
         {
-            //throw new NotImplementedException();
+            if (!this.isWorking_LapdataEvent)
+            {
+                this.isWorking_LapdataEvent = true;
+                this.Dispatcher.Invoke(() =>
+                {
+                    this.listBox_drivers.Items.Refresh();
+                    this.isWorking_LapdataEvent = false;
+                }, DispatcherPriority.Background);
+            }
         }
 
-        private void Connention_ParticipantsPacket(object sender, EventArgs e)
+        private void Connention_ParticipantsPacket(PacketParticipantsData packet, EventArgs e)
         {
             if (!this.isWorking_ParticipantsData && u.CanDoUdp)
             {
                 this.isWorking_ParticipantsData = true;
                 this.Dispatcher.Invoke(() =>
                 {
-                    var data = sender as PacketParticipantsData;
-                    this.UpdateParticipants(data);
+                    this.UpdateParticipants(ref packet);
                     this.isWorking_ParticipantsData = false;
                 }, DispatcherPriority.Background);
             }
         }
 
-        private void UpdateParticipants(PacketParticipantsData participants)
+        private void UpdateParticipants(ref PacketParticipantsData participants)
         {
             int index = this.listBox_drivers.SelectedIndex;
             int n = participants.Participants.Length;
@@ -129,26 +119,17 @@ namespace F1TelemetryApp.UserControls.Session
             {
                 this.listBox_drivers.ScrollIntoView(this.listBox_drivers.SelectedItem);
             }
-
-            //if (PlayerListItemData.PosChange)
-            //{
-            this.listBox_drivers.Items.Refresh();
-            //    GC.Collect();
-            //    PlayerListItemData.PosChange = false;
-            //}
         }
 
 
-        private void Connention_SessionHistoryPacket(object sender, EventArgs e)
+        private void Connention_SessionHistoryPacket(PacketSessionHistoryData packet, EventArgs e)
         {
             if (u.CanDoUdp && !this.isWorking_sessionHistory)
             {
                 this.isWorking_sessionHistory = true;
                 this.Dispatcher.Invoke(() =>
                 {
-                    var curHistory = sender as PacketSessionHistoryData;
-                    this.UpdateSessionHistory(curHistory);
-                    //GC.Collect();
+                    this.UpdateSessionHistory(packet);
                     this.isWorking_sessionHistory = false;
                 }, DispatcherPriority.Background);
             }
@@ -159,7 +140,6 @@ namespace F1TelemetryApp.UserControls.Session
             var arrayHistory = u.Connention.LastSessionHistoryPacket;
             var lapData = u.Connention.LastLapDataPacket;
 
-            //var itemSource = this.listBox_drivers.ItemsSource?.Cast<PlayerListItemData>();
             var itemSource = this.ParticipantsList;
             var curItem = itemSource?.Where(x => x.ArrayIndex == curHistory.CarIndex).FirstOrDefault();
             Brush fontColor = Brushes.White;
@@ -206,8 +186,6 @@ namespace F1TelemetryApp.UserControls.Session
                     curItem.TextColor = Brushes.White;
                 }
             }
-
-            //if (PlayerListItemData.PosChange) this.listBox_drivers.Items.Refresh();
         }
 
         private void OnPropertyChanged(string propertyName)
@@ -244,7 +222,6 @@ namespace F1TelemetryApp.UserControls.Session
 
                         selected.IsSelected = true;
                         this.SelectionChanged?.Invoke(this, new SelectionChangedEventArgs(e.RoutedEvent, e.RemovedItems, e.AddedItems));
-                        //this.personalInfo.LoadWear();
                     }
                     else
                     {

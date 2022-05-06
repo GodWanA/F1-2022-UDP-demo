@@ -25,7 +25,7 @@
 
         <BorderGapMaskConverter x:Key="BorderGapMaskConverter"/>
         <Style TargetType="GroupBox">
-            <Setter Property="BorderBrush" Value="white" />
+            <Setter Property="BorderBrush" Value="White" />
             <Setter Property="Foreground" Value="white" />
             <Setter Property="Background" Value="#7F000000" />
             <Setter Property="BorderThickness" Value="3" />

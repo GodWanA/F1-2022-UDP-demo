@@ -21,7 +21,7 @@ namespace F1TelemetryApp.UserControls
             }
             set
             {
-                if (header != value)
+                if (value != header)
                 {
                     header = value;
                     //this.textblock_Header.Text = this.header;
@@ -101,10 +101,7 @@ namespace F1TelemetryApp.UserControls
 
         private void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null)
-            {
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
         protected virtual void Dispose(bool disposing)

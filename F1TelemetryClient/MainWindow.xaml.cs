@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -22,71 +23,125 @@ namespace F1TelemetryClient
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged, IConnectUDP, IGridResize
+    public partial class MainWindow : Window, INotifyPropertyChanged, IConnectUDP, IGridResize, IDisposable
     {
         private DispatcherTimer lockTimer = new DispatcherTimer();
-        private DispatcherTimer cleanTimer = new DispatcherTimer();
         private string regPath;
+
 
         public GridSizes PrevRes { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         private bool isWorking_SessionData = false;
-        private bool isWorking_LapData = false;
-        private bool isWorking_ParticipantsData = false;
         private bool isWorking_CarStatusData = false;
         //private bool isWorking_CarTelemetryData = false;                
         private Flags lastFlag = Flags.InvalidOrUnknown;
-        private bool isCleaning;
+        private bool disposedValue;
 
         public MainWindow()
         {
             InitializeComponent();
+
             this.DataContext = this;
+
+            //this.socket = new ClientWebSocket();
+            //this.socket.ConnectAsync(new Uri("ws://localhost:8080"), new System.Threading.CancellationToken());
+
+            //new Recorder();
         }
 
         private void Window_Initialized(object sender, EventArgs e)
         {
             this.regPath = this.CreateRegPath();
             this.LoadWindowPosition(this.regPath);
-            this.SubscribeUDPEvents();
+            //this.SubscribeUDPEvents();
 
             this.lockTimer.Interval = TimeSpan.FromMilliseconds(500);
             this.lockTimer.Tick += LockTimer_Tick;
-
-            this.cleanTimer.Interval = TimeSpan.FromSeconds(30);
-            //this.cleanTimer.Tick += CleanTimer_Tick;
         }
 
         public void SubscribeUDPEvents()
         {
-            u.Connention.SessionPacket += this.Upp_SessionPacket;
-            u.Connention.CarStatusPacket += Udp_CarStatusPacket;
-            u.Connention.DataReadError += Connention_DataReadError;
-            u.Connention.ConnectionError += Connention_ConnectionError;
-
-            //this.cleanTimer.Start();
+            if (u.Connention != null)
+            {
+                u.Connention.SessionPacket += Connention_SessionPacket;
+                u.Connention.CarStatusPacket += Connention_CarStatusPacket;
+                u.Connention.DataReadError += Connention_DataReadError;
+                u.Connention.ConnectionError += Connention_ConnectionError;
+            }
         }
 
         public void UnsubscribeUDPEvents()
         {
-            u.Connention.SessionPacket -= this.Upp_SessionPacket;
-            u.Connention.CarStatusPacket -= Udp_CarStatusPacket;
-            u.Connention.DataReadError -= Connention_DataReadError;
-            u.Connention.ConnectionError -= Connention_ConnectionError;
-
-            //this.cleanTimer.Stop();
+            if (u.Connention != null)
+            {
+                u.Connention.SessionPacket -= Connention_SessionPacket;
+                u.Connention.CarStatusPacket -= Connention_CarStatusPacket;
+                u.Connention.DataReadError -= Connention_DataReadError;
+                u.Connention.ConnectionError -= Connention_ConnectionError;
+            }
         }
 
-        private void Connention_ConnectionError(object sender, EventArgs e)
+        private void Connention_CarStatusPacket(PacketCarStatusData packet, EventArgs e)
         {
-            this.ShowError(sender as Exception);
+            if (!this.isWorking_CarStatusData && u.CanDoUdp)
+            {
+                this.isWorking_CarStatusData = true;
+                this.Dispatcher.Invoke(() =>
+                {
+                    var flags = packet.CarStatusData.Select(x => x.VehicleFIAFlag);
+                    this.SetSessionInfoColor(flags);
+
+                    //this.CleanUpList();
+
+                    this.isWorking_CarStatusData = false;
+                }, DispatcherPriority.Background);
+            }
         }
 
-        private void Connention_DataReadError(object sender, EventArgs e)
+        private void Connention_SessionPacket(PacketSessionData packet, EventArgs e)
         {
-            this.ShowError(sender as Exception);
+            if (!this.isWorking_SessionData && u.CanDoUdp)
+            {
+                this.isWorking_SessionData = true;
+
+                this.Dispatcher.Invoke(() =>
+                {
+
+                    var lapData = u.Connention.LastLapDataPacket;
+                    var first = lapData?.Lapdata?.Where(x => x.CarPosition == 1).FirstOrDefault();
+                    u.TrackLength = packet.TrackLength;
+                    StringBuilder sb = new StringBuilder();
+
+                    sb.AppendLine("Session: " + Regex.Replace(packet.SessionType.ToString(), "([A-Z])", " $1", RegexOptions.Compiled).Trim());
+                    sb.AppendLine("Laps: " + first?.CurrentLapNum + " / " + packet.TotalLaps);
+                    sb.Append("TimeLeft: " + packet.SessionTimeLeft.ToString());
+
+                    this.textBlock_counterHead.Text = sb.ToString();
+
+                    //this.weatherController.SetActualWeather(sessionData.Weather, sessionData.SessionType, sessionData.TrackTemperature, sessionData.AirTemperature);
+                    //this.weatherController.SetWeatherForecast(sessionData.WeatherForcastSample);
+                    //this.tyrecontainer.UpdateTyres(this.map.RawTrack);
+
+                    var flags = packet.MarshalZones.Select(x => x.ZoneFlag);
+                    this.SetSessionInfoColor(flags);
+
+                    this.isWorking_SessionData = false;
+                    //this.CleanUpList();
+
+                }, DispatcherPriority.Background);
+            }
+        }
+
+        private void Connention_ConnectionError(object sender, Exception ex, EventArgs e)
+        {
+            this.ShowError(ex);
+        }
+
+        private void Connention_DataReadError(object sender, Exception ex, EventArgs e)
+        {
+            this.ShowError(ex);
         }
 
         private void ShowError(Exception ex)
@@ -104,23 +159,6 @@ namespace F1TelemetryClient
             }, DispatcherPriority.Background);
         }
 
-        private void CleanTimer_Tick(object sender, EventArgs e)
-        {
-            this.cleanTimer.Stop();
-
-            //if (u.CanDoUdp)
-            //{
-            //    this.CleanUpList();
-            //}
-            //this.listBox_drivers.Items.DeferRefresh();
-            GC.WaitForFullGCApproach();
-            GC.WaitForFullGCComplete();
-            GC.WaitForPendingFinalizers();
-            GC.Collect();
-
-            this.cleanTimer.Start();
-        }
-
         private void LockTimer_Tick(object sender, EventArgs e)
         {
             this.lockTimer.Stop();
@@ -130,59 +168,6 @@ namespace F1TelemetryClient
             GC.Collect();
             // this.UpdateLayout();
             u.CanDoUdp = true;
-        }
-
-        private void Udp_CarStatusPacket(object sender, EventArgs e)
-        {
-            if (!this.isWorking_CarStatusData && u.CanDoUdp)
-            {
-                this.isWorking_CarStatusData = true;
-                this.Dispatcher.Invoke(() =>
-                {
-                    var status = sender as PacketCarStatusData;
-
-                    var flags = status.CarStatusData.Select(x => x.VehicleFIAFlag);
-                    this.SetSessionInfoColor(flags);
-
-                    //this.CleanUpList();
-
-                    this.isWorking_CarStatusData = false;
-                }, DispatcherPriority.Background);
-            }
-        }
-
-        private void Upp_SessionPacket(object sender, EventArgs e)
-        {
-            if (!this.isWorking_SessionData && u.CanDoUdp)
-            {
-                this.isWorking_SessionData = true;
-                this.Dispatcher.Invoke(() =>
-                {
-                    var sessionData = sender as PacketSessionData;
-                    var lapData = u.Connention.LastLapDataPacket;
-                    var first = lapData?.Lapdata?.Where(x => x.CarPosition == 1).FirstOrDefault();
-
-                    u.TrackLength = sessionData.TrackLength;
-                    StringBuilder sb = new StringBuilder();
-
-                    sb.AppendLine("Session: " + Regex.Replace(sessionData.SessionType.ToString(), "([A-Z])", " $1", RegexOptions.Compiled).Trim());
-                    sb.AppendLine("Laps: " + first?.CurrentLapNum + " / " + sessionData.TotalLaps);
-                    sb.Append("TimeLeft: " + sessionData.SessionTimeLeft.ToString());
-
-                    this.textBlock_counterHead.Text = sb.ToString();
-
-                    //this.weatherController.SetActualWeather(sessionData.Weather, sessionData.SessionType, sessionData.TrackTemperature, sessionData.AirTemperature);
-                    //this.weatherController.SetWeatherForecast(sessionData.WeatherForcastSample);
-                    //this.tyrecontainer.UpdateTyres(this.map.RawTrack);
-
-                    var flags = sessionData.MarshalZones.Select(x => x.ZoneFlag);
-                    this.SetSessionInfoColor(flags);
-
-                    this.isWorking_SessionData = false;
-                    //this.CleanUpList();
-
-                }, DispatcherPriority.Background);
-            }
         }
 
         private void SetSessionInfoColor(IEnumerable<Flags> flags)
@@ -321,8 +306,9 @@ namespace F1TelemetryClient
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            this.SubscribeUDPEvents();
             this.CalculateView();
-            this.cleanTimer.Start();
+            this.FreezeColors();
         }
 
         private void cmdExit_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -383,12 +369,46 @@ namespace F1TelemetryClient
 
         private void Window_Unloaded(object sender, RoutedEventArgs e)
         {
-            this.cleanTimer.Stop();
+            this.UnsubscribeUDPEvents();
         }
 
         private void SessionTower_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             this.personalInfo.LoadWear();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                    this.UnsubscribeUDPEvents();
+                    this.PropertyChanged = null;
+
+                    this.lockTimer.Stop();
+                    this.lockTimer = null;
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~MainWindow()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

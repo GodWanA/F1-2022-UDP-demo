@@ -27,7 +27,7 @@ namespace F1TelemetryApp.UserControls
             get { return driverName; }
             set
             {
-                if (driverName != value)
+                if (value != driverName)
                 {
                     driverName = value;
                     //this.textblock_driver.Text = this.driverName;
@@ -90,7 +90,7 @@ namespace F1TelemetryApp.UserControls
             get { return textColor; }
             set
             {
-                if (TextColor != value)
+                if (value != TextColor)
                 {
                     textColor = value;
                     //this.textblock_interval.Foreground = this.textColor;
@@ -105,7 +105,7 @@ namespace F1TelemetryApp.UserControls
             get { return carPosition; }
             set
             {
-                if (carPosition != value)
+                if (value != carPosition)
                 {
 
                     if (value == 0)
@@ -141,7 +141,7 @@ namespace F1TelemetryApp.UserControls
             get { return arrayIndex; }
             set
             {
-                if (this.ArrayIndex != value)
+                if (value != this.ArrayIndex)
                 {
                     arrayIndex = value;
                     //this.OnPropertyChanged("CarPosition");
@@ -158,7 +158,7 @@ namespace F1TelemetryApp.UserControls
             }
             set
             {
-                if (this.IsMyTeam != value)
+                if (value != this.IsMyTeam)
                 {
                     this.isMyTeam = value;
                     if (this.isMyTeam) this.TeamColor = new SolidColorBrush(Color.FromRgb(255, 0, 255));
@@ -176,7 +176,7 @@ namespace F1TelemetryApp.UserControls
             }
             set
             {
-                if (this._nationality != value)
+                if (value != this._nationality)
                 {
                     this._nationality = value;
                     this.image_nation.Source = u.NationalityImage(this._nationality);
@@ -194,7 +194,7 @@ namespace F1TelemetryApp.UserControls
             }
             set
             {
-                if (this.RaceNumber != value)
+                if (value != this.RaceNumber)
                 {
                     this.raceNumber = value;
                     //this.label_raceNumber.Content = this.raceNumber;
@@ -212,7 +212,7 @@ namespace F1TelemetryApp.UserControls
             }
             set
             {
-                if (this.TeamID != value)
+                if (value != this.TeamID)
                 {
                     this._teamID = value;
                     this.TeamColor = u.PickTeamColor(this.TeamID);
@@ -333,7 +333,7 @@ namespace F1TelemetryApp.UserControls
             get { return isSelected; }
             set
             {
-                if (this.isSelected != value)
+                if (value != this.isSelected)
                 {
                     isSelected = value;
                     if (isSelected)
@@ -526,15 +526,14 @@ namespace F1TelemetryApp.UserControls
             this.SubscribeUDPEvents();
         }
 
-        private void Connention_CarStatusPacket(object sender, EventArgs e)
+        private void Connention_CarStatusPacket(PacketCarStatusData packet, EventArgs e)
         {
-            var status = sender as PacketCarStatusData;
-            if (status != null && !this.isStatus)
+            if (packet != null && !this.isStatus)
             {
                 this.isStatus = true;
                 this.Dispatcher.Invoke(() =>
                 {
-                    var current = status.CarStatusData[this.ArrayIndex];
+                    var current = packet.CarStatusData[this.ArrayIndex];
                     this.TyreCompund = current.VisualTyreCompound;
 
                     //// this.UpdateLayout();
@@ -543,16 +542,15 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private void Connention_ParticipantsPacket(object sender, EventArgs e)
+        private void Connention_ParticipantsPacket(PacketParticipantsData packet, EventArgs e)
         {
-            var participants = sender as PacketParticipantsData;
-            if (participants != null && !this.isParticipants)
+            if (packet != null && !this.isParticipants)
             {
                 this.isParticipants = true;
 
                 this.Dispatcher.Invoke(() =>
                 {
-                    var current = participants.Participants[this.ArrayIndex];
+                    var current = packet.Participants[this.ArrayIndex];
                     this.DriverName = current.Name;
                     this.Nationality = current.Nationality;
                     this.TeamID = current.TeamID;
@@ -568,18 +566,17 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private void Connention_LapDataPacket(object sender, EventArgs e)
+        private void Connention_LapDataPacket(PacketLapData packet, EventArgs e)
         {
-            var lapData = sender as PacketLapData;
-            if (lapData != null && !this.isLapdata)
+            if (packet != null && !this.isLapdata)
             {
                 this.isLapdata = true;
 
                 this.Dispatcher.Invoke(() =>
                 {
-                    if (this.arrayIndex < lapData.Lapdata.Length)
+                    if (this.arrayIndex < packet.Lapdata.Length)
                     {
-                        var current = lapData.Lapdata[this.ArrayIndex];
+                        var current = packet.Lapdata[this.ArrayIndex];
                         this.CarPosition = current.CarPosition;
 
                         if (current.CarPosition > 0)
