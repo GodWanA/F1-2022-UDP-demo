@@ -7,13 +7,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using static F1Telemetry.Helpers.Appendences;
 using static F1TelemetryApp.Classes.IGridResize;
@@ -26,24 +26,58 @@ namespace F1TelemetryClient
     public partial class MainWindow : Window, INotifyPropertyChanged, IConnectUDP, IGridResize, IDisposable
     {
         private DispatcherTimer lockTimer = new DispatcherTimer();
+        private DispatcherTimer performanceTimer = new DispatcherTimer();
         private string regPath;
-
-
-        public GridSizes PrevRes { get; private set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
+        private PerformanceCounter performance = new PerformanceCounter("Process", "% Processor Time", Process.GetCurrentProcess().ProcessName);
         private bool isWorking_SessionData = false;
         private bool isWorking_CarStatusData = false;
         //private bool isWorking_CarTelemetryData = false;                
         private Flags lastFlag = Flags.InvalidOrUnknown;
         private bool disposedValue;
+        private double maxCPU;
+        private double maxRAM;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public GridSizes PrevRes { get; private set; }
+
+        private string _cpuusage;
+        public string CPUusage
+        {
+            get { return _cpuusage; }
+            set
+            {
+                if (value != _cpuusage)
+                {
+                    _cpuusage = value;
+                    this.OnPropertyChanged("CPUusage");
+                }
+            }
+        }
+
+        private string _ramusage;
+        public string RAMusage
+        {
+            get { return _ramusage; }
+            set
+            {
+                if (value != _ramusage)
+                {
+                    _ramusage = value;
+                    this.OnPropertyChanged("RAMusage");
+                }
+            }
+        }
 
         public MainWindow()
         {
             InitializeComponent();
-
             this.DataContext = this;
+
+            //Timeline.DesiredFrameRateProperty.OverrideMetadata(
+            //    typeof(Timeline),
+            //    new FrameworkPropertyMetadata { DefaultValue = 10 }
+            //);
 
             //this.socket = new ClientWebSocket();
             //this.socket.ConnectAsync(new Uri("ws://localhost:8080"), new System.Threading.CancellationToken());
@@ -55,18 +89,41 @@ namespace F1TelemetryClient
         {
             this.regPath = this.CreateRegPath();
             this.LoadWindowPosition(this.regPath);
-            //this.SubscribeUDPEvents();
 
             this.lockTimer.Interval = TimeSpan.FromMilliseconds(500);
             this.lockTimer.Tick += LockTimer_Tick;
+
+            this.performanceTimer.Interval = TimeSpan.FromSeconds(1);
+            this.performanceTimer.Tick += PerformanceTimer_Tick;
+
+        }
+
+        private void PerformanceTimer_Tick(object sender, EventArgs e)
+        {
+            this.performanceTimer.Stop();
+
+            if (this.IsLoaded)
+            {
+                var currentCPU = this.performance.NextValue() / 10.0;
+                if (this.maxCPU < currentCPU) this.maxCPU = currentCPU;
+
+                this.CPUusage = String.Format("Total CPU usage: {0:0.00}% (Max: {1:0.00}%)", currentCPU, this.maxCPU);
+
+                var currentRAM = Process.GetCurrentProcess().PagedMemorySize64 / 1000000.0;
+                if (this.maxRAM < currentRAM) this.maxRAM = currentRAM;
+
+                this.RAMusage = String.Format("Total memory usage: {0:0.00}MB (Max: {1:0.00} MB)", currentRAM, this.maxRAM);
+            }
+
+            this.performanceTimer.Start();
         }
 
         public void SubscribeUDPEvents()
         {
             if (u.Connention != null)
             {
-                u.Connention.SessionPacket += Connention_SessionPacket;
-                u.Connention.CarStatusPacket += Connention_CarStatusPacket;
+                //u.Connention.SessionPacket += Connention_SessionPacket;
+                //u.Connention.CarStatusPacket += Connention_CarStatusPacket;
                 u.Connention.DataReadError += Connention_DataReadError;
                 u.Connention.ConnectionError += Connention_ConnectionError;
             }
@@ -76,63 +133,63 @@ namespace F1TelemetryClient
         {
             if (u.Connention != null)
             {
-                u.Connention.SessionPacket -= Connention_SessionPacket;
-                u.Connention.CarStatusPacket -= Connention_CarStatusPacket;
+                //u.Connention.SessionPacket -= Connention_SessionPacket;
+                //u.Connention.CarStatusPacket -= Connention_CarStatusPacket;
                 u.Connention.DataReadError -= Connention_DataReadError;
                 u.Connention.ConnectionError -= Connention_ConnectionError;
             }
         }
 
-        private void Connention_CarStatusPacket(PacketCarStatusData packet, EventArgs e)
-        {
-            if (!this.isWorking_CarStatusData && u.CanDoUdp)
-            {
-                this.isWorking_CarStatusData = true;
-                this.Dispatcher.Invoke(() =>
-                {
-                    var flags = packet.CarStatusData.Select(x => x.VehicleFIAFlag);
-                    this.SetSessionInfoColor(flags);
+        //private void Connention_CarStatusPacket(PacketCarStatusData packet, EventArgs e)
+        //{
+        //    if (!this.isWorking_CarStatusData && u.CanDoUdp)
+        //    {
+        //        this.isWorking_CarStatusData = true;
+        //        this.Dispatcher.Invoke(() =>
+        //        {
+        //            var flags = packet.CarStatusData.Select(x => x.VehicleFIAFlag);
+        //            this.SetSessionInfoColor(flags);
 
-                    //this.CleanUpList();
+        //            //this.CleanUpList();
 
-                    this.isWorking_CarStatusData = false;
-                }, DispatcherPriority.Background);
-            }
-        }
+        //            this.isWorking_CarStatusData = false;
+        //        }, DispatcherPriority.Render);
+        //    }
+        //}
 
-        private void Connention_SessionPacket(PacketSessionData packet, EventArgs e)
-        {
-            if (!this.isWorking_SessionData && u.CanDoUdp)
-            {
-                this.isWorking_SessionData = true;
+        //private void Connention_SessionPacket(PacketSessionData packet, EventArgs e)
+        //{
+        //    if (!this.isWorking_SessionData && u.CanDoUdp)
+        //    {
+        //        this.isWorking_SessionData = true;
 
-                this.Dispatcher.Invoke(() =>
-                {
+        //        this.Dispatcher.Invoke(() =>
+        //        {
 
-                    var lapData = u.Connention.LastLapDataPacket;
-                    var first = lapData?.Lapdata?.Where(x => x.CarPosition == 1).FirstOrDefault();
-                    u.TrackLength = packet.TrackLength;
-                    StringBuilder sb = new StringBuilder();
+        //            var lapData = u.Connention.LastLapDataPacket;
+        //            var first = lapData?.Lapdata?.Where(x => x.CarPosition == 1).FirstOrDefault();
+        //            u.TrackLength = packet.TrackLength;
+        //            StringBuilder sb = new StringBuilder();
 
-                    sb.AppendLine("Session: " + Regex.Replace(packet.SessionType.ToString(), "([A-Z])", " $1", RegexOptions.Compiled).Trim());
-                    sb.AppendLine("Laps: " + first?.CurrentLapNum + " / " + packet.TotalLaps);
-                    sb.Append("TimeLeft: " + packet.SessionTimeLeft.ToString());
+        //            sb.AppendLine("Session: " + Regex.Replace(packet.SessionType.ToString(), "([A-Z])", " $1", RegexOptions.Compiled).Trim());
+        //            sb.AppendLine("Laps: " + first?.CurrentLapNum + " / " + packet.TotalLaps);
+        //            sb.Append("TimeLeft: " + packet.SessionTimeLeft.ToString());
 
-                    this.textBlock_counterHead.Text = sb.ToString();
+        //            this.textBlock_counterHead.Text = sb.ToString();
 
-                    //this.weatherController.SetActualWeather(sessionData.Weather, sessionData.SessionType, sessionData.TrackTemperature, sessionData.AirTemperature);
-                    //this.weatherController.SetWeatherForecast(sessionData.WeatherForcastSample);
-                    //this.tyrecontainer.UpdateTyres(this.map.RawTrack);
+        //            //this.weatherController.SetActualWeather(sessionData.Weather, sessionData.SessionType, sessionData.TrackTemperature, sessionData.AirTemperature);
+        //            //this.weatherController.SetWeatherForecast(sessionData.WeatherForcastSample);
+        //            //this.tyrecontainer.UpdateTyres(this.map.RawTrack);
 
-                    var flags = packet.MarshalZones.Select(x => x.ZoneFlag);
-                    this.SetSessionInfoColor(flags);
+        //            var flags = packet.MarshalZones.Select(x => x.ZoneFlag);
+        //            this.SetSessionInfoColor(flags);
 
-                    this.isWorking_SessionData = false;
-                    //this.CleanUpList();
+        //            this.isWorking_SessionData = false;
+        //            //this.CleanUpList();
 
-                }, DispatcherPriority.Background);
-            }
-        }
+        //        }, DispatcherPriority.Render);
+        //    }
+        //}
 
         private void Connention_ConnectionError(object sender, Exception ex, EventArgs e)
         {
@@ -156,7 +213,7 @@ namespace F1TelemetryClient
                 );
 
                 if (res == MessageBoxResult.OK) Application.Current?.Shutdown();
-            }, DispatcherPriority.Background);
+            }, DispatcherPriority.Render);
         }
 
         private void LockTimer_Tick(object sender, EventArgs e)
@@ -170,35 +227,36 @@ namespace F1TelemetryClient
             u.CanDoUdp = true;
         }
 
-        private void SetSessionInfoColor(IEnumerable<Flags> flags)
-        {
-            var flag = flags.Where(x => x == Flags.Red || x == Flags.Yellow).FirstOrDefault();
+        //private void SetSessionInfoColor(IEnumerable<Flags> flags)
+        //{
+        //    var flag = flags.Where(x => x == Flags.Red || x == Flags.Yellow).FirstOrDefault();
 
-            if (this.lastFlag != flag)
-            {
-                this.lastFlag = flag;
+        //    if (this.lastFlag != flag)
+        //    {
+        //        this.lastFlag = flag;
 
-                switch (flag)
-                {
-                    default:
-                        this.border_sessioninfo.Background = Brushes.Black;
-                        this.textBlock_counterHead.Foreground = Brushes.White;
-                        break;
-                    case Flags.Yellow:
-                        this.border_sessioninfo.Background = u.FlagColors[Flags.Yellow];
-                        this.textBlock_counterHead.Foreground = Brushes.Black;
-                        break;
-                    case Flags.Red:
-                        this.border_sessioninfo.Background = u.FlagColors[Flags.Red];
-                        this.textBlock_counterHead.Foreground = Brushes.White;
-                        break;
-                }
-            }
-        }
+        //        switch (flag)
+        //        {
+        //            default:
+        //                this.border_sessioninfo.Background = Brushes.Black;
+        //                this.textBlock_counterHead.Foreground = Brushes.White;
+        //                break;
+        //            case Flags.Yellow:
+        //                this.border_sessioninfo.Background = u.FlagColors[Flags.Yellow];
+        //                this.textBlock_counterHead.Foreground = Brushes.Black;
+        //                break;
+        //            case Flags.Red:
+        //                this.border_sessioninfo.Background = u.FlagColors[Flags.Red];
+        //                this.textBlock_counterHead.Foreground = Brushes.White;
+        //                break;
+        //        }
+        //    }
+        //}
 
         private void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            //if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -309,6 +367,7 @@ namespace F1TelemetryClient
             this.SubscribeUDPEvents();
             this.CalculateView();
             this.FreezeColors();
+            this.performanceTimer.Start();
         }
 
         private void cmdExit_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -370,6 +429,7 @@ namespace F1TelemetryClient
         private void Window_Unloaded(object sender, RoutedEventArgs e)
         {
             this.UnsubscribeUDPEvents();
+            this.performanceTimer.Stop();
         }
 
         private void SessionTower_SelectionChanged(object sender, SelectionChangedEventArgs e)

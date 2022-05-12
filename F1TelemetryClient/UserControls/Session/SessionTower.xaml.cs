@@ -23,6 +23,8 @@ namespace F1TelemetryApp.UserControls.Session
         private bool isWorking_ParticipantsData;
         private bool isWorking_sessionHistory;
         private bool isWorking_LapdataEvent;
+        private DateTime lastClean;
+        private TimeSpan delta = TimeSpan.FromSeconds(0.4);
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event SelectionChangedEventHandler SelectionChanged;
@@ -55,7 +57,8 @@ namespace F1TelemetryApp.UserControls.Session
             {
                 u.Connention.SessionHistoryPacket += Connention_SessionHistoryPacket;
                 u.Connention.ParticipantsPacket += Connention_ParticipantsPacket;
-                u.Connention.LapDataPacket += Connention_LapDataPacket;
+                //u.Connention.LapDataPacket += Connention_LapDataPacket;
+                //u.Connention.RawDataRecieved += Connention_RawDataRecieved;
             }
         }
 
@@ -65,7 +68,26 @@ namespace F1TelemetryApp.UserControls.Session
             {
                 u.Connention.SessionHistoryPacket -= Connention_SessionHistoryPacket;
                 u.Connention.ParticipantsPacket -= Connention_ParticipantsPacket;
-                u.Connention.LapDataPacket -= Connention_LapDataPacket;
+                //u.Connention.LapDataPacket -= Connention_LapDataPacket;
+                //u.Connention.RawDataRecieved -= Connention_RawDataRecieved;
+            }
+        }
+
+        private void Connention_RawDataRecieved(byte[] rawData, EventArgs e)
+        {
+            if (!this.isWorking_LapdataEvent)
+            {
+                this.isWorking_LapdataEvent = true;
+                this.Dispatcher.Invoke(() =>
+                {
+                    if (DateTime.Now - this.lastClean > this.delta)
+                    {
+                        this.listBox_drivers.Items.Refresh();
+                        this.lastClean = DateTime.Now;
+                    }
+
+                    this.isWorking_LapdataEvent = false;
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -76,9 +98,14 @@ namespace F1TelemetryApp.UserControls.Session
                 this.isWorking_LapdataEvent = true;
                 this.Dispatcher.Invoke(() =>
                 {
-                    this.listBox_drivers.Items.Refresh();
+                    if (DateTime.Now - this.lastClean > TimeSpan.FromSeconds(0.1))
+                    {
+                        this.listBox_drivers.Items.Refresh();
+                        this.lastClean = DateTime.Now;
+                    }
+
                     this.isWorking_LapdataEvent = false;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -91,7 +118,7 @@ namespace F1TelemetryApp.UserControls.Session
                 {
                     this.UpdateParticipants(ref packet);
                     this.isWorking_ParticipantsData = false;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -131,7 +158,7 @@ namespace F1TelemetryApp.UserControls.Session
                 {
                     this.UpdateSessionHistory(packet);
                     this.isWorking_sessionHistory = false;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -163,10 +190,11 @@ namespace F1TelemetryApp.UserControls.Session
                     {
                         var prevHistory = arrayHistory.Where(x => x?.CarIndex == prevItem.ArrayIndex).FirstOrDefault();
                         string s = u.CalculateDelta(lapData, curHistory, prevHistory, out fontColor);
+
                         if (s != null && s != "") curItem.IntervalTime = s;
+
+                        if (fontColor.CanFreeze) fontColor.Freeze();
                         curItem.TextColor = fontColor;
-                        prevItem = null;
-                        prevItem = null;
                     }
 
                     var firstItem = itemSource.Where(x => x.CarPosition == 1).FirstOrDefault();
@@ -174,16 +202,18 @@ namespace F1TelemetryApp.UserControls.Session
                     {
                         var firstHistory = arrayHistory.Where(x => x?.CarIndex == firstItem.ArrayIndex).FirstOrDefault();
                         string s = u.CalculateDelta(lapData, curHistory, firstHistory, out fontColor);
+
                         if (s != null && s != "") curItem.LeaderIntervalTime = s;
-                        firstItem = null;
-                        firstHistory = null;
                     }
                 }
                 else
                 {
                     curItem.IntervalTime = "";
                     curItem.setStateText();
-                    curItem.TextColor = Brushes.White;
+
+                    var white = Brushes.White;
+                    if (white.CanFreeze) white.Freeze();
+                    curItem.TextColor = white;
                 }
             }
         }

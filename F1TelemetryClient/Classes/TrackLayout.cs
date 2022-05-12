@@ -125,7 +125,7 @@ namespace F1TelemetryApp.Classes
             t.NotifyFilter = NotifyFilters.LastWrite;
             t.EnableRaisingEvents = true;
 
-            t.Changed += T_Changed;
+            //t.Changed += T_Changed;
 
             return t;
         }
@@ -230,6 +230,14 @@ namespace F1TelemetryApp.Classes
             }
 
             return tracks;
+        }
+
+        internal List<Sectors> MarshalZoneInSector(List<Point> points)
+        {
+            var firstPoint = points[0];
+            var lastPoint = points[points.Count - 1];
+
+            return this.SectorZones.Where(x => x.Value.Contains(firstPoint) || x.Value.Contains(lastPoint))?.Select(x => (Sectors)x.Key)?.ToList();
         }
 
         internal static void SaveTrack(TrackLayout track)

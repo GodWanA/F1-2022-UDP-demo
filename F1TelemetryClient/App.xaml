@@ -191,5 +191,12 @@
             <Setter Property="Padding" Value="0"/>
         </Style>
 
+        <Style TargetType="FrameworkElement">
+            <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
+            <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
+            <Setter Property="VirtualizingPanel.IsContainerVirtualizable" Value="True"/>
+            <Setter Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="True"/>
+        </Style>
+
     </Application.Resources>
 </Application>

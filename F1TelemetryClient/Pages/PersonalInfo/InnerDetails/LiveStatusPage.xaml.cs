@@ -69,7 +69,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
                     }
 
                     this.isWorking_DemageData = false;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -87,7 +87,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
 
         //            this.isWorking_SessionData = false;
 
-        //        },DispatcherPriority.Background);
+        //        },DispatcherPriority.Render);
         //    }
         //}
 

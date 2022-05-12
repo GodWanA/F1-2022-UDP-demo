@@ -531,14 +531,11 @@ namespace F1TelemetryApp.UserControls
             if (packet != null && !this.isStatus)
             {
                 this.isStatus = true;
-                this.Dispatcher.Invoke(() =>
-                {
-                    var current = packet.CarStatusData[this.ArrayIndex];
-                    this.TyreCompund = current.VisualTyreCompound;
+                var current = packet.CarStatusData[this.ArrayIndex];
+                this.Dispatcher.Invoke(() => this.TyreCompund = current.VisualTyreCompound);
 
-                    //// this.UpdateLayout();
-                    this.isStatus = false;
-                }, DispatcherPriority.Background);
+                //// this.UpdateLayout();
+                this.isStatus = false;
             }
         }
 
@@ -562,7 +559,7 @@ namespace F1TelemetryApp.UserControls
 
                     //if (this.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
                     //else this.Visibility = Visibility.Visible;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -572,20 +569,19 @@ namespace F1TelemetryApp.UserControls
             {
                 this.isLapdata = true;
 
-                this.Dispatcher.Invoke(() =>
+                if (this.arrayIndex < packet.Lapdata.Length)
                 {
-                    if (this.arrayIndex < packet.Lapdata.Length)
+                    var current = packet.Lapdata[this.ArrayIndex];
+                    this.Dispatcher.Invoke(() => this.CarPosition = current.CarPosition);
+
+                    if (current.CarPosition > 0)
                     {
-                        var current = packet.Lapdata[this.ArrayIndex];
-                        this.CarPosition = current.CarPosition;
+                        float p = (float)Math.Round(current.LapDistance / u.TrackLength * 100.0, 2);
 
-                        if (current.CarPosition > 0)
+                        this.Dispatcher.Invoke(() =>
                         {
-                            float p = current.LapDistance / u.TrackLength * 100.0f;
-
                             this.CurrentLapTime = current.CurrentLapTime;
                             this.TrackLengthPercent = p;
-                            //if (current.Warnings > 0) Debug.WriteLine("HELLÓÓÓ");
                             this.WarningNumber = current.Warnings;
 
                             if (current.Penalties > TimeSpan.Zero) this.PenaltyTime = current.Penalties;
@@ -593,22 +589,28 @@ namespace F1TelemetryApp.UserControls
 
                             this.ResultStatus = current.ResultStatus;
                             this.SetPitStatues(current.PitStatus, current.PitStopTimer);
+                        });
 
-                            if (current.IsCurrentLapInvalid)
+                        if (current.IsCurrentLapInvalid)
+                        {
+                            this.Dispatcher.Invoke(() =>
                             {
                                 this.TimerForeground = Brushes.Red;
                                 this.TrackPercentForeground = Brushes.Red;
-                            }
-                            else
+                            });
+                        }
+                        else
+                        {
+                            this.Dispatcher.Invoke(() =>
                             {
                                 this.TimerForeground = Brushes.White;
                                 this.TrackPercentForeground = Brushes.LimeGreen;
-                            }
+                            });
                         }
                     }
-                    //// this.UpdateLayout();
-                    this.isLapdata = false;
-                }, DispatcherPriority.Background);
+                }
+                //// this.UpdateLayout();
+                this.isLapdata = false;
             }
         }
 

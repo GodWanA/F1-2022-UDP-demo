@@ -725,16 +725,19 @@ namespace F1TelemetryApp.UserControls
                 var player = lapdata.Lapdata[this.driverIndex];
                 var a = lapdata.Lapdata;
 
-                this.StopGo = player.NumberOfUnservedStopGoPenalties;
-                this.Warning = player.Warnings;
-                this.DriveThrough = player.NumberOfUnservedDriveThroughPenalties;
-                this.TimePenaltis = player.Penalties;
-                this.CarPosition = player.CarPosition;
-                this.CurrentLapTime = player.CurrentLapTime;
-                this.CurrentStatus = player.ResultStatus.ToString();
-                this.NumberOfPits = player.NumberOfPitStops;
+                this.Dispatcher.Invoke(() =>
+                {
+                    this.StopGo = player.NumberOfUnservedStopGoPenalties;
+                    this.Warning = player.Warnings;
+                    this.DriveThrough = player.NumberOfUnservedDriveThroughPenalties;
+                    this.TimePenaltis = player.Penalties;
+                    this.CarPosition = player.CarPosition;
+                    this.CurrentLapTime = player.CurrentLapTime;
+                    this.CurrentStatus = player.ResultStatus.ToString();
+                    this.NumberOfPits = player.NumberOfPitStops;
 
-                this.LapPercent = player.LapDistance / u.TrackLength * 100f;
+                    this.LapPercent = player.LapDistance / u.TrackLength * 100f;
+                });
 
                 this.prevIndex = Array.IndexOf(a, a.Where(x => x.CarPosition == player.CarPosition - 1 && x.CarPosition != 0).FirstOrDefault());
                 this.nextIndex = Array.IndexOf(a, a.Where(x => x.CarPosition == player.CarPosition + 1 && x.CarPosition != 0).FirstOrDefault());
@@ -773,40 +776,55 @@ namespace F1TelemetryApp.UserControls
         {
             if (telemetry != null)
             {
-                this.Throttle = telemetry.Throttle * 100f;
-                this.Brake = telemetry.Brake * 100f;
-                this.Clutch = telemetry.Clutch * 100f;
-
-                this.SpeedKPH = telemetry.Speed;
-                this.SpeedMPH = telemetry.Speed * 0.621371192f;
-
-                this.Gear = telemetry.GearString;
-
-                this.RPM = telemetry.EngineRPM;
-
-                for (int i = 0; i < this.grid_revLight.Children.Count; i++)
-                {
-                    var item = this.grid_revLight.Children[i] as Ellipse;
-                    var c = Brushes.Gray;
-
-                    if ((telemetry.RevLightBitValue & (1 << i)) != 0)
-                    {
-                        if (i < 5) c = Brushes.LimeGreen;
-                        else if (i < 10) c = Brushes.Red;
-                        else c = Brushes.Magenta;
-                    }
-
-                    if (c.CanFreeze) c.Freeze();
-                    item.Fill = c;
-                }
+                var t = MathF.Round(telemetry.Throttle * 100f, 2);
+                var b = MathF.Round(telemetry.Brake * 100f, 2);
+                var cl = MathF.Round(telemetry.Clutch * 100f, 2);
+                var kph = telemetry.Speed;
+                var mph = MathF.Round(telemetry.Speed * 0.621371192f);
+                var s = MathF.Round(180f * telemetry.Steer, 2);
+                var gear = telemetry.GearString;
+                var rpm = telemetry.EngineRPM;
+                var drs = telemetry.IsDRS;
 
                 var fg = Brushes.Gray;
-                if (telemetry.IsDRS) fg = Brushes.LimeGreen;
-                if (fg.CanFreeze) fg.Freeze();
-                this.textblock_DRS.Foreground = fg;
+                var revLight = telemetry.RevLightBitValue;
 
-                this.Steer = 180f * telemetry.Steer;
-                this.image_wheel.RenderTransform = new RotateTransform(this.Steer, this.image_wheel.ActualWidth / 2, this.image_wheel.ActualHeight / 2);
+                this.Dispatcher.Invoke(() =>
+                {
+
+                    this.Throttle = t;
+                    this.Brake = b;
+                    this.Clutch = cl;
+
+                    this.SpeedKPH = kph;
+                    this.SpeedMPH = mph;
+
+                    this.Gear = gear;
+                    this.RPM = rpm;
+                    this.Steer = s;
+
+                    for (int i = 0; i < this.grid_revLight.Children.Count; i++)
+                    {
+                        var item = this.grid_revLight.Children[i] as Ellipse;
+                        var c = Brushes.Gray;
+
+                        if ((revLight & (1 << i)) != 0)
+                        {
+                            if (i < 5) c = Brushes.LimeGreen;
+                            else if (i < 10) c = Brushes.Red;
+                            else c = Brushes.Magenta;
+                        }
+
+                        if (c.CanFreeze) c.Freeze();
+                        item.Fill = c;
+                    }
+
+                    if (drs) fg = Brushes.LimeGreen;
+                    if (fg.CanFreeze) fg.Freeze();
+
+                    this.textblock_DRS.Foreground = fg;
+                    this.image_wheel.RenderTransform = new RotateTransform(this.Steer, this.image_wheel.ActualWidth / 2, this.image_wheel.ActualHeight / 2);
+                });
 
                 // this.UpdateLayout();
             }
@@ -815,32 +833,39 @@ namespace F1TelemetryApp.UserControls
         private void UpdateGForce(Vector3 gForce)
         {
             float g = MathF.Abs(gForce.X + gForce.Y);
+
             if (g != this.GForce)
             {
-                this.GForce = g;
-                double r = this.grid_gCanvas.ActualWidth / 2;
-                double o = r - this.ellipse_gpointer.ActualWidth / 2;
-                float a = (float)o / 5f;
-
-                float fy = gForce.Y * a;
-                if (MathF.Abs(fy) > o) fy = (float)o;
-
-                float fx = gForce.X * a;
-                if (MathF.Abs(fx) > o) fx = (float)o;
-
-                this.ellipse_gpointer.Margin = new Thickness
+                this.Dispatcher.Invoke(() =>
                 {
-                    Top = o + fy,
-                    Left = o + fx,
-                };
+                    this.GForce = g;
+                    double r = this.grid_gCanvas.ActualWidth / 2;
+                    double o = r - this.ellipse_gpointer.ActualWidth / 2;
 
-                if (g > 5f) g = 5f;
+                    float a = (float)o / 5f;
+                    float fy = gForce.Y * a;
 
-                byte red = (byte)MathF.Round(g * 51);
-                byte others = (byte)(255 - red);
-                var c = new SolidColorBrush(Color.FromRgb(255, others, others));
-                if (c.CanFreeze) c.Freeze();
-                this.textblock_gForce.Foreground = c;
+                    if (MathF.Abs(fy) > o) fy = (float)o;
+
+                    float fx = gForce.X * a;
+                    if (MathF.Abs(fx) > o) fx = (float)o;
+
+                    this.ellipse_gpointer.Margin = new Thickness
+                    {
+                        Top = o + fy,
+                        Left = o + fx,
+                    };
+
+                    if (g > 5f) g = 5f;
+
+                    byte red = (byte)MathF.Round(g * 51);
+                    byte others = (byte)(255 - red);
+                    var c = new SolidColorBrush(Color.FromRgb(255, others, others));
+
+                    if (c.CanFreeze) c.Freeze();
+
+                    this.textblock_gForce.Foreground = c;
+                });
 
                 // this.UpdateLayout();
             }
@@ -853,29 +878,50 @@ namespace F1TelemetryApp.UserControls
                 if (this.lastFlag != status.VehicleFIAFlag)
                 {
                     this.lastFlag = status.VehicleFIAFlag;
-                    this.rectangle_flag.Fill = u.FlagColors[status.VehicleFIAFlag];
+                    var flag = u.FlagColors[status.VehicleFIAFlag];
+                    this.Dispatcher.Invoke(() => this.rectangle_flag.Fill = flag);
                 }
 
-                this.FuelPercent = status.FuelInTank / status.FuelCapacity * 100;
-                this.FuelCapacity = status.FuelCapacity;
-                this.FuelInTank = status.FuelInTank;
-                this.FuelRemaining = status.FuelRemainingLaps;
-                this.FuelMix = status.FuelMix;
+                var fp = Math.Round(status.FuelInTank / status.FuelCapacity * 100, 2);
+                var fc = Math.Round(status.FuelCapacity, 2);
+                var fit = Math.Round(status.FuelInTank, 2);
+                var fr = Math.Round(status.FuelRemainingLaps, 2);
+                var mix = status.FuelMix;
+                var ers = MathF.Round(status.ERSStoreEnergyPercent, 2);
+                var d = MathF.Round(100 - status.ERSDeployedThisLapPercent, 2);
+                var mguh = MathF.Round(status.ERSHarvestedThisLapMGUHPercent, 2);
+                var mguk = MathF.Round(status.ERSHarvestedThisLapMGUKPercent, 2);
+                var ersMode = status.ERSDeployMode;
+                var bb = status.FrontBrakeBias;
 
-                this.ERSEnergy = status.ERSStoreEnergyPercent;
-                this.ERSDeployable = 100 - status.ERSDeployedThisLapPercent;
-                this.ERSMGUH = status.ERSHarvestedThisLapMGUHPercent;
-                this.ERSMGUK = status.ERSHarvestedThisLapMGUKPercent;
-                this.ERSMode = status.ERSDeployMode;
 
-                this.BrakeBias = status.FrontBrakeBias;
+                this.Dispatcher.Invoke(() =>
+                {
+                    this.FuelPercent = fp;
+                    this.FuelCapacity = fc;
+                    this.FuelInTank = fit;
+                    this.FuelRemaining = fr;
+                    this.FuelMix = mix;
+
+                    this.ERSEnergy = ers;
+                    this.ERSDeployable = d;
+                    this.ERSMGUH = mguh;
+                    this.ERSMGUK = mguk;
+                    this.ERSMode = ersMode;
+
+                    this.BrakeBias = bb;
+
+                    if (this.FuelRemaining < 0) this.RemainingColor = Brushes.Red;
+                    else if (this.FuelRemaining > 0) this.RemainingColor = Brushes.LimeGreen;
+                    else this.RemainingColor = Brushes.LightGray;
+                });
 
                 if (this.isABS != status.IsAntiLockBrakes)
                 {
                     this.isABS = status.IsAntiLockBrakes;
 
-                    if (this.isABS) this.ColorABS = Brushes.LimeGreen;
-                    else this.ColorABS = Brushes.Gray;
+                    if (this.isABS) this.Dispatcher.Invoke(() => this.ColorABS = Brushes.LimeGreen);
+                    else this.Dispatcher.Invoke(() => this.ColorABS = Brushes.Gray);
                 }
 
                 if (this.tc != status.TractionControl)
@@ -885,23 +931,19 @@ namespace F1TelemetryApp.UserControls
                     switch (this.tc)
                     {
                         default:
-                            this.ColorTC = Brushes.Gray;
+                            this.Dispatcher.Invoke(() => this.ColorTC = Brushes.Gray);
                             break;
                         case TractionControlSettings.Medium:
-                            this.ColorTC = Brushes.Yellow;
+                            this.Dispatcher.Invoke(() => this.ColorTC = Brushes.Yellow);
                             break;
                         case TractionControlSettings.Full:
-                            this.ColorTC = Brushes.LimeGreen;
+                            this.Dispatcher.Invoke(() => this.ColorTC = Brushes.LimeGreen);
                             break;
                     }
                 }
 
-                if (this.FuelRemaining < 0) this.RemainingColor = Brushes.Red;
-                else if (this.FuelRemaining > 0) this.RemainingColor = Brushes.LimeGreen;
-                else this.RemainingColor = Brushes.LightGray;
-
-                if (status.IsPitLimiter) this.textblock_PLS.Foreground = Brushes.Cyan;
-                else this.textblock_PLS.Foreground = Brushes.Gray;
+                if (status.IsPitLimiter) this.Dispatcher.Invoke(() => this.textblock_PLS.Foreground = Brushes.Cyan);
+                else this.Dispatcher.Invoke(() => this.textblock_PLS.Foreground = Brushes.Gray);
 
                 // this.UpdateLayout();
             }
@@ -914,22 +956,30 @@ namespace F1TelemetryApp.UserControls
                 if (participantsData.Participants.Length > this.driverIndex)
                 {
                     var player = participantsData.Participants[this.driverIndex];
-                    this.DriverName = player.Name;
-                    this.RaceNumber = player.RaceNumber;
-                    this.TeamName = u.PickTeamName(player.TeamID);
-                    this.TeamColor = u.PickTeamColor(player.TeamID);
-                    this.image_nationality.Source = u.NationalityImage(player.Nationality);
-                    this.IsAi = player.IsAI;
+                    var prevDriver = "";
+                    var nextDriver = "";
 
-                    if (prevIndex != -1) this.PrevDriver = participantsData.Participants[this.prevIndex].ShortName;
-                    else this.PrevDriver = "---";
+                    if (this.prevIndex != -1) prevDriver = participantsData.Participants[this.prevIndex].ShortName;
+                    else prevDriver = "---";
 
-                    if (nextIndex != -1) this.NextDriver = participantsData.Participants[this.nextIndex].ShortName;
-                    else this.NextDriver = "---";
+                    if (this.nextIndex != -1) nextDriver = participantsData.Participants[this.nextIndex].ShortName;
+                    else nextDriver = "---";
+
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.DriverName = player.Name;
+                        this.RaceNumber = player.RaceNumber;
+                        this.TeamName = u.PickTeamName(player.TeamID);
+                        this.TeamColor = u.PickTeamColor(player.TeamID);
+                        this.image_nationality.Source = u.NationalityImage(player.Nationality);
+                        this.IsAi = player.IsAI;
+                        this.PrevDriver = prevDriver;
+                        this.NextDriver = nextDriver;
+                    });
                 }
                 else
                 {
-                    this.Visibility = Visibility.Hidden;
+                    this.Dispatcher.Invoke(() => this.Visibility = Visibility.Hidden);
                 }
 
                 // this.UpdateLayout();
@@ -942,29 +992,37 @@ namespace F1TelemetryApp.UserControls
             {
                 if (history.BestLapTimeLapNumber > 0 && history.BestLapTimeLapNumber < history.LapHistoryData.Length)
                 {
-                    this.BestLapTime = history.LapHistoryData[history.BestLapTimeLapNumber - 1].LapTime;
+                    var lp = history.LapHistoryData[history.BestLapTimeLapNumber - 1].LapTime;
+                    this.Dispatcher.Invoke(() => this.BestLapTime = lp);
                 }
 
-                if (history.NumberOfTyreStints != this.stackpanel_tyrehistory.Children.Count)
+                var n = history.NumberOfTyreStints;
+                var t = history.TyreStintsHistoryData;
+
+                this.Dispatcher.Invoke(() =>
                 {
-                    this.stackpanel_tyrehistory.Children.Clear();
-
-                    for (int i = 0; i < history.NumberOfTyreStints; i++)
+                    if (n != this.stackpanel_tyrehistory.Children.Count)
                     {
-                        var tyre = history.TyreStintsHistoryData[i];
+                        this.stackpanel_tyrehistory.Children.Clear();
 
-                        if (tyre.IsCurrentTyre || tyre.EndLap != 0)
+                        for (int i = 0; i < n; i++)
                         {
-                            this.stackpanel_tyrehistory.Children.Add(new Image
+                            var tyre = t[i];
+
+                            if (tyre.IsCurrentTyre || tyre.EndLap != 0)
                             {
-                                Source = u.TyreCompoundToImage(tyre.TyreVisualCompound),
-                                Width = 20,
-                                Height = 20,
-                                Margin = new Thickness(0),
-                            });
+                                this.stackpanel_tyrehistory.Children.Add(new Image
+                                {
+                                    Source = u.TyreCompoundToImage(tyre.TyreVisualCompound),
+                                    Width = 20,
+                                    Height = 20,
+                                    Margin = new Thickness(0),
+                                });
+
+                            }
                         }
                     }
-                }
+                });
 
                 var lastHistoryPacket = u.Connention.LastSessionHistoryPacket;
                 var lastLapData = u.Connention.LastLapDataPacket;
@@ -974,8 +1032,12 @@ namespace F1TelemetryApp.UserControls
 
                 if (this.prevIndex > -1)
                 {
-                    this.PrevDelta = u.CalculateDelta(lastLapData, lastHistoryPacket[prevIndex], history, out f);
-                    this.textblock_prev.Foreground = f;
+                    var prev = u.CalculateDelta(lastLapData, lastHistoryPacket[prevIndex], history, out f);
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.PrevDelta = prev;
+                        this.textblock_prev.Foreground = f;
+                    });
                 }
                 else
                 {
@@ -984,8 +1046,12 @@ namespace F1TelemetryApp.UserControls
 
                 if (this.nextIndex > -1)
                 {
-                    this.NextDelta = u.CalculateDelta(lastLapData, lastHistoryPacket[nextIndex], history, out f);
-                    this.textblock_next.Foreground = f;
+                    var next = u.CalculateDelta(lastLapData, lastHistoryPacket[nextIndex], history, out f);
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.NextDelta = next;
+                        this.textblock_next.Foreground = f;
+                    });
                 }
                 else
                 {
@@ -1001,12 +1067,20 @@ namespace F1TelemetryApp.UserControls
         private void UpdateSession(ref PacketSessionData session)
         {
             bool ok = session != null && session.Header.Player1CarIndex == this.driverIndex;
+            string npw = null;
+            string rp = null;
 
-            if (ok && session.PitStopWindowIdealLap > 0) this.NextPitWindow = session.PitStopWindowIdealLap + " - " + session.PitStopWindowLastestLap;
-            else this.NextPitWindow = "---";
+            if (ok && session.PitStopWindowIdealLap > 0) npw = session.PitStopWindowIdealLap + " - " + session.PitStopWindowLastestLap;
+            else npw = "---";
 
-            if (ok && session.PitStopRejoinPosition > 0) this.RejoinPos = session.PitStopRejoinPosition.ToString();
-            else this.RejoinPos = "-";
+            if (ok && session.PitStopRejoinPosition > 0) rp = session.PitStopRejoinPosition.ToString();
+            else rp = "-";
+
+            this.Dispatcher.Invoke(() =>
+            {
+                this.NextPitWindow = npw;
+                this.RejoinPos = rp;
+            });
 
             // this.UpdateLayout();
         }
@@ -1093,15 +1167,22 @@ namespace F1TelemetryApp.UserControls
 
         private void OnUpdateEvent(Action method)
         {
-            this.Dispatcher.Invoke(() =>
+            //this.Dispatcher.Invoke(() =>
+            //{
+            if (this.CanDoEvents())
             {
-                if (this.canUpdate && this.IsLoaded)
-                {
-                    this.canUpdate = false;
-                    if (this.driverIndex > -1) method();
-                    this.canUpdate = true;
-                }
-            }, DispatcherPriority.Background);
+                this.canUpdate = false;
+                if (this.driverIndex > -1) method();
+                this.canUpdate = true;
+            }
+            //}, DispatcherPriority.Render);
+        }
+
+        private bool CanDoEvents()
+        {
+            var ret = false;
+            this.Dispatcher.Invoke(() => ret = this.canUpdate && this.IsLoaded);
+            return ret;
         }
 
         public void SubscribeUDPEvents()

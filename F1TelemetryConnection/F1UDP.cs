@@ -311,6 +311,7 @@ namespace F1Telemetry
                 this.CancelToken = new CancellationTokenSource();
 
                 this.Connection = new UdpClient(this.EndPoint);
+                this.Connection.DontFragment = true;
                 this.Connection.Client.ReceiveTimeout = int.MaxValue;
                 this.Connection.Client.SendTimeout = int.MaxValue;
 
@@ -334,19 +335,19 @@ namespace F1Telemetry
                     if (!this.IsAsyncPacketProcessEnabled)
                     {
                         this.OnRawDataRecive(received);
-                        this.ByteArrayProcess((byte[])received.Clone());
+                        this.ByteArrayProcess(received);
                     }
                     else
                     {
                         Task.Run(() =>
                         {
                             this.OnRawDataRecive(received);
-                            this.ByteArrayProcess((byte[])received.Clone());
+                            this.ByteArrayProcess(received);
                         }, this.CancelToken.Token);
                     }
                 }
 
-                received = null;
+                //received = null;
                 this?.Connection?.BeginReceive(new AsyncCallback(recv), null);
             }
         }
@@ -403,40 +404,40 @@ namespace F1Telemetry
             switch (header.PacketID)
             {
                 case PacketTypes.CarMotion:
-                    this.CarMotion(array, header);
+                    this.CarMotion(ref array, ref header);
                     break;
                 case PacketTypes.Session:
-                    this.Session(array, header);
+                    this.Session(ref array, ref header);
                     break;
                 case PacketTypes.LapData:
-                    this.Lapdata(array, header);
+                    this.Lapdata(ref array, ref header);
                     break;
                 case PacketTypes.Event:
-                    this.Event(array, header);
+                    this.Event(ref array, ref header);
                     break;
                 case PacketTypes.Participants:
-                    this.Participants(array, header);
+                    this.Participants(ref array, ref header);
                     break;
                 case PacketTypes.CarSetups:
-                    this.CarSetups(array, header);
+                    this.CarSetups(ref array, ref header);
                     break;
                 case PacketTypes.CarTelemetry:
-                    this.CarTelemetry(array, header);
+                    this.CarTelemetry(ref array, ref header);
                     break;
                 case PacketTypes.CarStatus:
-                    this.CarStatus(array, header);
+                    this.CarStatus(ref array, ref header);
                     break;
                 case PacketTypes.FinalClassification:
-                    this.FinalClassification(array, header);
+                    this.FinalClassification(ref array, ref header);
                     break;
                 case PacketTypes.LobbyInfo:
-                    this.LobbyInfo(array, header);
+                    this.LobbyInfo(ref array, ref header);
                     break;
                 case PacketTypes.CarDamage:
-                    this.CarDamage(array, header);
+                    this.CarDamage(ref array, ref header);
                     break;
                 case PacketTypes.SessionHistory:
-                    this.SessionHistory(array, header);
+                    this.SessionHistory(ref array, ref header);
                     break;
             }
 
@@ -446,7 +447,7 @@ namespace F1Telemetry
             //}
         }
 
-        private void CarMotion(byte[] array, PacketHeader head)
+        private void CarMotion(ref byte[] array, ref PacketHeader head)
         {
             try
             {
@@ -459,7 +460,7 @@ namespace F1Telemetry
             }
         }
 
-        private void Session(byte[] array, PacketHeader head)
+        private void Session(ref byte[] array, ref PacketHeader head)
         {
             try
             {
@@ -472,7 +473,7 @@ namespace F1Telemetry
             }
         }
 
-        private void Lapdata(byte[] array, PacketHeader head)
+        private void Lapdata(ref byte[] array, ref PacketHeader head)
         {
             try
             {
@@ -485,7 +486,7 @@ namespace F1Telemetry
             }
         }
 
-        private void Event(byte[] array, PacketHeader head)
+        private void Event(ref byte[] array, ref PacketHeader head)
         {
             try
             {
@@ -547,7 +548,7 @@ namespace F1Telemetry
             }
         }
 
-        private void Participants(byte[] array, PacketHeader head)
+        private void Participants(ref byte[] array, ref PacketHeader head)
         {
             try
             {
@@ -560,7 +561,7 @@ namespace F1Telemetry
             }
         }
 
-        private void CarSetups(byte[] array, PacketHeader head)
+        private void CarSetups(ref byte[] array, ref PacketHeader head)
         {
             try
             {
@@ -573,7 +574,7 @@ namespace F1Telemetry
             }
         }
 
-        private void CarTelemetry(byte[] array, PacketHeader head)
+        private void CarTelemetry(ref byte[] array, ref PacketHeader head)
         {
             try
             {
@@ -588,7 +589,7 @@ namespace F1Telemetry
             }
         }
 
-        private void CarStatus(byte[] array, PacketHeader head)
+        private void CarStatus(ref byte[] array, ref PacketHeader head)
         {
             try
             {
@@ -603,7 +604,7 @@ namespace F1Telemetry
             }
         }
 
-        private void FinalClassification(byte[] array, PacketHeader head)
+        private void FinalClassification(ref byte[] array, ref PacketHeader head)
         {
             try
             {
@@ -616,7 +617,7 @@ namespace F1Telemetry
             }
         }
 
-        private void LobbyInfo(byte[] array, PacketHeader head)
+        private void LobbyInfo(ref byte[] array, ref PacketHeader head)
         {
             try
             {
@@ -632,7 +633,7 @@ namespace F1Telemetry
             }
         }
 
-        private void CarDamage(byte[] array, PacketHeader head)
+        private void CarDamage(ref byte[] array, ref PacketHeader head)
         {
             try
             {
@@ -645,7 +646,7 @@ namespace F1Telemetry
             }
         }
 
-        private void SessionHistory(byte[] array, PacketHeader head)
+        private void SessionHistory(ref byte[] array, ref PacketHeader head)
         {
             try
             {

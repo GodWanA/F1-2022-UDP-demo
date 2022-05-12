@@ -30,19 +30,19 @@ namespace F1Telemetry.Models.SessionPacket
             //uint8 m_timeOffset;               // Time in minutes the forecast is for
             this.Index += ByteReader.ToUInt8(array, this.Index, out valb);
             this.TimeOffset = TimeSpan.FromMinutes(valb);
-
-            //uint8 m_weather;                  // Weather - 0 = clear, 1 = light cloud, 2 = overcast
-            //                                  // 3 = light rain, 4 = heavy rain, 5 = storm
-            this.Index += ByteReader.ToUInt8(array, this.Index, out valb);
-            this.Weather = (WeatherTypes)valb;
         }
 
         protected override void Reader2020(byte[] array)
         {
             sbyte valsb;
+            byte valb;
 
             this.ReaderCommon(array);
 
+            //uint8 m_weather;                  // Weather - 0 = clear, 1 = light cloud, 2 = overcast
+            //                                  // 3 = light rain, 4 = heavy rain, 5 = storm
+            this.Index += ByteReader.ToUInt8(array, this.Index, out valb);
+            this.Weather = (WeatherTypes)valb;
             //int8 m_trackTemperature;         // Track temp. in degrees Celsius
             this.Index += ByteReader.ToInt8(array, this.Index, out valsb);
             this.TrackTemperature = valsb;
@@ -57,6 +57,23 @@ namespace F1Telemetry.Models.SessionPacket
             sbyte valsb;
 
             this.ReaderCommon(array);
+
+            //uint8 m_weather;                  // Weather - 0 = clear, 1 = light cloud, 2 = overcast
+            //                                  // 3 = light rain, 4 = heavy rain, 5 = storm
+            this.Index += ByteReader.ToUInt8(array, this.Index, out valb);
+
+            switch (valb)
+            {
+                default:
+                    this.Weather = (WeatherTypes)valb;
+                    break;
+                case 6:
+                    this.Weather = WeatherTypes.Storm;
+                    break;
+                case 5:
+                    this.Weather = WeatherTypes.HeavyRain;
+                    break;
+            }
 
             //int8 m_trackTemperature;         // Track temp. in degrees Celsius
             this.Index += ByteReader.ToInt8(array, this.Index, out valsb);

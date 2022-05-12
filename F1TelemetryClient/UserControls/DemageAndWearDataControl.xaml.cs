@@ -46,8 +46,9 @@ namespace F1TelemetryApp.UserControls
 
                 if (this.IsLoaded)
                 {
-                    var fg = new SolidColorBrush(this.ColorMapBackgound.GradientStops.GetRelativeColor(this.percent / 100.0));
-                    var t = new SolidColorBrush(this.ColorMapText.GradientStops.GetRelativeColor(this.percent / 100.0));
+                    var p = Math.Round(this.percent / 100.0, 2);
+                    var fg = new SolidColorBrush(this.ColorMapBackgound.GradientStops.GetRelativeColor(p));
+                    var t = new SolidColorBrush(this.ColorMapText.GradientStops.GetRelativeColor(p));
 
                     if (fg.CanFreeze) fg.Freeze();
                     if (t.CanFreeze) t.Freeze();

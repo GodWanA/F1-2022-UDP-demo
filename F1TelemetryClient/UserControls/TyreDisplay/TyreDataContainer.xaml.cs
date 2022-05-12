@@ -85,26 +85,50 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
             {
                 if (demage.TyreWear != null)
                 {
-                    this.tyredata_fl.Wear = demage.TyreWear["FrontLeft"];
-                    this.tyredata_fr.Wear = demage.TyreWear["FrontRight"];
-                    this.tyredata_rl.Wear = demage.TyreWear["RearLeft"];
-                    this.tyredata_rr.Wear = demage.TyreWear["RearRight"];
+                    var fl = Math.Round(demage.TyreWear["FrontLeft"], 2);
+                    var fr = Math.Round(demage.TyreWear["FrontRight"], 2);
+                    var rl = Math.Round(demage.TyreWear["RearLeft"], 2);
+                    var rr = Math.Round(demage.TyreWear["RearRight"], 2);
+
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.tyredata_fl.Wear = fl;
+                        this.tyredata_fr.Wear = fr;
+                        this.tyredata_rl.Wear = rl;
+                        this.tyredata_rr.Wear = rr;
+                    });
                 }
 
                 if (demage.TyreDemage != null)
                 {
-                    this.tyredata_fl.Demage = demage.TyreDemage["FrontLeft"];
-                    this.tyredata_fr.Demage = demage.TyreDemage["FrontRight"];
-                    this.tyredata_rl.Demage = demage.TyreDemage["RearLeft"];
-                    this.tyredata_rr.Demage = demage.TyreDemage["RearRight"];
+                    var fl = demage.TyreDemage["FrontLeft"];
+                    var fr = demage.TyreDemage["FrontRight"];
+                    var rl = demage.TyreDemage["RearLeft"];
+                    var rr = demage.TyreDemage["RearRight"];
+
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.tyredata_fl.Demage = fl;
+                        this.tyredata_fr.Demage = fr;
+                        this.tyredata_rl.Demage = rl;
+                        this.tyredata_rr.Demage = rr;
+                    });
                 }
 
                 if (demage.BrakesDemage != null)
                 {
-                    this.tyredata_fl.BrakeDemage = demage.BrakesDemage["FrontLeft"];
-                    this.tyredata_fr.BrakeDemage = demage.BrakesDemage["FrontRight"];
-                    this.tyredata_rl.BrakeDemage = demage.BrakesDemage["RearLeft"];
-                    this.tyredata_rr.BrakeDemage = demage.BrakesDemage["RearRight"];
+                    var fl = demage.BrakesDemage["FrontLeft"];
+                    var fr = demage.BrakesDemage["FrontRight"];
+                    var rl = demage.BrakesDemage["RearLeft"];
+                    var rr = demage.BrakesDemage["RearRight"];
+
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.tyredata_fl.BrakeDemage = fl;
+                        this.tyredata_fr.BrakeDemage = fr;
+                        this.tyredata_rl.BrakeDemage = rl;
+                        this.tyredata_rr.BrakeDemage = rr;
+                    });
                 }
 
                 // this.UpdateLayout();
@@ -115,27 +139,69 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
         {
             if (telemetry != null)
             {
-                this.tyredata_fl.TyreInnerTemperature = telemetry.TyresInnerTemperature["FrontLeft"];
-                this.tyredata_fr.TyreInnerTemperature = telemetry.TyresInnerTemperature["FrontRight"];
-                this.tyredata_rl.TyreInnerTemperature = telemetry.TyresInnerTemperature["RearLeft"];
-                this.tyredata_rr.TyreInnerTemperature = telemetry.TyresInnerTemperature["RearRight"];
+                if (telemetry.TyresInnerTemperature != null)
+                {
+                    var fl = telemetry.TyresInnerTemperature["FrontLeft"];
+                    var fr = telemetry.TyresInnerTemperature["FrontRight"];
+                    var rl = telemetry.TyresInnerTemperature["RearLeft"];
+                    var rr = telemetry.TyresInnerTemperature["RearRight"];
 
-                this.tyredata_fl.TyreSurfaceTemperature = telemetry.TyresSurfaceTemperature["FrontLeft"];
-                this.tyredata_fr.TyreSurfaceTemperature = telemetry.TyresSurfaceTemperature["FrontRight"];
-                this.tyredata_rl.TyreSurfaceTemperature = telemetry.TyresSurfaceTemperature["RearLeft"];
-                this.tyredata_rr.TyreSurfaceTemperature = telemetry.TyresSurfaceTemperature["RearRight"];
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.tyredata_fl.TyreInnerTemperature = fl;
+                        this.tyredata_fr.TyreInnerTemperature = fr;
+                        this.tyredata_rl.TyreInnerTemperature = rl;
+                        this.tyredata_rr.TyreInnerTemperature = rr;
+                    });
+                }
 
-                this.tyredata_fl.Pressure = telemetry.TyresPressure["FrontLeft"];
-                this.tyredata_fr.Pressure = telemetry.TyresPressure["FrontRight"];
-                this.tyredata_rl.Pressure = telemetry.TyresPressure["RearLeft"];
-                this.tyredata_rr.Pressure = telemetry.TyresPressure["RearRight"];
+                if (telemetry.TyresSurfaceTemperature != null)
+                {
+                    var fl = telemetry.TyresSurfaceTemperature["FrontLeft"];
+                    var fr = telemetry.TyresSurfaceTemperature["FrontRight"];
+                    var rl = telemetry.TyresSurfaceTemperature["RearLeft"];
+                    var rr = telemetry.TyresSurfaceTemperature["RearRight"];
 
-                this.tyredata_fl.BrakesTemperature = telemetry.BrakesTemperature["FrontLeft"];
-                this.tyredata_fr.BrakesTemperature = telemetry.BrakesTemperature["FrontRight"];
-                this.tyredata_rl.BrakesTemperature = telemetry.BrakesTemperature["RearLeft"];
-                this.tyredata_rr.BrakesTemperature = telemetry.BrakesTemperature["RearRight"];
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.tyredata_fl.TyreSurfaceTemperature = fl;
+                        this.tyredata_fr.TyreSurfaceTemperature = fr;
+                        this.tyredata_rl.TyreSurfaceTemperature = rl;
+                        this.tyredata_rr.TyreSurfaceTemperature = rr;
+                    });
+                }
 
-                // this.UpdateLayout();
+                if (telemetry.TyresPressure != null)
+                {
+                    var fl = Math.Round(telemetry.TyresPressure["FrontLeft"], 2);
+                    var fr = Math.Round(telemetry.TyresPressure["FrontRight"], 2);
+                    var rl = Math.Round(telemetry.TyresPressure["RearLeft"], 2);
+                    var rr = Math.Round(telemetry.TyresPressure["RearRight"], 2);
+
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.tyredata_fl.Pressure = fl;
+                        this.tyredata_fr.Pressure = fr;
+                        this.tyredata_rl.Pressure = rl;
+                        this.tyredata_rr.Pressure = rr;
+                    });
+                }
+
+                if (telemetry.BrakesTemperature != null)
+                {
+                    var fl = telemetry.BrakesTemperature["FrontLeft"];
+                    var fr = telemetry.BrakesTemperature["FrontRight"];
+                    var rl = telemetry.BrakesTemperature["RearLeft"];
+                    var rr = telemetry.BrakesTemperature["RearRight"];
+
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.tyredata_fl.BrakesTemperature = fl;
+                        this.tyredata_fr.BrakesTemperature = fr;
+                        this.tyredata_rl.BrakesTemperature = rl;
+                        this.tyredata_rr.BrakesTemperature = rr;
+                    });
+                }
             }
         }
 
@@ -143,9 +209,14 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
         {
             if (status != null)
             {
-                this.ActualTyreCpompund = status.VisualTyreCompound;
-                this.LapAges = (int)status.TyresAgeLaps;
+                var atc = status.VisualTyreCompound;
+                var tal = (int)status.TyresAgeLaps;
 
+                this.Dispatcher.Invoke(() =>
+                {
+                    this.ActualTyreCpompund = atc;
+                    this.LapAges = tal;
+                });
                 // this.UpdateLayout();
             }
         }
@@ -184,15 +255,19 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
 
         private void OnUpdateEvent(Action method)
         {
-            this.Dispatcher.Invoke(() =>
+            if (this.CanDoEvent())
             {
-                if (this.canUpdate && this.IsLoaded)
-                {
-                    this.canUpdate = false;
-                    if (this.driverIndex > -1) method.Invoke();
-                    this.canUpdate = true;
-                }
-            }, DispatcherPriority.Background);
+                this.canUpdate = false;
+                if (this.driverIndex > -1) method.Invoke();
+                this.canUpdate = true;
+            }
+        }
+
+        private bool CanDoEvent()
+        {
+            bool ret = false;
+            this.Dispatcher.Invoke(() => ret = this.canUpdate && this.IsLoaded);
+            return ret;
         }
 
         public void SubscribeUDPEvents()

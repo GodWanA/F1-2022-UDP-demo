@@ -229,7 +229,7 @@ namespace F1TelemetryApp.Windows
                             StrokeEndLineCap = PenLineCap.Round,
                             StrokeDashCap = PenLineCap.Round,
                         });
-                    }, DispatcherPriority.Background);
+                    }, DispatcherPriority.Render);
                 }
             }
         }
@@ -294,7 +294,7 @@ namespace F1TelemetryApp.Windows
                     }
 
                     this.canCarmotion = true;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -409,7 +409,7 @@ namespace F1TelemetryApp.Windows
                     this.trackLength = packet.TrackLength;
                     this.UpdateSession(ref packet);
                     this.canSession = true;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -424,7 +424,7 @@ namespace F1TelemetryApp.Windows
                 {
                     this.UpdateLapdata(ref packet);
                     this.canLapdata = true;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 

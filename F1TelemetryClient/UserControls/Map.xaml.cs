@@ -75,7 +75,7 @@ namespace F1TelemetryApp.UserControls
                 {
                     this.UpdateLapdata(ref packet);
                     this.isLapdataRunning = false;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -88,6 +88,8 @@ namespace F1TelemetryApp.UserControls
                 {
                     var e = gridCars[i] as Border;
                     var c = data.Lapdata[i];
+
+                    Panel.SetZIndex(e, 100 - c.CarPosition);
 
                     switch (c.DriverStatus)
                     {
@@ -124,7 +126,7 @@ namespace F1TelemetryApp.UserControls
                 {
                     this.UpdateCarStatus(ref packet);
                     this.isStatusRunning = false;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -135,14 +137,18 @@ namespace F1TelemetryApp.UserControls
             {
                 for (int i = 0; i < gridCars.Count; i++)
                 {
-                    var e = gridCars[i] as Border;
                     var c = data.CarStatusData[i];
                     var b = u.FlagColors[c.VehicleFIAFlag] as SolidColorBrush;
 
-                    if (b.Color == Brushes.Transparent.Color) b = Map.BorderColor((SolidColorBrush)e.Background);
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        var e = gridCars[i] as Border;
 
-                    if (b.CanFreeze) b.Freeze();
-                    e.BorderBrush = b;
+                        if (b.Color == Brushes.Transparent.Color) b = Map.BorderColor((SolidColorBrush)e.Background);
+                        if (b.CanFreeze) b.Freeze();
+
+                        e.BorderBrush = b;
+                    });
                 }
             }
         }
@@ -157,7 +163,7 @@ namespace F1TelemetryApp.UserControls
                     this.UpdateMotion(ref packet);
                     this.isCarmotionRunning = false;
                 }
-                , DispatcherPriority.Background);
+                , DispatcherPriority.Render);
             }
         }
 
@@ -193,7 +199,7 @@ namespace F1TelemetryApp.UserControls
                 {
                     this.UpdateParticipants(ref packet);
                     this.isParticipantsRunning = false;
-                }, DispatcherPriority.Background);
+                }, DispatcherPriority.Render);
             }
         }
 
@@ -210,6 +216,7 @@ namespace F1TelemetryApp.UserControls
                     var teamBrush = u.PickTeamColor(p.TeamID);
                     var b = Map.BorderColor(teamBrush);
 
+
                     var e = Map.CreateEllipse(teamBrush, b, p.RaceNumber);
                     e.ToolTip = p.Name + " | " + p.RaceNumber + "\r\n" + u.PickTeamName(p.TeamID);
                     carsGrid.Add(e);
@@ -221,7 +228,10 @@ namespace F1TelemetryApp.UserControls
                 {
                     var teamBrush = u.PickTeamColor(data.Participants[i].TeamID);
                     var b = Map.BorderColor(teamBrush);
-                    ((Border)carsGrid[i]).ToolTip = data.Participants[i].Name + " | " + data.Participants[i].RaceNumber + "\r\n" + u.PickTeamName(data.Participants[i].TeamID);
+                    if (b.CanFreeze) b.Freeze();
+
+                    string s = data.Participants[i].Name + " | " + data.Participants[i].RaceNumber + "\r\n" + u.PickTeamName(data.Participants[i].TeamID);
+                    this.Dispatcher.Invoke(() => ((Border)carsGrid[i]).ToolTip = s);
                 }
             }
         }
@@ -231,11 +241,11 @@ namespace F1TelemetryApp.UserControls
             if (!this.isSessionRunning && packet != null)
             {
                 this.isSessionRunning = true;
-                this.Dispatcher.Invoke(() =>
-                {
-                    this.UpdateSession(ref packet);
-                    this.isSessionRunning = false;
-                }, DispatcherPriority.Background);
+                //this.Dispatcher.Invoke(() =>
+                //{
+                this.UpdateSession(ref packet);
+                this.isSessionRunning = false;
+                //}, DispatcherPriority.Render);
             }
         }
 
@@ -261,43 +271,56 @@ namespace F1TelemetryApp.UserControls
                     this.midX = ax;
                     this.midY = ay;
 
-                    this.DrawPath(this.path_baseline, RawTrack.BaseLine);
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.DrawPath(this.path_baseline, RawTrack.BaseLine);
 
-                    this.DrawPath(this.path_s1, RawTrack.SectorZones[0]);
-                    this.DrawPath(this.path_s2, RawTrack.SectorZones[1]);
-                    this.DrawPath(this.path_s3, RawTrack.SectorZones[2]);
+                        this.DrawPath(this.path_s1, RawTrack.SectorZones[0]);
+                        this.DrawPath(this.path_s2, RawTrack.SectorZones[1]);
+                        this.DrawPath(this.path_s3, RawTrack.SectorZones[2]);
+                    });
 
                     if (RawTrack.MarshalZones.Count > 0)
                     {
-                        this.grid_marshal.Children.Clear();
+                        this.Dispatcher.Invoke(() => this.grid_marshal.Children.Clear());
 
                         foreach (var item in RawTrack.MarshalZones.Values)
                         {
-                            var p = Map.CreatePath(null);
-                            this.grid_marshal.Children.Add(p);
-                            this.DrawPath(p, item);
+                            this.Dispatcher.Invoke(() =>
+                            {
+                                var p = Map.CreatePath(null);
+                                this.grid_marshal.Children.Add(p);
+                                this.DrawPath(p, item);
+                            });
                         }
                     }
 
                     if (RawTrack.DRSZones.Count > 0)
                     {
-                        this.grid_drs.Children.Clear();
+                        this.Dispatcher.Invoke(() => this.grid_drs.Children.Clear());
 
                         foreach (var item in RawTrack.DRSZones.Values)
                         {
-                            var p = Map.CreatePath(Map.drsColor);
-                            this.grid_drs.Children.Add(p);
-                            this.DrawPath(p, item);
+                            this.Dispatcher.Invoke(() =>
+                            {
+                                var p = Map.CreatePath(Map.drsColor);
+                                this.grid_drs.Children.Add(p);
+                                this.DrawPath(p, item);
+                            });
                         }
                     }
                 }
             }
 
-            for (int i = 0; i < this.grid_marshal.Children.Count; i++)
+            var d = data.MarshalZones;
+            this.Dispatcher.Invoke(() =>
             {
-                var p = this.grid_marshal.Children[i] as Path;
-                p.Stroke = u.FlagColors[data.MarshalZones[i].ZoneFlag];
-            }
+                for (int i = 0; i < this.grid_marshal.Children.Count; i++)
+                {
+                    var p = this.grid_marshal.Children[i] as Path;
+                    p.Stroke = u.FlagColors[d[i].ZoneFlag];
+                }
+            });
         }
 
         private static Border CreateEllipse(Brush fill, Brush stroke, int raceNumber)
@@ -320,7 +343,7 @@ namespace F1TelemetryApp.UserControls
                     Foreground = fill.Negative(),
                     TextWrapping = TextWrapping.NoWrap,
                     FontSize = 7,
-                }
+                },
             };
         }
 

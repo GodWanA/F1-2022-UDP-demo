@@ -197,6 +197,53 @@ namespace F1Telemetry.Models.SessionPacket
             }
         }
 
+        public string GetSessionType(bool shortName)
+        {
+            switch (this.SessionType)
+            {
+                default:
+                    if (shortName) return "UNK";
+                    else return "Unknown";
+                case SessionTypes.Practice1:
+                    if (shortName) return "P1";
+                    else return "Practice 1";
+                case SessionTypes.Practice2:
+                    if (shortName) return "P2";
+                    else return "Practice 2";
+                case SessionTypes.Practice3:
+                    if (shortName) return "P3";
+                    else return "Practice 3";
+                case SessionTypes.ShortPractice:
+                    if (shortName) return "SP";
+                    else return "Short Practice";
+                case SessionTypes.Quallifying1:
+                    if (shortName) return "Q1";
+                    else return "Quallifying 1";
+                case SessionTypes.Quallifying2:
+                    if (shortName) return "Q2";
+                    else return "Quallifying 2";
+                case SessionTypes.Quallifying3:
+                    if (shortName) return "Q3";
+                    else return "Quallifying 3";
+                case SessionTypes.ShortQuallifying:
+                    if (shortName) return "SQ";
+                    else return "Short Quallifying";
+                case SessionTypes.OneShotQuallifying:
+                    if (shortName) return "OSQ";
+                    else return "OneShotQuallifying";
+                case SessionTypes.Race:
+                    if (shortName) return "RACE";
+                    else return "Race";
+                case SessionTypes.TimeTrial:
+                    if (shortName) return "TT";
+                    else return "Time Trial";
+                case SessionTypes.Race2:
+                case SessionTypes.Race3:
+                    if (shortName) return "UNK";
+                    else return "Unknown";
+            }
+        }
+
         /// <summary>
         /// Packet's header<br/>
         /// All game has to support.
