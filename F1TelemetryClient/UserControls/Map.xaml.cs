@@ -13,6 +13,7 @@ using F1Telemetry.Models.ParticipantsPacket;
 using F1Telemetry.Models.MotionPacket;
 using F1Telemetry.Models.CarStatusPacket;
 using F1Telemetry.Models.LapDataPacket;
+using F1Telemetry.Models;
 
 namespace F1TelemetryApp.UserControls
 {
@@ -31,6 +32,7 @@ namespace F1TelemetryApp.UserControls
         private bool isParticipantsRunning;
         private bool isCarmotionRunning;
         private double maxWidth;
+        private double maxHight;
         private double midX;
         private double midY;
         private double multiply;
@@ -66,9 +68,18 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
+        private bool CanUpdateEvent()
+        {
+            bool ret = false;
+
+            this.Dispatcher.Invoke(() => ret = this.IsLoaded && this.IsEnabled);
+
+            return ret;
+        }
+
         private void Connention_LapDataPacket(PacketLapData packet, EventArgs e)
         {
-            if (!this.isLapdataRunning && packet != null)
+            if (this.CanUpdateEvent() && !this.isLapdataRunning && packet != null)
             {
                 this.isLapdataRunning = true;
                 this.Dispatcher.Invoke(() =>
@@ -119,7 +130,7 @@ namespace F1TelemetryApp.UserControls
 
         private void Connention_CarStatusPacket(PacketCarStatusData packet, EventArgs e)
         {
-            if (!this.isStatusRunning && packet != null)
+            if (this.CanUpdateEvent() && !this.isStatusRunning && packet != null)
             {
                 this.isStatusRunning = true;
                 this.Dispatcher.Invoke(() =>
@@ -155,7 +166,7 @@ namespace F1TelemetryApp.UserControls
 
         private void Connention_CarMotionPacket(PacketMotionData packet, EventArgs e)
         {
-            if (!this.isCarmotionRunning && packet != null)
+            if (this.CanUpdateEvent() && !this.isCarmotionRunning && packet != null)
             {
                 this.isCarmotionRunning = true;
                 this.Dispatcher.Invoke(() =>
@@ -170,9 +181,9 @@ namespace F1TelemetryApp.UserControls
         private void UpdateMotion(ref PacketMotionData data)
         {
             var gridCars = this.grid_cars.Children;
-            if (gridCars.Count == data.CarMotionData.Length)
+            if (gridCars.Count == data?.CarMotionData?.Length)
             {
-                for (int i = 0; i < data.CarMotionData.Length; i++)
+                for (int i = 0; i < data?.CarMotionData?.Length; i++)
                 {
                     var item = data.CarMotionData[i];
 
@@ -192,7 +203,7 @@ namespace F1TelemetryApp.UserControls
 
         private void Connention_ParticipantsPacket(PacketParticipantsData packet, EventArgs e)
         {
-            if (!this.isParticipantsRunning && packet != null)
+            if (this.CanUpdateEvent() && !this.isParticipantsRunning && packet != null)
             {
                 this.isParticipantsRunning = true;
                 this.Dispatcher.Invoke(() =>
@@ -238,7 +249,7 @@ namespace F1TelemetryApp.UserControls
 
         private void Connention_SessionPacket(PacketSessionData packet, EventArgs e)
         {
-            if (!this.isSessionRunning && packet != null)
+            if (this.CanUpdateEvent() && !this.isSessionRunning && packet != null)
             {
                 this.isSessionRunning = true;
                 //this.Dispatcher.Invoke(() =>
@@ -249,20 +260,20 @@ namespace F1TelemetryApp.UserControls
             }
         }
 
-        private void UpdateSession(ref PacketSessionData data)
+        private void UpdateSession(ref PacketSessionData data, bool forced = false)
         {
-            if (data.TrackID != this.TrackID)
+            if (data?.TrackID != this.TrackID || forced)
             {
-                this.TrackID = data.TrackID;
-                this.RawTrack = TrackLayout.FindNearestMap(this.TrackID.ToString(), data.Header.PacketFormat);
+                this.TrackID = data?.TrackID ?? Tracks.Unknown;
+                this.RawTrack = TrackLayout.FindNearestMap(this.TrackID.ToString(), data?.Header?.PacketFormat ?? 0);
 
                 if (RawTrack != null && RawTrack.BaseLine?.Count != 0)
                 {
-                    this.maxWidth = this.ActualWidth - 30;
+                    this.CalcMaxPoints();
 
                     double ax, ay;
                     var dx = u.ImageMiltiplier(RawTrack.BaseLine.Select(x => x.X), this.maxWidth, out ax);
-                    var dy = u.ImageMiltiplier(RawTrack.BaseLine.Select(x => x.Y), this.maxWidth, out ay);
+                    var dy = u.ImageMiltiplier(RawTrack.BaseLine.Select(x => x.Y), this.maxHight, out ay);
 
                     var m = dx;
                     if (m > dy) m = dy;
@@ -312,7 +323,7 @@ namespace F1TelemetryApp.UserControls
                 }
             }
 
-            var d = data.MarshalZones;
+            var d = data?.MarshalZones;
             this.Dispatcher.Invoke(() =>
             {
                 for (int i = 0; i < this.grid_marshal.Children.Count; i++)
@@ -323,8 +334,22 @@ namespace F1TelemetryApp.UserControls
             });
         }
 
+        private void CalcMaxPoints()
+        {
+            this.maxWidth = this.ActualWidth - 30;
+            this.maxHight = this.ActualHeight - 30;
+        }
+
         private static Border CreateEllipse(Brush fill, Brush stroke, int raceNumber)
         {
+            SolidColorBrush text = null;
+
+            if (fill is SolidColorBrush)
+            {
+                if ((fill as SolidColorBrush).Color.IsLightColor()) text = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+                else text = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            }
+
             return new Border
             {
                 Background = fill,
@@ -340,7 +365,7 @@ namespace F1TelemetryApp.UserControls
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center,
                     Text = raceNumber.ToString(),
-                    Foreground = fill.Negative(),
+                    Foreground = text,
                     TextWrapping = TextWrapping.NoWrap,
                     FontSize = 7,
                 },
@@ -391,9 +416,12 @@ namespace F1TelemetryApp.UserControls
         {
             //if (v.X == this.maxx) ;
 
-            var d = maxWidth / 2;
-            var x = (v.X + midX * -1) * multiply + d;
-            var y = (v.Y + midY * -1) * multiply + d;
+            var dx = this.maxWidth / 2;
+            var dy = this.maxHight / 2;
+
+            var x = (v.X + midX * -1) * multiply + dx;
+            var y = (v.Y + midY * -1) * multiply + dy;
+
             return new Point(10 + x, 10 + y);
         }
 
@@ -460,6 +488,44 @@ namespace F1TelemetryApp.UserControls
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
+        }
+
+        private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (this.IsLoaded)
+            {
+                if (this.ActualHeight < 60)
+                {
+                    if (this.IsEnabled)
+                    {
+                        this.IsEnabled = false;
+                        this.grid_content.Visibility = Visibility.Hidden;
+                    }
+                }
+                else
+                {
+                    if (!this.IsEnabled)
+                    {
+                        this.IsEnabled = true;
+                        this.grid_content.Visibility = Visibility.Visible;
+                    }
+                }
+
+                if (this.IsEnabled)
+                {
+                    this.isSessionRunning = true;
+                    this.isCarmotionRunning = true;
+
+                    var ses = u.Connention?.LastSessionDataPacket;
+                    var mot = u.Connention?.LastMotionPacket;
+
+                    this.UpdateSession(ref ses, true);
+                    this.UpdateMotion(ref mot);
+
+                    this.isSessionRunning = false;
+                    this.isCarmotionRunning = false;
+                }
+            }
         }
     }
 }

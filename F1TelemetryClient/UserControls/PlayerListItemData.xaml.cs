@@ -4,6 +4,7 @@ using F1Telemetry.Models.ParticipantsPacket;
 using F1TelemetryApp.Classes;
 using System;
 using System.ComponentModel;
+using System.Text;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -626,6 +627,32 @@ namespace F1TelemetryApp.UserControls
             u.Connention.LapDataPacket -= Connention_LapDataPacket;
             u.Connention.ParticipantsPacket -= Connention_ParticipantsPacket;
             u.Connention.CarStatusPacket -= Connention_CarStatusPacket;
+        }
+
+        private void UserControl_ToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+            var sb = new StringBuilder();
+
+            var par = u.Connention?.LastParticipantsPacket?.Participants[this.ArrayIndex];
+            var lap = u.Connention?.LastLapDataPacket?.Lapdata[this.arrayIndex];
+
+            sb.AppendLine("Driver name: " + this.DriverName + " | " + par?.ShortName);
+            sb.AppendLine("Racenumber: " + this.RaceNumber);
+            sb.AppendLine("Nationality: " + this.Nationality);
+            sb.AppendLine("Team: " + this.TeamID);
+            sb.AppendLine("Tyre: " + this.TyreCompund);
+            sb.AppendLine("Lap number: " + lap?.CurrentLapNum);
+            sb.AppendLine("Current status: " + lap?.DriverStatus);
+            sb.AppendLine("Result status: " + lap?.ResultStatus);
+            sb.AppendLine("Pit status: " + lap?.PitStatus);
+            sb.AppendLine("Current position: " + this.CarPosition);
+            sb.AppendLine("Grid Position: " + lap?.GridPosition);
+            sb.AppendLine("Warnings: " + this.WarningNumber);
+            sb.AppendLine("Penalty time: " + this.PenaltyTime + " sec");
+            sb.AppendLine("Driver through: " + lap?.NumberOfUnservedDriveThroughPenalties);
+            sb.AppendLine("Stop'n'Go :" + lap?.NumberOfUnservedStopGoPenalties);
+
+            this.ToolTip = sb.ToString();
         }
     }
 }

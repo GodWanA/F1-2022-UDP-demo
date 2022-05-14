@@ -461,5 +461,19 @@ namespace F1TelemetryApp.UserControls.Session
         {
             this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        private void UserControl_ToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+            var ses = u.Connention.LastSessionDataPacket;
+            var sb = new StringBuilder();
+
+            sb.AppendLine("Track: " + this.TrackName);
+            sb.AppendLine("Session: " + ses?.GetSessionType(false));
+            sb.AppendLine("Laps: " + this.CurrentLap + "/" + this.TotalLaps);
+            sb.AppendLine("Session duration: " + ses?.SessionDuration);
+            sb.AppendLine("Time left: " + this.SessionTimeLeft);
+
+            this.ToolTip = sb.ToString().Trim();
+        }
     }
 }

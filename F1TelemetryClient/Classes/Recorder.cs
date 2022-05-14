@@ -76,7 +76,7 @@ namespace F1TelemetryApp.Classes
             }
         }
 
-        private void Connention_RawDataRecieved(byte[] rawData, EventArgs e)
+        private void Connention_RawDataRecieved(byte[] rawData, PacketHeader head, EventArgs e)
         {
             if (!this.isAdding)
             {

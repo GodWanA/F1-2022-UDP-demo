@@ -70,5 +70,23 @@ namespace F1TelemetryApp.Classes
 
             return ret;
         }
+
+        public static Brush GrayScale(this Brush b)
+        {
+            Brush ret = null;
+
+            if (b is SolidColorBrush)
+            {
+                Color c = (b as SolidColorBrush).Color;
+
+                var nc = (byte)Math.Round((c.R + c.G + c.B) / 3.0);
+                var tmp = new SolidColorBrush(Color.FromArgb(c.A, nc, nc, nc));
+
+                if (tmp.CanFreeze) tmp.Freeze();
+                ret = tmp;
+            }
+
+            return ret;
+        }
     }
 }

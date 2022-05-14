@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="200" Loaded="UserControl_Loaded" Unloaded="UserControl_Unloaded">
     <Grid>
-        <ListBox x:Name="listBox_drivers" ItemsSource="{Binding ParticipantsList}" Grid.Row="1" BorderBrush="{x:Null}" Foreground="{x:Null}" SelectionChanged="listBox_drivers_SelectionChanged" BorderThickness="0,0,0,0" >
+        <ListBox ScrollViewer.VerticalScrollBarVisibility="Visible" x:Name="listBox_drivers" ItemsSource="{Binding ParticipantsList}" Grid.Row="1" BorderBrush="{x:Null}" Foreground="{x:Null}" SelectionChanged="listBox_drivers_SelectionChanged" BorderThickness="0,0,0,0" >
             <ListBox.Background>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                     <GradientStop Color="#FF4A4A4A"/>

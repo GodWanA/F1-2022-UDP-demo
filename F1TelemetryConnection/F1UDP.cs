@@ -137,7 +137,7 @@ namespace F1Telemetry
 
         // main packet envets:
 
-        public delegate void RawHandler(byte[] rawData, EventArgs e);
+        public delegate void RawHandler(byte[] rawData, PacketHeader head, EventArgs e);
 
         public delegate void CarMotionHandler(PacketMotionData packet, EventArgs e);
         public delegate void SessionHandler(PacketSessionData packet, EventArgs e);
@@ -334,14 +334,12 @@ namespace F1Telemetry
                 {
                     if (!this.IsAsyncPacketProcessEnabled)
                     {
-                        this.OnRawDataRecive(received);
                         this.ByteArrayProcess(received);
                     }
                     else
                     {
                         Task.Run(() =>
                         {
-                            this.OnRawDataRecive(received);
                             this.ByteArrayProcess(received);
                         }, this.CancelToken.Token);
                     }
@@ -398,8 +396,9 @@ namespace F1Telemetry
         /// <param name="array">Raw byte array</param>
         private void ByteArrayProcess(byte[] array)
         {
-            var start = DateTime.Now;
+            //var start = DateTime.Now;
             var header = new PacketHeader(array);
+            this.OnRawDataRecive(array, header);
 
             switch (header.PacketID)
             {
@@ -858,9 +857,9 @@ namespace F1Telemetry
             if (this.EventPacketButtons != null) this.EventPacketButtons(sender, new EventArgs());
         }
 
-        protected virtual void OnRawDataRecive(byte[] sender)
+        protected virtual void OnRawDataRecive(byte[] sender, PacketHeader head)
         {
-            if (this.RawDataRecieved != null) this.RawDataRecieved(sender, new EventArgs());
+            if (this.RawDataRecieved != null) this.RawDataRecieved(sender, head, new EventArgs());
         }
     }
 }

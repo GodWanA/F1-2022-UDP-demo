@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:F1TelemetryApp.UserControls"
              x:Class="F1TelemetryApp.UserControls.PlayerListItemData"
              mc:Ignorable="d" 
-             d:DesignWidth="300" Height="auto" RenderOptions.BitmapScalingMode="LowQuality" Initialized="UserControl_Initialized">
+             ToolTip="Player info"
+             d:DesignWidth="300" Height="auto" RenderOptions.BitmapScalingMode="LowQuality" Initialized="UserControl_Initialized" ToolTipOpening="UserControl_ToolTipOpening">
     <UserControl.Resources>
         <Storyboard x:Key="PosDec">
             <ColorAnimationUsingKeyFrames Storyboard.TargetName="border_position" Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)">

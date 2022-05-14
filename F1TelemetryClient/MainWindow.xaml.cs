@@ -74,10 +74,10 @@ namespace F1TelemetryClient
             InitializeComponent();
             this.DataContext = this;
 
-            //Timeline.DesiredFrameRateProperty.OverrideMetadata(
-            //    typeof(Timeline),
-            //    new FrameworkPropertyMetadata { DefaultValue = 10 }
-            //);
+            Timeline.DesiredFrameRateProperty.OverrideMetadata(
+                typeof(Timeline),
+                new FrameworkPropertyMetadata { DefaultValue = 15 }
+            );
 
             //this.socket = new ClientWebSocket();
             //this.socket.ConnectAsync(new Uri("ws://localhost:8080"), new System.Threading.CancellationToken());
@@ -95,7 +95,6 @@ namespace F1TelemetryClient
 
             this.performanceTimer.Interval = TimeSpan.FromSeconds(1);
             this.performanceTimer.Tick += PerformanceTimer_Tick;
-
         }
 
         private void PerformanceTimer_Tick(object sender, EventArgs e)

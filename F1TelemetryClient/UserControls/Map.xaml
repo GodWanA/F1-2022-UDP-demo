@@ -5,10 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:F1TelemetryApp.UserControls"
              mc:Ignorable="d" 
-             Height="265" Width="265" Initialized="UserControl_Initialized">
+             d:Width="265" d:Height="265" MaxHeight="265" MaxWidth="265" Initialized="UserControl_Initialized" SizeChanged="UserControl_SizeChanged">
     <Grid>
-        <Border Background="Black" CornerRadius="5">
-            <Grid>
+        <Border Background="Black" CornerRadius="10,10,0,0">
+            <Grid x:Name="grid_content">
                 <Path x:Name="path_baseline" Margin="5" Stroke="Gray" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
                 <Path x:Name="path_s1" Margin="5" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
