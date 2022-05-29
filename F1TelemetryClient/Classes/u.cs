@@ -1,6 +1,7 @@
 ﻿using F1Telemetry;
 using F1Telemetry.Models.LapDataPacket;
 using F1Telemetry.Models.SessionHistoryPacket;
+using F1TelemetryApp.UserControls;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -24,6 +25,7 @@ namespace F1TelemetryApp.Classes
         internal static Dictionary<Flags, System.Windows.Media.Brush> FlagColors { get; set; } = u.FillColors();
         public static int SelectedIndex { get; internal set; }
         public static object SelectedItem { get; internal set; }
+        public static PlayerListItemData SelectedPlayer { get; internal set; }
         public static bool CanDoUdp { get; internal set; }
 
         private static Dictionary<Flags, System.Windows.Media.Brush> FillColors()
@@ -437,6 +439,36 @@ namespace F1TelemetryApp.Classes
         internal static float CalculateERS(float value)
         {
             return value / 4000000f * 100f;
+        }
+
+        internal static double PointsToPixels(double wpfPoints, LengthDirection direction)
+        {
+            if (direction == LengthDirection.Horizontal)
+            {
+                return wpfPoints * System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Width / SystemParameters.WorkArea.Width;
+            }
+            else
+            {
+                return wpfPoints * System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Height / SystemParameters.WorkArea.Height;
+            }
+        }
+
+        internal static double PixelsToPoints(double pixels, LengthDirection direction)
+        {
+            if (direction == LengthDirection.Horizontal)
+            {
+                return pixels * SystemParameters.WorkArea.Width / System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Width;
+            }
+            else
+            {
+                return pixels * SystemParameters.WorkArea.Height / System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Height;
+            }
+        }
+
+        internal enum LengthDirection
+        {
+            Vertical, // |
+            Horizontal // ——
         }
     }
 }

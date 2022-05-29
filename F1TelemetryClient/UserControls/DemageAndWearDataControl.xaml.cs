@@ -53,8 +53,11 @@ namespace F1TelemetryApp.UserControls
                     if (fg.CanFreeze) fg.Freeze();
                     if (t.CanFreeze) t.Freeze();
 
-                    this.ProgressbarForeground = fg;
-                    this.ProgressbarText = t;
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.ProgressbarForeground = fg;
+                        this.ProgressbarText = t;
+                    });
                 }
             }
         }
@@ -102,7 +105,8 @@ namespace F1TelemetryApp.UserControls
 
         private void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            // if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
         }
 
         protected virtual void Dispose(bool disposing)

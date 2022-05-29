@@ -3,6 +3,7 @@ using F1Telemetry.Models.SessionPacket;
 using F1TelemetryApp.Classes;
 using F1TelemetryApp.UserControls;
 using System;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -27,6 +28,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
         private void tyrecontainer_Unloaded(object sender, RoutedEventArgs e)
         {
             this.UnsubscribeUDPEvents();
+            this.LoadWear();
         }
 
         private void tyrecontainer_Loaded(object sender, RoutedEventArgs e)
@@ -141,17 +143,17 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
         internal void LoadWear()
         {
             //if (this.listBox_drivers.SelectedIndex != -1)
-            if (u.SelectedIndex > -1)
+            if (u.SelectedPlayer != null && u.Connention != null)
             {
                 //int i = (this.listBox_drivers.SelectedItem as PlayerListItemData).ArrayIndex;
-                int i = ((PlayerListItemData)u.SelectedItem).ArrayIndex;
+                int i = u.SelectedPlayer.ArrayIndex;
                 var demage = u.Connention.LastCarDemagePacket?.CarDamageData[i];
                 var status = u.Connention.LastCarStatusDataPacket?.CarStatusData[i];
                 var telemetry = u.Connention.LastCarTelmetryPacket?.CarTelemetryData[i];
-                var sessionHistory = u.Connention.LastSessionHistoryPacket[i];
-                var participants = u.Connention.LastParticipantsPacket;
-                var gForce = u.Connention.LastMotionPacket.CarMotionData[i].GForce;
-                var lapdata = u.Connention.LastLapDataPacket;
+                var sessionHistory = u.Connention?.LastSessionHistoryPacket[i];
+                var participants = u.Connention?.LastParticipantsPacket;
+                var gForce = u.Connention?.LastMotionPacket?.CarMotionData[i]?.GForce ?? Vector3.Zero;
+                var lapdata = u.Connention?.LastLapDataPacket;
 
                 this.tyrecontainer.UpdateDatas(demage, status, telemetry, i);
                 this.drivercontainer.UpdateDatas(status, telemetry, sessionHistory, participants, gForce, lapdata, i);

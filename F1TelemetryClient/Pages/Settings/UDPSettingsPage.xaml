@@ -42,13 +42,7 @@
                         <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBox x:Name="textbox_ip0" Grid.Column="0" Grid.Row="0" TextAlignment="Center" MaxLength="3" PreviewTextInput="textbox_ip0_PreviewTextInput" TextChanged="textbox_ip0_TextChanged"/>
-                    <TextBlock Text="." Grid.Column="1" Grid.Row="0" Margin="5,0,5,2"/>
-                    <TextBox x:Name="textbox_ip1" Grid.Column="2" Grid.Row="0" TextAlignment="Center" MaxLength="3" PreviewTextInput="textbox_ip0_PreviewTextInput" TextChanged="textbox_ip0_TextChanged"/>
-                    <TextBlock Text="." Grid.Column="3" Grid.Row="0" Margin="5,0,5,2"/>
-                    <TextBox x:Name="textbox_ip2" Grid.Column="4" Grid.Row="0" TextAlignment="Center" MaxLength="3" PreviewTextInput="textbox_ip0_PreviewTextInput" TextChanged="textbox_ip0_TextChanged"/>
-                    <TextBlock Text="." Grid.Column="5" Grid.Row="0" Margin="5,0,5,2"/>
-                    <TextBox x:Name="textbox_ip3" Grid.Column="6" Grid.Row="0" TextAlignment="Center" MaxLength="3" PreviewTextInput="textbox_ip0_PreviewTextInput" TextChanged="textbox_ip0_TextChanged"/>
+                    <ComboBox x:Name="combobox_addresses" Grid.ColumnSpan="7"/>
                     <TextBlock Text=":" Grid.Column="7" Grid.Row="0" Margin="5,0,5,2"/>
                     <TextBox x:Name="textbox_port" Grid.Column="8" Grid.Row="0" TextAlignment="Center" MaxLength="5" PreviewTextInput="textbox_ip0_PreviewTextInput" TextChanged="textbox_port_TextChanged"/>
                 </Grid>

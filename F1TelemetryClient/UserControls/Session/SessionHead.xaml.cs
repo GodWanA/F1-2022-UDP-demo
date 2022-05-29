@@ -229,7 +229,8 @@ namespace F1TelemetryApp.UserControls.Session
                         else
                         {
                             this.isRaceOver = false;
-                            this.Dispatcher.Invoke(() => this.CurrentLap = data);
+                            //this.Dispatcher.Invoke(() => this.CurrentLap = data);
+                            this.CurrentLap = data;
                         }
 
                         break;
@@ -251,11 +252,11 @@ namespace F1TelemetryApp.UserControls.Session
                 this.TimeLeft = Math.Round(packet.SessionTimeLeft.TotalSeconds / (this.isRaceOver ? 160 : packet.SessionDuration.TotalSeconds) * 100.0, 2);
                 this.session = packet.SessionType;
 
-                this.Dispatcher.Invoke(() =>
-                {
-                    this.TotalLaps = packet.TotalLaps;
-                    this.SessionTimeLeft = packet.SessionTimeLeft;
-                });
+                //this.Dispatcher.Invoke(() =>
+                //{
+                this.TotalLaps = packet.TotalLaps;
+                this.SessionTimeLeft = packet.SessionTimeLeft;
+                //});
 
                 if (!this.isRaceOver)
                 {
@@ -293,9 +294,9 @@ namespace F1TelemetryApp.UserControls.Session
                         this.grid_timeData.Visibility = Visibility.Hidden;
                         this.stackpanel_lapData.Visibility = Visibility.Hidden;
                         this.grid_formationLap.Visibility = Visibility.Visible;
-
-                        this.NonLapInfo = "Finnished";
                     });
+
+                    this.NonLapInfo = "Finnished";
                 }
 
                 var flags = packet.MarshalZones.Select(x => x.ZoneFlag).Distinct().Where(x => x == Flags.Yellow || x == Flags.Red || x == Flags.Green);
@@ -303,7 +304,8 @@ namespace F1TelemetryApp.UserControls.Session
 
                 if (packet.MarshalZones.Where(x => x.ZoneFlag == Flags.Yellow).Count() == packet.NumberOfMarshalZones)
                 {
-                    this.Dispatcher.Invoke(() => this.FlagLocation = "Full course");
+                    //this.Dispatcher.Invoke(() => this.FlagLocation = "Full course");
+                    this.FlagLocation = "Full course";
                 }
                 else
                 {
@@ -333,7 +335,8 @@ namespace F1TelemetryApp.UserControls.Session
                             sb.Append(item);
                         }
 
-                        this.Dispatcher.Invoke(() => this.FlagLocation = sb.ToString());
+                        //this.Dispatcher.Invoke(() => this.FlagLocation = sb.ToString());
+                        this.FlagLocation = sb.ToString();
                     }
                 }
 
@@ -342,10 +345,11 @@ namespace F1TelemetryApp.UserControls.Session
                     case SafetyCarStatuses.NoSafetyCar:
                         break;
                     case SafetyCarStatuses.FullSafetyCar:
-                        this.Dispatcher.Invoke(() => this.FlagName += " - SC");
+                        // this.Dispatcher.Invoke(() => this.FlagName += " - SC");
+                        this.FlagName += " - SC";
                         break;
                     case SafetyCarStatuses.VirtualSafetyCar:
-                        this.Dispatcher.Invoke(() => this.FlagName += " - VSC");
+                        this.FlagName += " - VSC";
                         break;
                     case SafetyCarStatuses.FormationLap:
                         this.Dispatcher.Invoke(() =>
@@ -353,9 +357,9 @@ namespace F1TelemetryApp.UserControls.Session
                             this.grid_timeData.Visibility = Visibility.Visible;
                             this.stackpanel_lapData.Visibility = Visibility.Hidden;
                             this.grid_formationLap.Visibility = Visibility.Visible;
-
-                            this.NonLapInfo = "Formation Lap";
                         });
+
+                        this.NonLapInfo = "Formation Lap";
                         break;
                 }
 
@@ -381,22 +385,25 @@ namespace F1TelemetryApp.UserControls.Session
                 if (flags.Contains(Flags.Red))
                 {
                     flag = Flags.Red;
-                    this.Dispatcher.Invoke(() => this.FlagName = "RED Flag");
+                    // this.Dispatcher.Invoke(() => this.FlagName = "RED Flag");
+                    this.FlagName = "RED Flag";
                 }
                 else if (flags.Contains(Flags.Yellow))
                 {
                     flag = Flags.Yellow;
-                    this.Dispatcher.Invoke(() => this.FlagName = "YELLOW Flag");
+                    // this.Dispatcher.Invoke(() => this.FlagName = "YELLOW Flag");
+                    this.FlagName = "YELLOW Flag";
                 }
                 else if (flags.Contains(Flags.Green))
                 {
                     flag = Flags.Green;
-                    this.Dispatcher.Invoke(() => this.FlagName = "GREEN Flag");
+                    // this.Dispatcher.Invoke(() => this.FlagName = "GREEN Flag");
+                    this.FlagName = "GREEN Flag";
                 }
 
                 var c = u.FlagColors[flag];
                 if (c.CanFreeze) c.Freeze();
-                this.Dispatcher.Invoke(() => this.FlagColor = (SolidColorBrush)c);
+                this.FlagColor = (SolidColorBrush)c;
             }
 
             return flag;
@@ -459,7 +466,8 @@ namespace F1TelemetryApp.UserControls.Session
 
         private void OnPropertyChanged(string propertyName)
         {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            // this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
         }
 
         private void UserControl_ToolTipOpening(object sender, ToolTipEventArgs e)

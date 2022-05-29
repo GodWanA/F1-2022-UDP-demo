@@ -93,18 +93,21 @@ namespace F1TelemetryApp.UserControls
                     this.OnPropertyChanged("Wear");
                 }
 
-                if (this.IsLoaded)
+                this.Dispatcher.Invoke(() =>
                 {
-                    this.Condition = 100.0 - this.Wear;
-                    var fg = new SolidColorBrush(this.ColorMapTyreConditionBackground.GradientStops.GetRelativeColor(this.Condition / 100.0));
-                    var t = new SolidColorBrush(this.ColorMapTyreConditionText.GradientStops.GetRelativeColor(this.Condition / 100.0));
+                    if (this.IsLoaded)
+                    {
+                        this.Condition = 100.0 - this.Wear;
+                        var fg = new SolidColorBrush(this.ColorMapTyreConditionBackground.GradientStops.GetRelativeColor(this.Condition / 100.0));
+                        var t = new SolidColorBrush(this.ColorMapTyreConditionText.GradientStops.GetRelativeColor(this.Condition / 100.0));
 
-                    if (fg.CanFreeze) fg.Freeze();
-                    if (t.CanFreeze) t.Freeze();
+                        if (fg.CanFreeze) fg.Freeze();
+                        if (t.CanFreeze) t.Freeze();
 
-                    this.TyreConditionForeground = fg;
-                    this.TyreConditionText = t;
-                }
+                        this.TyreConditionForeground = fg;
+                        this.TyreConditionText = t;
+                    }
+                });
             }
         }
 
@@ -251,10 +254,11 @@ namespace F1TelemetryApp.UserControls
 
         private void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null)
-            {
-                this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            //if (this.PropertyChanged != null)
+            //{
+            //    this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            //}
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
         }
 
         private void UserControl_Initialized(object sender, EventArgs e)
@@ -500,7 +504,7 @@ namespace F1TelemetryApp.UserControls
 
             var b = new SolidColorBrush(c);
             if (b.CanFreeze) b.Freeze();
-            this.border_heatMap.Background = b;
+            this.Dispatcher.Invoke(() => this.border_heatMap.Background = b);
         }
 
         private void ColorOuterHeat(double value)
@@ -518,7 +522,7 @@ namespace F1TelemetryApp.UserControls
 
             var b = new SolidColorBrush(c);
             if (b.CanFreeze) b.Freeze();
-            this.border_heatMap.BorderBrush = b;
+            this.Dispatcher.Invoke(() => this.border_heatMap.BorderBrush = b);
         }
 
         internal static void UpdateTyres(TrackLayout rawTrack)

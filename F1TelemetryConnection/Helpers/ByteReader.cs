@@ -273,11 +273,11 @@ namespace F1Telemetry.Helpers
                 int ret = 0;
 
                 ret += ByteReader.ToFloat(array, index + ret, out tmp);
-                dictionary.Add("RearLeft", tmp);
-                dictionary.Add("RearRight", tmp);
-                ret += ByteReader.ToFloat(array, index + ret, out tmp);
                 dictionary.Add("FrontLeft", tmp);
                 dictionary.Add("FrontRight", tmp);
+                ret += ByteReader.ToFloat(array, index + ret, out tmp);
+                dictionary.Add("RearLeft", tmp);
+                dictionary.Add("RearRight", tmp);
 
                 return ret;
             }

@@ -76,7 +76,7 @@ namespace F1TelemetryClient
 
             Timeline.DesiredFrameRateProperty.OverrideMetadata(
                 typeof(Timeline),
-                new FrameworkPropertyMetadata { DefaultValue = 15 }
+                new FrameworkPropertyMetadata { DefaultValue = 10 }
             );
 
             //this.socket = new ClientWebSocket();
@@ -121,8 +121,6 @@ namespace F1TelemetryClient
         {
             if (u.Connention != null)
             {
-                //u.Connention.SessionPacket += Connention_SessionPacket;
-                //u.Connention.CarStatusPacket += Connention_CarStatusPacket;
                 u.Connention.DataReadError += Connention_DataReadError;
                 u.Connention.ConnectionError += Connention_ConnectionError;
             }
@@ -132,63 +130,10 @@ namespace F1TelemetryClient
         {
             if (u.Connention != null)
             {
-                //u.Connention.SessionPacket -= Connention_SessionPacket;
-                //u.Connention.CarStatusPacket -= Connention_CarStatusPacket;
                 u.Connention.DataReadError -= Connention_DataReadError;
                 u.Connention.ConnectionError -= Connention_ConnectionError;
             }
         }
-
-        //private void Connention_CarStatusPacket(PacketCarStatusData packet, EventArgs e)
-        //{
-        //    if (!this.isWorking_CarStatusData && u.CanDoUdp)
-        //    {
-        //        this.isWorking_CarStatusData = true;
-        //        this.Dispatcher.Invoke(() =>
-        //        {
-        //            var flags = packet.CarStatusData.Select(x => x.VehicleFIAFlag);
-        //            this.SetSessionInfoColor(flags);
-
-        //            //this.CleanUpList();
-
-        //            this.isWorking_CarStatusData = false;
-        //        }, DispatcherPriority.Render);
-        //    }
-        //}
-
-        //private void Connention_SessionPacket(PacketSessionData packet, EventArgs e)
-        //{
-        //    if (!this.isWorking_SessionData && u.CanDoUdp)
-        //    {
-        //        this.isWorking_SessionData = true;
-
-        //        this.Dispatcher.Invoke(() =>
-        //        {
-
-        //            var lapData = u.Connention.LastLapDataPacket;
-        //            var first = lapData?.Lapdata?.Where(x => x.CarPosition == 1).FirstOrDefault();
-        //            u.TrackLength = packet.TrackLength;
-        //            StringBuilder sb = new StringBuilder();
-
-        //            sb.AppendLine("Session: " + Regex.Replace(packet.SessionType.ToString(), "([A-Z])", " $1", RegexOptions.Compiled).Trim());
-        //            sb.AppendLine("Laps: " + first?.CurrentLapNum + " / " + packet.TotalLaps);
-        //            sb.Append("TimeLeft: " + packet.SessionTimeLeft.ToString());
-
-        //            this.textBlock_counterHead.Text = sb.ToString();
-
-        //            //this.weatherController.SetActualWeather(sessionData.Weather, sessionData.SessionType, sessionData.TrackTemperature, sessionData.AirTemperature);
-        //            //this.weatherController.SetWeatherForecast(sessionData.WeatherForcastSample);
-        //            //this.tyrecontainer.UpdateTyres(this.map.RawTrack);
-
-        //            var flags = packet.MarshalZones.Select(x => x.ZoneFlag);
-        //            this.SetSessionInfoColor(flags);
-
-        //            this.isWorking_SessionData = false;
-        //            //this.CleanUpList();
-
-        //        }, DispatcherPriority.Render);
-        //    }
-        //}
 
         private void Connention_ConnectionError(object sender, Exception ex, EventArgs e)
         {
@@ -254,8 +199,9 @@ namespace F1TelemetryClient
 
         private void OnPropertyChanged(string propertyName)
         {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            //if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+            // this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)
+            // if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -340,7 +286,6 @@ namespace F1TelemetryClient
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            u.Connention.Close();
             this.SaveWindowPosition(this.regPath);
         }
 

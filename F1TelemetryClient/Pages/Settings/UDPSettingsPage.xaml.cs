@@ -45,10 +45,7 @@ namespace F1TelemetryApp.Pages.Settings
             ushort n;
 
             if (
-                UDPSettingsPage.IsByte(this.textbox_ip0.Text)
-                && UDPSettingsPage.IsByte(this.textbox_ip1.Text)
-                && UDPSettingsPage.IsByte(this.textbox_ip2.Text)
-                && UDPSettingsPage.IsByte(this.textbox_ip3.Text)
+                this.combobox_addresses.SelectedIndex != 0
                 && ushort.TryParse(this.textbox_port.Text, out n)
             )
             {
@@ -74,23 +71,59 @@ namespace F1TelemetryApp.Pages.Settings
 
         internal void LoadData()
         {
-            if (u.Connention != null)
+            Task.Run(() =>
             {
-                var tmp = u.Connention.IPAdress.Split('.', StringSplitOptions.TrimEntries);
-
-                if (tmp != null)
+                this.Dispatcher.Invoke(() =>
                 {
-                    this.textbox_ip0.Text = tmp[0];
-                    this.textbox_ip1.Text = tmp[1];
-                    this.textbox_ip2.Text = tmp[2];
-                    this.textbox_ip3.Text = tmp[3];
+                    this.IsEnabled = false;
+                    this.Cursor = Cursors.Wait;
+                    this.textblock_error.Text = "Exploring local network...";
+                });
 
-                    this.textbox_port.Text = u.Connention.Port.ToString();
+                if (u.Connention != null)
+                {
+                    var res = NetWorkDetector.Ping_all();
+                    int savedIndex = -1;
+                    if (res != null)
+                    {
+                        int i = 0;
+                        var sb = new StringBuilder();
+
+                        foreach (var item in res)
+                        {
+                            sb.Clear();
+                            sb.Append(item["IP"]);
+
+                            if (item["HostName"] != null) sb.Append(" (" + item["HostName"] + ")");
+                            else sb.Append(" (" + item["MACAddress"] + ")");
+
+                            this.Dispatcher.Invoke(() => this.combobox_addresses.Items.Add(sb.ToString()));
+
+                            if (item["IP"] == u.Connention?.IPAddress) savedIndex = i;
+
+                            i++;
+                        }
+                    }
+
+                    var tmp = u.Connention.IPAddress.Split('.', StringSplitOptions.TrimEntries);
+
+                    if (tmp != null)
+                    {
+                        if (savedIndex > -1) this.Dispatcher.Invoke(() => this.combobox_addresses.SelectedIndex = savedIndex);
+                    }
                 }
 
-                this.slider_maxpacket.Value = u.Connention.NumberOfPacketPerSecond;
-                this.checkbox_multicore.IsChecked = u.Connention.IsAsyncPacketProcessEnabled;
-            }
+                this.Dispatcher.Invoke(() =>
+                {
+                    this.IsEnabled = true;
+                    this.Cursor = null;
+                    this.textblock_error.Text = "";
+                });
+            });
+
+            this.textbox_port.Text = u.Connention?.Port.ToString();
+            this.slider_maxpacket.Value = u.Connention?.NumberOfPacketPerSecond ?? -1;
+            this.checkbox_multicore.IsChecked = u.Connention?.IsAsyncPacketProcessEnabled;
         }
 
         internal void SaveData()
@@ -99,22 +132,25 @@ namespace F1TelemetryApp.Pages.Settings
             {
                 if (this.IsValidIP())
                 {
-                    string oIP = u.Connention.IPAdress;
+                    string oIP = u.Connention.IPAddress;
                     int oPort = u.Connention.Port;
 
                     try
                     {
                         u.Connention.Close();
 
-                        StringBuilder ip = new StringBuilder()
-                            .Append(this.textbox_ip0.Text).Append(".")
-                            .Append(this.textbox_ip1.Text).Append(".")
-                            .Append(this.textbox_ip2.Text).Append(".")
-                            .Append(this.textbox_ip3.Text);
+                        var ip = this.combobox_addresses.SelectedItem as string;
+                        ip = ip.Remove(ip.IndexOf(" "));
+
+                        //StringBuilder ip = new StringBuilder()
+                        //    .Append(this.textbox_ip0.Text).Append(".")
+                        //    .Append(this.textbox_ip1.Text).Append(".")
+                        //    .Append(this.textbox_ip2.Text).Append(".")
+                        //    .Append(this.textbox_ip3.Text);
 
                         int port = int.Parse(this.textbox_port.Text);
 
-                        u.Connention.Connect(ip.ToString(), port);
+                        u.Connention?.Connect(ip, port);
                     }
                     catch (Exception ex)
                     {

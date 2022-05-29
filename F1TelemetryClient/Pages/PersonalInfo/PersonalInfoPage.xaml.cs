@@ -73,7 +73,8 @@ namespace F1TelemetryApp.Pages.PersonalInfo
                 this.isLoadingWear = true;
 
                 //if (this.listBox_drivers.SelectedIndex != -1)
-                this.livestatusdata.LoadWear();
+                if (this.livestatusdata.IsLoaded) this.livestatusdata.LoadWear();
+                if (this.carsetupdata.IsLoaded) this.carsetupdata.LoadSetup();
 
                 this.isLoadingWear = false;
             }

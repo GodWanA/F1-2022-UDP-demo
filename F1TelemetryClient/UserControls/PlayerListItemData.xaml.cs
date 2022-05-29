@@ -111,21 +111,27 @@ namespace F1TelemetryApp.UserControls
 
                     if (value == 0)
                     {
-                        this.Visibility = System.Windows.Visibility.Collapsed;
-                        this.IsEnabled = false;
+                        this.Dispatcher.Invoke(() =>
+                        {
+                            this.Visibility = System.Windows.Visibility.Collapsed;
+                            this.IsEnabled = false;
+                        });
                     }
                     else
                     {
-                        this.Visibility = System.Windows.Visibility.Visible;
-                        this.IsEnabled = true;
-
-                        if (this.IsLoaded && this.carPosition > 0)
+                        this.Dispatcher.Invoke(() =>
                         {
-                            Storyboard sb;
-                            if (carPosition > value) sb = this.Resources["PosDec"] as Storyboard;
-                            else sb = this.Resources["PosInc"] as Storyboard;
-                            if (sb != null) sb.Begin();
-                        }
+                            this.Visibility = System.Windows.Visibility.Visible;
+                            this.IsEnabled = true;
+
+                            if (this.IsLoaded && this.carPosition > 0)
+                            {
+                                Storyboard sb;
+                                if (carPosition > value) sb = this.Resources["PosDec"] as Storyboard;
+                                else sb = this.Resources["PosInc"] as Storyboard;
+                                if (sb != null) sb.Begin();
+                            }
+                        });
                     }
 
                     carPosition = value;
@@ -162,7 +168,12 @@ namespace F1TelemetryApp.UserControls
                 if (value != this.IsMyTeam)
                 {
                     this.isMyTeam = value;
-                    if (this.isMyTeam) this.TeamColor = new SolidColorBrush(Color.FromRgb(255, 0, 255));
+                    if (this.isMyTeam)
+                    {
+                        var c = new SolidColorBrush(Color.FromRgb(255, 0, 255));
+                        if (c.CanFreeze) c.Freeze();
+                        this.TeamColor = c;
+                    }
                     //this.OnPropertyChanged("IsMyTeam");
                 }
             }
@@ -180,7 +191,7 @@ namespace F1TelemetryApp.UserControls
                 if (value != this._nationality)
                 {
                     this._nationality = value;
-                    this.image_nation.Source = u.NationalityImage(this._nationality);
+                    this.Dispatcher.Invoke(() => this.image_nation.Source = u.NationalityImage(this._nationality));
                     //this.OnPropertyChanged("Nationality");
                 }
             }
@@ -276,7 +287,7 @@ namespace F1TelemetryApp.UserControls
                 if (value != this.TyreCompund)
                 {
                     this.tyreCompund = value;
-                    this.image_tyre.Source = u.TyreCompoundToImage(this.tyreCompund);
+                    this.Dispatcher.Invoke(() => this.image_tyre.Source = u.TyreCompoundToImage(this.tyreCompund));
                     //this.OnPropertyChanged("TyreCompund");
                 }
             }
@@ -339,11 +350,13 @@ namespace F1TelemetryApp.UserControls
                     isSelected = value;
                     if (isSelected)
                     {
-                        this.grid_header.Background = new SolidColorBrush(Color.FromRgb(130, 130, 130));
+                        // this.grid_header.Background = new SolidColorBrush(Color.FromRgb(130, 130, 130));
+                        this.Dispatcher.Invoke(() => this.grid_header.Background = new SolidColorBrush(Color.FromRgb(130, 130, 130)));
                     }
                     else
                     {
-                        this.grid_header.Background = Brushes.Black;
+                        // this.grid_header.Background = Brushes.Black;
+                        this.Dispatcher.Invoke(() => this.grid_header.Background = Brushes.Black);
                     }
                 }
             }
@@ -399,11 +412,13 @@ namespace F1TelemetryApp.UserControls
                         case ResultSatuses.NotClassiFied:
                         case ResultSatuses.DidNotFinish:
                         case ResultSatuses.Retired:
-                            this.border_position.Opacity = 0.5;
+                            this.Dispatcher.Invoke(() => this.border_position.Opacity = 0.5);
+                            // this.border_position.Opacity = 0.5;
                             this.IsOut = true;
                             break;
                         default:
-                            this.border_position.Opacity = 1;
+                            this.Dispatcher.Invoke(() => this.border_position.Opacity = 1);
+                            // this.border_position.Opacity = 1;
                             this.IsOut = false;
                             break;
                     }
@@ -416,7 +431,8 @@ namespace F1TelemetryApp.UserControls
 
         private void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+            // if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public int CompareTo(PlayerListItemData other)
@@ -533,7 +549,8 @@ namespace F1TelemetryApp.UserControls
             {
                 this.isStatus = true;
                 var current = packet.CarStatusData[this.ArrayIndex];
-                this.Dispatcher.Invoke(() => this.TyreCompund = current.VisualTyreCompound);
+                //this.Dispatcher.Invoke(() => this.TyreCompund = current.VisualTyreCompound);
+                this.TyreCompund = current.VisualTyreCompound;
 
                 //// this.UpdateLayout();
                 this.isStatus = false;
@@ -546,7 +563,9 @@ namespace F1TelemetryApp.UserControls
             {
                 this.isParticipants = true;
 
-                this.Dispatcher.Invoke(() =>
+                //this.Dispatcher.Invoke(() =>
+                //{
+                if (this.ArrayIndex > -1 && this.ArrayIndex < packet.Participants.Length)
                 {
                     var current = packet.Participants[this.ArrayIndex];
                     this.DriverName = current.Name;
@@ -554,13 +573,14 @@ namespace F1TelemetryApp.UserControls
                     this.TeamID = current.TeamID;
                     this.IsMyTeam = current.IsMyTeam;
                     this.RaceNumber = current.RaceNumber;
+                }
 
-                    //// this.UpdateLayout();
-                    this.isParticipants = false;
+                //// this.UpdateLayout();
+                this.isParticipants = false;
 
-                    //if (this.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
-                    //else this.Visibility = Visibility.Visible;
-                }, DispatcherPriority.Render);
+                //if (this.CarPosition == 0) elem.Visibility = Visibility.Collapsed;
+                //else this.Visibility = Visibility.Visible;
+                //}, DispatcherPriority.Render);
             }
         }
 
@@ -594,19 +614,19 @@ namespace F1TelemetryApp.UserControls
 
                         if (current.IsCurrentLapInvalid)
                         {
-                            this.Dispatcher.Invoke(() =>
-                            {
-                                this.TimerForeground = Brushes.Red;
-                                this.TrackPercentForeground = Brushes.Red;
-                            });
+                            //this.Dispatcher.Invoke(() =>
+                            //{
+                            this.TimerForeground = Brushes.Red;
+                            this.TrackPercentForeground = Brushes.Red;
+                            //});
                         }
                         else
                         {
-                            this.Dispatcher.Invoke(() =>
-                            {
-                                this.TimerForeground = Brushes.White;
-                                this.TrackPercentForeground = Brushes.LimeGreen;
-                            });
+                            //this.Dispatcher.Invoke(() =>
+                            //{
+                            this.TimerForeground = Brushes.White;
+                            this.TrackPercentForeground = Brushes.LimeGreen;
+                            //});
                         }
                     }
                 }

@@ -25,7 +25,8 @@ namespace F1TelemetryApp.UserControls
 
         private void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            // if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
         }
 
         private TimeSpan? offsetTime;
@@ -132,7 +133,7 @@ namespace F1TelemetryApp.UserControls
                     }
 
                     if (source != null && source.CanFreeze) source.Freeze();
-                    this.image_wheather.Source = source;
+                    this.Dispatcher.Invoke(() => this.image_wheather.Source = source);
                     //this.OnPropertyChanged("Weather");
                 }
             }
@@ -148,8 +149,8 @@ namespace F1TelemetryApp.UserControls
                 if (this.newBlockMarker != value)
                 {
                     newBlockMarker = value;
-                    if (newBlockMarker) this.rectangle_marker.Visibility = Visibility.Visible;
-                    else this.rectangle_marker.Visibility = Visibility.Collapsed;
+                    if (newBlockMarker) this.Dispatcher.Invoke(() => this.rectangle_marker.Visibility = Visibility.Visible);
+                    else this.Dispatcher.Invoke(() => this.rectangle_marker.Visibility = Visibility.Collapsed);
                 }
             }
         }
@@ -177,8 +178,8 @@ namespace F1TelemetryApp.UserControls
                 {
                     isCurrentSession = value;
 
-                    if (isCurrentSession) this.rectangle_background.Visibility = Visibility.Visible;
-                    else this.rectangle_background.Visibility = Visibility.Hidden;
+                    if (isCurrentSession) this.Dispatcher.Invoke(() => this.rectangle_background.Visibility = Visibility.Visible);
+                    else this.Dispatcher.Invoke(() => this.rectangle_background.Visibility = Visibility.Hidden);
 
                     //this.OnPropertyChanged("IsCurrentSession");
                 }

@@ -381,7 +381,7 @@ namespace F1TelemetryApp.UserControls
                     else img = new BitmapImage(new Uri("pack://application:,,,/Images/DriverInfo/NotRobot.png"));
 
                     if (img.CanFreeze) img.Freeze();
-                    this.image_isAi.Source = img;
+                    this.Dispatcher.Invoke(() => this.image_isAi.Source = img);
                 }
             }
         }
@@ -715,7 +715,8 @@ namespace F1TelemetryApp.UserControls
 
         private void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            // if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
         }
 
         private void UpdateLapdata(ref PacketLapData lapdata)
@@ -725,19 +726,19 @@ namespace F1TelemetryApp.UserControls
                 var player = lapdata.Lapdata[this.driverIndex];
                 var a = lapdata.Lapdata;
 
-                this.Dispatcher.Invoke(() =>
-                {
-                    this.StopGo = player.NumberOfUnservedStopGoPenalties;
-                    this.Warning = player.Warnings;
-                    this.DriveThrough = player.NumberOfUnservedDriveThroughPenalties;
-                    this.TimePenaltis = player.Penalties;
-                    this.CarPosition = player.CarPosition;
-                    this.CurrentLapTime = player.CurrentLapTime;
-                    this.CurrentStatus = player.ResultStatus.ToString();
-                    this.NumberOfPits = player.NumberOfPitStops;
+                //this.Dispatcher.Invoke(() =>
+                //{
+                this.StopGo = player.NumberOfUnservedStopGoPenalties;
+                this.Warning = player.Warnings;
+                this.DriveThrough = player.NumberOfUnservedDriveThroughPenalties;
+                this.TimePenaltis = player.Penalties;
+                this.CarPosition = player.CarPosition;
+                this.CurrentLapTime = player.CurrentLapTime;
+                this.CurrentStatus = player.ResultStatus.ToString();
+                this.NumberOfPits = player.NumberOfPitStops;
 
-                    this.LapPercent = player.LapDistance / u.TrackLength * 100f;
-                });
+                this.LapPercent = player.LapDistance / u.TrackLength * 100f;
+                //});
 
                 this.prevIndex = Array.IndexOf(a, a.Where(x => x.CarPosition == player.CarPosition - 1 && x.CarPosition != 0).FirstOrDefault());
                 this.nextIndex = Array.IndexOf(a, a.Where(x => x.CarPosition == player.CarPosition + 1 && x.CarPosition != 0).FirstOrDefault());

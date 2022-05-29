@@ -151,7 +151,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2020<br/>
         ///     - 2021<br/>
         /// </summary>
-        public byte BreakPressure { get; private set; }
+        public byte BrakePressure { get; private set; }
         /// <summary>
         /// Brake bias (percentage).<br/>
         /// Supports:<br/>
@@ -239,7 +239,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
             this.RearSuspensionHeight = uint8;
             //uint8 m_brakePressure;            // Brake pressure (percentage)
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.BreakPressure = uint8;
+            this.BrakePressure = uint8;
             //uint8 m_brakeBias;                // Brake bias (percentage)
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.BrakeBias = uint8;
@@ -310,7 +310,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
             this.RearSuspensionHeight = valb;
             //uint8 m_brakePressure;            // Brake pressure (percentage)
             this.Index += ByteReader.ToUInt8(array, this.Index, out valb);
-            this.BreakPressure = valb;
+            this.BrakePressure = valb;
             //uint8 m_brakeBias;                // Brake bias (percentage)
             this.Index += ByteReader.ToUInt8(array, this.Index, out valb);
             this.BrakeBias = valb;
@@ -318,7 +318,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
             //float m_rearRightTyrePressure;    // Rear right tyre pressure (PSI)
             //float m_frontLeftTyrePressure;    // Front left tyre pressure (PSI)
             //float m_frontRightTyrePressure;   // Front right tyre pressure (PSI)            
-            this.Index = ByteReader.ToWheelData.FromFloat(array, this.Index, out d);
+            this.Index += ByteReader.ToWheelData.FromFloat(array, this.Index, out d);
             this.TyrePressure = d;
             //uint8 m_ballast;                  // Ballast
             this.Index += ByteReader.ToUInt8(array, this.Index, out valb);

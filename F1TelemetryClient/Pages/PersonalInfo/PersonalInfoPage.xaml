@@ -13,13 +13,15 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <UserControls:WeatherDisplayController Margin="2" x:Name="weatherController" VerticalAlignment="Top" Height="175" Grid.Column="1" Grid.Row="0"/>
+        <UserControls:WeatherDisplayController Margin="2" x:Name="weatherController" VerticalAlignment="Top" Height="175" Grid.Column="1" Grid.Row="0" Loaded="livestatusdata_Loaded" Unloaded="livestatusdata_Unloaded"/>
 
-        <TabControl Padding="0" Grid.Column="1" Margin="2" Grid.Row="1">
+        <TabControl x:Name="tabcontrol_content" Padding="0" Grid.Column="1" Margin="2" Grid.Row="1">
             <TabItem Header="Live status">
-                <InnerDetails:LiveStatusPage x:Name="livestatusdata" Loaded="livestatusdata_Loaded" Unloaded="livestatusdata_Unloaded"/>
+                <InnerDetails:LiveStatusPage x:Name="livestatusdata"/>
             </TabItem>
-            <TabItem Header="Carsetup" IsEnabled="False"/>
+            <TabItem Header="Carsetup">
+                <InnerDetails:CarsetupPage x:Name="carsetupdata"/>
+            </TabItem>
             <TabItem Header="Telemetry graphs" IsEnabled="False"/>
             <TabItem Header="Lap history" IsEnabled="False"/>
         </TabControl>

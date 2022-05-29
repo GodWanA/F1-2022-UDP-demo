@@ -73,79 +73,87 @@ namespace F1TelemetryApp.UserControls.Session
             }
         }
 
-        private void Connention_RawDataRecieved(byte[] rawData, EventArgs e)
-        {
-            if (!this.isWorking_LapdataEvent)
-            {
-                this.isWorking_LapdataEvent = true;
-                this.Dispatcher.Invoke(() =>
-                {
-                    if (DateTime.Now - this.lastClean > this.delta)
-                    {
-                        this.listBox_drivers.Items.Refresh();
-                        this.lastClean = DateTime.Now;
-                    }
+        //private void Connention_RawDataRecieved(byte[] rawData, EventArgs e)
+        //{
+        //    if (!this.isWorking_LapdataEvent)
+        //    {
+        //        this.isWorking_LapdataEvent = true;
+        //        this.Dispatcher.Invoke(() =>
+        //        {
+        //            if (DateTime.Now - this.lastClean > this.delta)
+        //            {
+        //                this.listBox_drivers.Items.Refresh();
+        //                this.lastClean = DateTime.Now;
+        //            }
 
-                    this.isWorking_LapdataEvent = false;
-                }, DispatcherPriority.Render);
-            }
-        }
+        //            this.isWorking_LapdataEvent = false;
+        //        }, DispatcherPriority.Render);
+        //    }
+        //}
 
-        private void Connention_LapDataPacket(PacketLapData packet, EventArgs e)
-        {
-            if (!this.isWorking_LapdataEvent)
-            {
-                this.isWorking_LapdataEvent = true;
-                this.Dispatcher.Invoke(() =>
-                {
-                    if (DateTime.Now - this.lastClean > TimeSpan.FromSeconds(0.1))
-                    {
-                        this.listBox_drivers.Items.Refresh();
-                        this.lastClean = DateTime.Now;
-                    }
+        //private void Connention_LapDataPacket(PacketLapData packet, EventArgs e)
+        //{
+        //    if (!this.isWorking_LapdataEvent)
+        //    {
+        //        this.isWorking_LapdataEvent = true;
+        //        this.Dispatcher.Invoke(() =>
+        //        {
+        //            if (DateTime.Now - this.lastClean > TimeSpan.FromSeconds(0.1))
+        //            {
+        //                this.listBox_drivers.Items.Refresh();
+        //                this.lastClean = DateTime.Now;
+        //            }
 
-                    this.isWorking_LapdataEvent = false;
-                }, DispatcherPriority.Render);
-            }
-        }
+        //            this.isWorking_LapdataEvent = false;
+        //        }, DispatcherPriority.Render);
+        //    }
+        //}
 
         private void Connention_ParticipantsPacket(PacketParticipantsData packet, EventArgs e)
         {
             if (!this.isWorking_ParticipantsData && u.CanDoUdp)
             {
                 this.isWorking_ParticipantsData = true;
-                this.Dispatcher.Invoke(() =>
-                {
-                    this.UpdateParticipants(ref packet);
-                    this.isWorking_ParticipantsData = false;
-                }, DispatcherPriority.Render);
+                //this.Dispatcher.Invoke(() =>
+                //{
+                this.UpdateParticipants(ref packet);
+                this.isWorking_ParticipantsData = false;
+                //}, DispatcherPriority.Render);
             }
         }
 
         private void UpdateParticipants(ref PacketParticipantsData participants)
         {
-            int index = this.listBox_drivers.SelectedIndex;
             int n = participants.Participants.Length;
+            int playerIndex = participants.Header.Player1CarIndex;
 
             if (this.participantsList.Count != n)
             {
-                this.participantsList.Clear();
+                this.Dispatcher.Invoke(() => this.participantsList.Clear());
 
                 for (int i = 0; i < n; i++)
                 {
-                    var data = new PlayerListItemData();
-                    data.ArrayIndex = i;
-                    this.participantsList.Add(data);
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        var data = new PlayerListItemData();
+                        data.ArrayIndex = i;
+                        this.participantsList.Add(data);
+                    });
                 }
             }
 
-            if (index != -1) this.listBox_drivers.SelectedIndex = index;
-            else if (participants.Header.Player1CarIndex != 255) this.listBox_drivers.SelectedItem = this.participantsList[participants.Header.Player1CarIndex];
-
-            if (this.listBox_drivers.SelectedItem != null)
+            this.Dispatcher.Invoke(() =>
             {
-                this.listBox_drivers.ScrollIntoView(this.listBox_drivers.SelectedItem);
-            }
+                int index = this.listBox_drivers.SelectedIndex;
+
+                if (index != -1) this.listBox_drivers.SelectedIndex = index;
+                else if (playerIndex != 255) this.listBox_drivers.SelectedItem = this.participantsList[playerIndex];
+
+                if (this.listBox_drivers.SelectedItem != null)
+                {
+                    this.listBox_drivers.ScrollIntoView(this.listBox_drivers.SelectedItem);
+                }
+            });
         }
 
 
@@ -154,11 +162,11 @@ namespace F1TelemetryApp.UserControls.Session
             if (u.CanDoUdp && !this.isWorking_sessionHistory)
             {
                 this.isWorking_sessionHistory = true;
-                this.Dispatcher.Invoke(() =>
-                {
-                    this.UpdateSessionHistory(packet);
-                    this.isWorking_sessionHistory = false;
-                }, DispatcherPriority.Render);
+                //this.Dispatcher.Invoke(() =>
+                //{
+                this.UpdateSessionHistory(packet);
+                this.isWorking_sessionHistory = false;
+                //}, DispatcherPriority.Render);
             }
         }
 
@@ -167,8 +175,8 @@ namespace F1TelemetryApp.UserControls.Session
             var arrayHistory = u.Connention.LastSessionHistoryPacket;
             var lapData = u.Connention.LastLapDataPacket;
 
-            var itemSource = this.ParticipantsList;
-            var curItem = itemSource?.Where(x => x.ArrayIndex == curHistory.CarIndex).FirstOrDefault();
+            //var itemSource = this.ParticipantsList;
+            var curItem = this.ParticipantsList?.Where(x => x.ArrayIndex == curHistory.CarIndex).FirstOrDefault();
             Brush fontColor = Brushes.White;
 
             if (curItem != null)
@@ -185,7 +193,7 @@ namespace F1TelemetryApp.UserControls.Session
                     curItem.LeaderIntervalTime = "";
                     var curLapdata = lapData?.Lapdata[curItem.ArrayIndex];
 
-                    var prevItem = itemSource.Where(x => x.CarPosition == curItem.CarPosition - 1).FirstOrDefault();
+                    var prevItem = this.ParticipantsList?.Where(x => x.CarPosition == curItem.CarPosition - 1).FirstOrDefault();
                     if (prevItem != null)
                     {
                         var prevHistory = arrayHistory.Where(x => x?.CarIndex == prevItem.ArrayIndex).FirstOrDefault();
@@ -197,7 +205,7 @@ namespace F1TelemetryApp.UserControls.Session
                         curItem.TextColor = fontColor;
                     }
 
-                    var firstItem = itemSource.Where(x => x.CarPosition == 1).FirstOrDefault();
+                    var firstItem = this.ParticipantsList?.Where(x => x.CarPosition == 1).FirstOrDefault();
                     if (firstItem != null)
                     {
                         var firstHistory = arrayHistory.Where(x => x?.CarIndex == firstItem.ArrayIndex).FirstOrDefault();
@@ -220,7 +228,8 @@ namespace F1TelemetryApp.UserControls.Session
 
         private void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            // if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -237,20 +246,24 @@ namespace F1TelemetryApp.UserControls.Session
 
         private void listBox_drivers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            u.SelectedIndex = this.listBox_drivers.SelectedIndex;
-            u.SelectedItem = this.listBox_drivers.SelectedItem;
+            var selected = this.listBox_drivers.SelectedItem;
+
+            if (u.SelectedItem != selected)
+            {
+                u.SelectedItem = selected;
+                u.SelectedIndex = this.listBox_drivers.SelectedIndex;
+                u.SelectedPlayer = u.SelectedItem as PlayerListItemData;
+            }
 
             if (this.IsLoaded)
             {
                 if (this.listBox_drivers.SelectedIndex > -1)
                 {
-                    var selected = this.listBox_drivers.SelectedItem as PlayerListItemData;
-
-                    if (selected.CarPosition > 0)
+                    if (u.SelectedPlayer.CarPosition > 0)
                     {
                         foreach (var item in this.participantsList) item.IsSelected = false;
 
-                        selected.IsSelected = true;
+                        u.SelectedPlayer.IsSelected = true;
                         this.SelectionChanged?.Invoke(this, new SelectionChangedEventArgs(e.RoutedEvent, e.RemovedItems, e.AddedItems));
                     }
                     else

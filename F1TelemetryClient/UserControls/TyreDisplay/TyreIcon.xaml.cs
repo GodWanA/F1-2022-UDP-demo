@@ -25,8 +25,11 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
                 //if (value != this.tyre)
                 //{
                 this.tyre = value;
-                this.image_tyre.Source = u.TyreCompoundToImage(value);
-                this.textblock_name.Text = value.ToString();
+                this.Dispatcher.Invoke(() =>
+                {
+                    this.image_tyre.Source = u.TyreCompoundToImage(value);
+                    this.textblock_name.Text = value.ToString();
+                });
                 //this.OnPropertyChanged("Tyre");
                 //}
             }
@@ -43,7 +46,8 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
 
         private void OnPropertyChanged(string propertyName)
         {
-            if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            // if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
         }
 
         protected virtual void Dispose(bool disposing)

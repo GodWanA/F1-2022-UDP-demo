@@ -27,7 +27,7 @@ namespace F1Telemetry
         /// <summary>
         /// Connection's IP address
         /// </summary>
-        public string IPAdress { get; private set; }
+        public string IPAddress { get; private set; }
         /// <summary>
         /// Connection's Port address
         /// </summary>
@@ -288,11 +288,11 @@ namespace F1Telemetry
         /// <summary>
         /// Create and connects to Codemaster's F1 games UDP service.
         /// </summary>
-        /// <param name="ipAdress">Service IP adress as string</param>
+        /// <param name="ipAddress">Service IP adress as string</param>
         /// <param name="port">Service Port number as integer</param>
-        public F1UDP(string ipAdress, int port)
+        public F1UDP(string ipAddress, int port)
         {
-            this.Connect(ipAdress, port);
+            this.Connect(ipAddress, port);
         }
 
         /// <summary>
@@ -304,10 +304,11 @@ namespace F1Telemetry
         {
             try
             {
-                this.IPAdress = ip;
+                this.IPAddress = ip;
                 this.Port = port;
                 this.IsConnecting = true;
-                this.EndPoint = new IPEndPoint(IPAddress.Parse(this.IPAdress), this.Port);
+                //this.EndPoint = new IPEndPoint(IPAddress.Parse(this.IPAdress), this.Port);
+                this.EndPoint = new IPEndPoint(System.Net.IPAddress.Any, this.Port);
                 this.CancelToken = new CancellationTokenSource();
 
                 this.Connection = new UdpClient(this.EndPoint);
@@ -315,12 +316,46 @@ namespace F1Telemetry
                 this.Connection.Client.ReceiveTimeout = int.MaxValue;
                 this.Connection.Client.SendTimeout = int.MaxValue;
 
-                this.Connection.BeginReceive(new AsyncCallback(recv), null);
+                //this.Connection.BeginReceive(new AsyncCallback(recv), null);
+                this.recv();
             }
             catch (Exception e)
             {
                 this.OnConnectionError(e);
             }
+        }
+
+        private void recv()
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    while (this.IsConnecting)
+                    {
+                        try
+                        {
+                            var ep = this.EndPoint;
+                            var array = this.Connection?.Receive(ref ep);
+
+                            if (array != null)
+                            {
+                                if (this.IsAsyncPacketProcessEnabled) Task.Run(() => this.ByteArrayProcess(array.Clone() as byte[]));
+                                else this.ByteArrayProcess(array);
+                            }
+                        }
+                        catch (Exception) { }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.OnConnectionError(ex);
+                }
+                finally
+                {
+                    this.OnClosedConnection(this);
+                }
+            }, this.CancelToken.Token);
         }
 
         private void recv(IAsyncResult res)
@@ -346,25 +381,27 @@ namespace F1Telemetry
                 }
 
                 //received = null;
-                this?.Connection?.BeginReceive(new AsyncCallback(recv), null);
+
+                if (this.IsConnecting) this?.Connection?.BeginReceive(new AsyncCallback(recv), null);
             }
         }
 
         /// <summary>
         /// Closing UPD connection
         /// </summary>
-        public void Close()
+        public void Close(bool isForced = false)
         {
+            this.Connection?.Close();
+
             if (this.IsConnecting)
             {
                 this.IsConnecting = false;
-                this.CancelToken.Cancel();
+                if (isForced) this.CancelToken.Cancel();
                 //this.CancelToken.Dispose();
                 //this.CancelToken = null;
             }
 
             if (this.ClosedConnection != null) this.ClosedConnection(this, new EventArgs());
-            this.Connection.Close();
         }
 
 
@@ -374,7 +411,7 @@ namespace F1Telemetry
         public void Reconnect()
         {
             this.Close();
-            this.Connect(this.IPAdress, this.Port);
+            this.Connect(this.IPAddress, this.Port);
         }
 
 

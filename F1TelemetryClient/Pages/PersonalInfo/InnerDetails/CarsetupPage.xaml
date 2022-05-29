@@ -1,0 +1,336 @@
+﻿<UserControl x:Class="F1TelemetryApp.Pages.PersonalInfo.InnerDetails.CarsetupPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:F1TelemetryApp.Pages.PersonalInfo.InnerDetails"
+             mc:Ignorable="d" 
+             d:DesignHeight="2000" d:DesignWidth="800" Unloaded="UserControl_Unloaded" Loaded="UserControl_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button x:Name="button_copyToClipboard" Content="Copy to Clipboard" Click="button_copyToClipboard_Click" Width="auto" HorizontalAlignment="Left" Padding="10,3" Margin="1"/>
+            <Button Content="Copy to Clipboard" Width="auto" HorizontalAlignment="Left" Padding="10,3" Margin="1"/>
+        </StackPanel>
+        <ScrollViewer Grid.Row="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <GroupBox x:Name="groupBox_aero" Header="Aerodynamics" Padding="3" Margin="3" Grid.Row="0" Grid.ColumnSpan="12">
+                    <Border Background="Black" CornerRadius="5" Padding="5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" MaxWidth="150"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto" MinWidth="30"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Front Wing:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="0" Margin="5,2"/>
+                            <Slider Value="{Binding FrontWing, FallbackValue=0}" Minimum="1" Maximum="11" TickFrequency="1" Grid.Column="1" Grid.Row="0" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding FrontWing, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="0" Margin="2"/>
+
+                            <TextBlock Text="Rear Wing:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="1" Margin="5,2"/>
+                            <Slider Value="{Binding RearWing, FallbackValue=0}" Minimum="1" Maximum="11" TickFrequency="1" Grid.Column="1" Grid.Row="1" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding RearWing, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="1" Margin="2"/>
+                        </Grid>
+                    </Border>
+                </GroupBox>
+
+                <GroupBox x:Name="groupBox_transmission" Header="Transmission" Padding="3" Margin="3" Grid.Row="1" Grid.ColumnSpan="12">
+                    <Border Background="Black" CornerRadius="5" Padding="5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" MaxWidth="150"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto" MinWidth="30"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="0" Margin="5,2">
+                        <Run>Differential Adjustment</Run><LineBreak/>
+                        <Run FontWeight="Bold">On</Run> <Run>Throttle: </Run>
+                            </TextBlock>
+                            <Slider Value="{Binding DifferentialOnThrottle, FallbackValue=0}" Minimum="0" Maximum="100" TickFrequency="10" Grid.Column="1" Grid.Row="0" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding DifferentialOnThrottle, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="0" Margin="2"/>
+
+                            <TextBlock TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="1" Margin="5,2">
+                        <Run>Differential Adjustment</Run><LineBreak/>
+                        <Run FontWeight="Bold">Off</Run> <Run>Throttle: </Run>
+                            </TextBlock>
+                            <Slider Value="{Binding DifferentialOffThrottle, FallbackValue=0}" Minimum="0" Maximum="100" TickFrequency="10" Grid.Column="1" Grid.Row="1" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding DifferentialOffThrottle, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="1" Margin="2"/>
+                        </Grid>
+                    </Border>
+                </GroupBox>
+
+                <GroupBox x:Name="groupBox_suspensionGeometry" Header="Suspension Geometry" Padding="3" Margin="3" Grid.Row="2" Grid.ColumnSpan="12">
+                    <Border Background="Black" CornerRadius="5" Padding="5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" MaxWidth="150"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto" MinWidth="30"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Front Chamber:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="0" Margin="5,2"/>
+                            <Slider Value="{Binding FrontChamber, FallbackValue=0}" Minimum="-3.50" Maximum="-2.50" TickFrequency="0.1" Grid.Column="1" Grid.Row="0" Margin="2" SmallChange="0.1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding FrontChamber, FallbackValue=0, StringFormat=0.00}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="0" Margin="2"/>
+
+                            <TextBlock Text="Rear Chamber:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="1" Margin="5,2"/>
+                            <Slider Value="{Binding RearChamber, FallbackValue=0}" Minimum="-2.0" Maximum="-1.0" TickFrequency="0.1" Grid.Column="1" Grid.Row="1" Margin="2" SmallChange="0.1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding RearChamber, FallbackValue=0, StringFormat=0.00}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="1" Margin="2"/>
+
+                            <TextBlock Text="Front Toe:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="2" Margin="5,2"/>
+                            <Slider Value="{Binding FrontToe, FallbackValue=0}" Minimum="0.05" Maximum="0.15" TickFrequency="0.01" Grid.Column="1" Grid.Row="2" Margin="2" SmallChange="0.01" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding FrontToe, FallbackValue=0, StringFormat=0.00}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="2" Margin="2"/>
+
+                            <TextBlock Text="Rear Toe:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="3" Margin="5,2"/>
+                            <Slider Value="{Binding RearToe, FallbackValue=0}" Minimum="0.2" Maximum="0.5" TickFrequency="0.03" Grid.Column="1" Grid.Row="3" Margin="2" SmallChange="0.03" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding RearToe, FallbackValue=0, StringFormat=0.00}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="3" Margin="2"/>
+                        </Grid>
+                    </Border>
+                </GroupBox>
+
+                <GroupBox x:Name="groupBox_suspension" Header="Suspension" Padding="3" Margin="3" Grid.Row="3" Grid.ColumnSpan="12">
+                    <Border Background="Black" CornerRadius="5" Padding="5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" MaxWidth="150"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto" MinWidth="30"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Front Suspension:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="0" Margin="5,2"/>
+                            <Slider Value="{Binding FrontSuspension, FallbackValue=0}" Minimum="0" Maximum="11" TickFrequency="1" Grid.Column="1" Grid.Row="0" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding FrontSuspension, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="0" Margin="2"/>
+
+                            <TextBlock Text="Rear Suspension:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="1" Margin="5,2"/>
+                            <Slider Value="{Binding RearSuspension, FallbackValue=0}" Minimum="0" Maximum="11" TickFrequency="1" Grid.Column="1" Grid.Row="1" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding RearSuspension, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="1" Margin="2"/>
+
+                            <TextBlock Text="Front Anti-Roll Bar:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="2" Margin="5,2"/>
+                            <Slider Value="{Binding FrontAntiRollBar, FallbackValue=0}" Minimum="0" Maximum="11" TickFrequency="1" Grid.Column="1" Grid.Row="2" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding FrontAntiRollBar, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="2" Margin="2"/>
+
+                            <TextBlock Text="Rear Anti-Roll Bar:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="3" Margin="5,2"/>
+                            <Slider Value="{Binding RearAntiRollBar, FallbackValue=0}" Minimum="0" Maximum="11" TickFrequency="1" Grid.Column="1" Grid.Row="3" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding RearAntiRollBar, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="3" Margin="2"/>
+
+                            <TextBlock TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="4" Margin="5,2">
+                            <Run>Front Suspension</Run><LineBreak/>
+                            <Run>Height:</Run>
+                            </TextBlock>
+                            <Slider Value="{Binding FrontSuspensionHeight, FallbackValue=0}" Minimum="0" Maximum="11" TickFrequency="1" Grid.Column="1" Grid.Row="4" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding FrontSuspensionHeight, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="4" Margin="2"/>
+
+                            <TextBlock TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="5" Margin="5,2">
+                            <Run>Rear Suspension</Run><LineBreak/>
+                            <Run>Height:</Run>
+                            </TextBlock>
+                            <Slider Value="{Binding RearSuspensionHeight, FallbackValue=0}" Minimum="0" Maximum="11" TickFrequency="1" Grid.Column="1" Grid.Row="5" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding RearSuspensionHeight, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="5" Margin="2"/>
+
+                        </Grid>
+                    </Border>
+                </GroupBox>
+
+                <GroupBox x:Name="groupbox_brake" Header="Brakes" Padding="3" Margin="3" Grid.Row="4" Grid.ColumnSpan="12">
+                    <Border Background="Black" CornerRadius="5" Padding="5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" MaxWidth="150"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto" MinWidth="30"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Brake Pressure:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="0" Margin="5,2"/>
+                            <Slider Value="{Binding BrakePressure, FallbackValue=0}" Minimum="50" Maximum="100" TickFrequency="10" Grid.Column="1" Grid.Row="0" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <TextBlock Text="{Binding BrakePressure, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="0" Margin="2"/>
+
+                            <TextBlock Text="Front Brake Bias:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="1" Margin="5,2"/>
+                            <Slider Value="{Binding BrakeBias, FallbackValue=0}" Minimum="50" Maximum="70" TickFrequency="1" Grid.Column="1" Grid.Row="1" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False" IsDirectionReversed="True"/>
+                            <TextBlock Text="{Binding BrakeBias, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="1" Margin="2"/>
+                        </Grid>
+                    </Border>
+                </GroupBox>
+
+                <GroupBox x:Name="groupBox_tyre" Header="Tyre Pressure" Padding="3" Margin="3" Grid.Row="5" Grid.ColumnSpan="12">
+                    <Border Background="Black" CornerRadius="5" Padding="5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Front Tyre Pressure:" FontWeight="Bold" Margin="0,7" Grid.Row="0" Grid.ColumnSpan="2"/>
+
+                            <Grid Grid.Row="1" Grid.Column="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" MaxWidth="150"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="auto" MinWidth="30"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Left:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="0" Margin="5,2"/>
+                                <Slider Value="{Binding TyreFrontLeft, FallbackValue=0}" Minimum="21" Maximum="25" TickFrequency="0.4" Grid.Column="1" Grid.Row="0" Margin="2" SmallChange="0.1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False" LargeChange="0.4"/>
+                                <TextBlock Text="{Binding TyreFrontLeft, FallbackValue='0.00 PSI', StringFormat='0.00 PSI'}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="0" Margin="2"/>
+                            </Grid>
+
+                            <Grid Grid.Row="1" Grid.Column="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" MaxWidth="150"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="auto" MinWidth="30"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Right:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="0" Margin="5,2"/>
+                                <Slider Value="{Binding TyreFrontRight, FallbackValue=0}" Minimum="21" Maximum="25" TickFrequency="0.4" Grid.Column="1" Grid.Row="0" Margin="2" SmallChange="0.1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False" LargeChange="0.4"/>
+                                <TextBlock Text="{Binding TyreFrontRight, FallbackValue='0.00 PSI', StringFormat='0.00 PSI'}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="0" Margin="2"/>
+                            </Grid>
+
+                            <TextBlock Text="Rear Tyre Pressure:" FontWeight="Bold" Margin="0,7" Grid.Row="3" Grid.ColumnSpan="2"/>
+
+                            <Grid Grid.Row="4" Grid.Column="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" MaxWidth="150"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="auto" MinWidth="30"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Left:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="0" Margin="5,2"/>
+                                <Slider Value="{Binding TyreRearLeft, FallbackValue=0}" Minimum="19.5" Maximum="23.5" TickFrequency="0.4" Grid.Column="1" Grid.Row="0" Margin="2" SmallChange="0.1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False" LargeChange="0.4"/>
+                                <TextBlock Text="{Binding TyreRearLeft, FallbackValue='0.00 PSI', StringFormat='0.00 PSI'}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="0" Margin="2"/>
+                            </Grid>
+
+                            <Grid Grid.Row="4" Grid.Column="4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" MaxWidth="150"/>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="auto" MinWidth="30"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Right:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="0" Margin="5,2"/>
+                                <Slider Value="{Binding TyreRearRight, FallbackValue=0}" Minimum="19.5" Maximum="23.5" TickFrequency="0.4" Grid.Column="1" Grid.Row="0" Margin="2" SmallChange="0.1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False" LargeChange="0.4"/>
+                                <TextBlock Text="{Binding TyreRearRight, FallbackValue='0.00 PSI', StringFormat='0.00 PSI'}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="0" Margin="2"/>
+                            </Grid>
+
+                        </Grid>
+                    </Border>
+                </GroupBox>
+
+                <GroupBox x:Name="groubBox_weight" Header="Weight Distribution" Padding="3" Margin="3" Grid.Row="6" Grid.ColumnSpan="12">
+                    <Border Background="Black" CornerRadius="5" Padding="5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" MaxWidth="150"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto" MinWidth="30"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Ballast:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="0" Margin="5,2"/>
+                            <Slider Value="{Binding TyreRearRight, FallbackValue=0}" Minimum="1" Maximum="11" TickFrequency="1" Grid.Column="1" Grid.Row="0" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False" LargeChange="1"/>
+                            <TextBlock Text="{Binding TyreRearRight, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="0" Margin="2"/>
+                        </Grid>
+                    </Border>
+                </GroupBox>
+
+                <GroupBox x:Name="groupBox_fuel" Header="Fuel" Padding="3" Margin="3" Grid.Row="7" Grid.ColumnSpan="12">
+                    <Border Background="Black" CornerRadius="5" Padding="5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" MaxWidth="150"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="auto" MinWidth="30"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Fuel load:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="0" Margin="5,2"/>
+                            <Slider Value="{Binding Fuel, FallbackValue=0}" Minimum="5" Maximum="110" TickFrequency="5" Grid.Column="1" Grid.Row="0" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False" LargeChange="1"/>
+                            <TextBlock Text="{Binding Fuel, FallbackValue='0.00 Kg', StringFormat='0.00 Kg'}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="0" Margin="2"/>
+                        </Grid>
+                    </Border>
+                </GroupBox>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
