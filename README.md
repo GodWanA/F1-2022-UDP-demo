@@ -5,7 +5,7 @@
 ###### In the DLL:
   - Packet event system for all packet, and some of the newer packets emulated on older games where possible.
   - All packets last state aviable via properties.
-  - Optional emit limit on packages where 60Hz supported, to reduce CPU usage.
+  - Optional set limit on packages where 60Hz supported, to reduce CPU usage.
   - Aync UPD listening and optional multi-core CPU support where possible.
   - Can connect any IP and port, not only localhost.
 
