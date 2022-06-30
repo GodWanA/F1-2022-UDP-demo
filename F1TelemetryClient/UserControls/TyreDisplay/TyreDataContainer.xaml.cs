@@ -61,8 +61,9 @@ namespace F1TelemetryApp.UserControls.TyreDisplay
 
         private void OnPropertyChanged(string propertyName)
         {
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), DispatcherPriority.Background);
             //if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+            //this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), System.Windows.Threading.DispatcherPriority.DataBind);
         }
 
         internal void UpdateDatas(CarDamageData demage, CarStatusData status, CarTelemetryData telemetry, int index)

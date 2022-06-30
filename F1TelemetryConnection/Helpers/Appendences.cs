@@ -651,6 +651,11 @@ namespace F1Telemetry.Helpers
             F1Classic,
             F2,
             F1Generic,
+            // 2022:
+            Beta,
+            Supercars,
+            Esport,
+            F2_2021,
         }
 
         public enum SafetyCarStatuses
@@ -728,6 +733,10 @@ namespace F1Telemetry.Helpers
             StopGoServed,
             Flashback,
             ButtonStatus,
+
+            // custom events:
+            Warning = 300,
+            PitStop = 301,
         }
 
         public enum TelemetrySettings
@@ -790,6 +799,48 @@ namespace F1Telemetry.Helpers
             Engine = 3,
             Temperatures = 4,
             Closed = 255,
+        }
+
+        public enum GameModes
+        {
+            EventMode = 0,
+            GrandPrix = 3,
+            TimeTrial = 5,
+            Splitscreen = 6,
+            OnlineCustom = 7,
+            OnlineLeague = 8,
+            CareerInvitational = 11,
+            ChampionshipInvitational = 12,
+            Championship = 13,
+            OnlineChampionship = 14,
+            OnlineWeekly_Event = 15,
+            Career22 = 19,
+            Career22Online = 20,
+            Benchmark = 127,
+        }
+
+        public enum Rulesets
+        {
+            PracticeAndQualifying = 0,
+            Race = 1,
+            TimeTrial = 2,
+            TimeAttack = 4,
+            CheckpointChallenge = 6,
+            Autocross = 8,
+            Drift = 9,
+            AverageSpeedZone = 10,
+            RivalDuel = 11,
+        }
+
+        public enum SessionLengths
+        {
+            None = 0,
+            VeryShort = 2,
+            Short = 3,
+            Medium = 4,
+            MediumLong = 5,
+            Long = 6,
+            Full = 7,
         }
     }
 }

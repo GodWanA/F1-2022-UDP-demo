@@ -55,6 +55,11 @@ namespace F1Telemetry.Models.SessionPacket
             this.Reader2018(array);
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2018(array);
+        }
+
         /// <summary>
         /// Fraction (0..1) of way through the lap the marshal zone starts.<br/>
         /// Supports:<br/>
@@ -62,6 +67,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float ZoneStart { get; private set; }
         /// <summary>
@@ -71,6 +77,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Flags ZoneFlag { get; private set; }
         /// <summary>
@@ -80,6 +87,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float ZoneStartMeter { get; private set; }
 

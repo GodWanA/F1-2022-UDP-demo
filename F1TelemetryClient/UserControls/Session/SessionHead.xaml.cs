@@ -1,4 +1,5 @@
-﻿using F1TelemetryApp.Classes;
+﻿using F1Telemetry.Helpers;
+using F1TelemetryApp.Classes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -248,7 +249,7 @@ namespace F1TelemetryApp.UserControls.Session
                 this.isWorkingSession = true;
 
                 this.TrackName = packet.TrackID.ToString();
-                this.SessionName = packet.GetSessionType(true);
+                this.SessionName = packet.SessionType.GetSessionType(true);
                 this.TimeLeft = Math.Round(packet.SessionTimeLeft.TotalSeconds / (this.isRaceOver ? 160 : packet.SessionDuration.TotalSeconds) * 100.0, 2);
                 this.session = packet.SessionType;
 
@@ -466,17 +467,18 @@ namespace F1TelemetryApp.UserControls.Session
 
         private void OnPropertyChanged(string propertyName)
         {
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), DispatcherPriority.Background);
             // this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+            //this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), System.Windows.Threading.DispatcherPriority.DataBind);
         }
 
         private void UserControl_ToolTipOpening(object sender, ToolTipEventArgs e)
         {
-            var ses = u.Connention.LastSessionDataPacket;
+            var ses = u.Connention.CurrentSessionDataPacket;
             var sb = new StringBuilder();
 
             sb.AppendLine("Track: " + this.TrackName);
-            sb.AppendLine("Session: " + ses?.GetSessionType(false));
+            sb.AppendLine("Session: " + ses?.SessionType.GetSessionType());
             sb.AppendLine("Laps: " + this.CurrentLap + "/" + this.TotalLaps);
             sb.AppendLine("Session duration: " + ses?.SessionDuration);
             sb.AppendLine("Time left: " + this.SessionTimeLeft);

@@ -5,10 +5,12 @@ using F1TelemetryApp.UserControls;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static F1Telemetry.Helpers.Appendences;
@@ -274,98 +276,6 @@ namespace F1TelemetryApp.Classes
             return ret;
         }
 
-        internal static String PickTeamName(Teams teamid)
-        {
-            switch (teamid)
-            {
-                default:
-                    return null;
-                // F1 Cars:
-                case Teams.Mercedes:
-                case Teams.Mercedes2020:
-                    return "Mercedes-AMG Petronas";
-                case Teams.Ferrari:
-                case Teams.Ferrari2020:
-                    return "Scuderia Ferrari";
-                case Teams.RedBullRacing:
-                case Teams.RedBull2020:
-                    return "Red Bull Racing";
-                case Teams.Alpine:
-                    return "Alpine";
-                case Teams.Renault2020:
-                    return "Renault";
-                case Teams.Haas:
-                case Teams.Haas2020:
-                    return "HAAS";
-                case Teams.AstonMartin:
-                    return "Aston Martin";
-                case Teams.RacingPoint2020:
-                    return "Racing Point";
-                case Teams.AlphaTauri:
-                case Teams.AlphaTauri2020:
-                    return "Alpha Tauri";
-                case Teams.McLaren:
-                case Teams.McLaren2020:
-                    return "McLaren Racing";
-                case Teams.AlfaRomeo:
-                case Teams.AlfaRomeo2020:
-                    return "Alfa Romeo Sauber";
-                case Teams.Williams:
-                case Teams.Williams2020:
-                    return "Williams Racing";
-                // MyTeam:
-                case Teams.MyTeam:
-                    return "MyTeam";
-                // F2:                    
-                case Teams.ArtGP19:
-                case Teams.ArtGP20:
-                case Teams.ArtGP21:
-                    return "ART Grand Prix";
-                case Teams.Arden19:
-                    return "BWT Arden";
-                case Teams.BWT20:
-                    return "BWT HWA Racelab";
-                case Teams.BWT21:
-                    return "HWA Racelab";
-                case Teams.Campos19:
-                case Teams.Campos20:
-                case Teams.Campos21:
-                    return "CamposRacing";
-                case Teams.Carlin19:
-                case Teams.Carlin20:
-                case Teams.Carlin21:
-                    return "Carlin";
-                case Teams.SauberJuniorCharouz19:
-                    return "Sauber Junior Team by Charouz";
-                case Teams.Charouz20:
-                case Teams.Charouz21:
-                    return "Charouz Racing System";
-                case Teams.Dams19:
-                case Teams.Dams20:
-                case Teams.Dams21:
-                    return "DAMS";
-                case Teams.Hitech20:
-                case Teams.Hitech21:
-                    return "Hitech Grand Prix";
-                case Teams.MPMotorsport19:
-                case Teams.MPMotorsport20:
-                case Teams.MPMotorsport21:
-                    return "MP Motorsport";
-                case Teams.Prema19:
-                case Teams.Prema20:
-                case Teams.Prema21:
-                    return "Prema Racing";
-                case Teams.Trident19:
-                case Teams.Trident20:
-                case Teams.Trident21:
-                    return "Trident";
-                case Teams.UniVirtuosi19:
-                case Teams.UniVirtuosi20:
-                case Teams.UniVirtuosi21:
-                    return "UNI-Virtuosi Racing";
-            }
-        }
-
         internal static string CalculateDelta(
            PacketLapData lapDatas,
            PacketSessionHistoryData prevHistory,
@@ -375,7 +285,7 @@ namespace F1TelemetryApp.Classes
         {
             StringBuilder sb = new StringBuilder();
             fontColor = System.Windows.Media.Brushes.White;
-            var sessionData = u.Connention.LastSessionDataPacket;
+            var sessionData = u.Connention.CurrentSessionDataPacket;
 
             if (
                 lapDatas != null

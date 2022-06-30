@@ -84,6 +84,11 @@ namespace F1Telemetry.Models.MotionPacket
             this.Reader2018(array);
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2018(array);
+        }
+
         /// <summary>
         /// World space X,Y,Z positions<br/>
         /// Supported:<br/>
@@ -91,6 +96,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Vector3 WorldVelocity { get; private set; }
         /// <summary>
@@ -100,6 +106,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Vector3 WorldPosition { get; private set; }
         /// <summary>
@@ -109,6 +116,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Vector3 WorldForwardDir { get; private set; }
         /// <summary>
@@ -118,6 +126,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Vector3 WorldRightDir { get; private set; }
         /// <summary>
@@ -128,6 +137,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Vector3 GForce { get; private set; }
         /// <summary>
@@ -137,6 +147,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float Yaw { get; private set; }
         /// <summary>
@@ -146,6 +157,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float Pitch { get; private set; }
         /// <summary>
@@ -155,6 +167,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float Roll { get; private set; }
     }

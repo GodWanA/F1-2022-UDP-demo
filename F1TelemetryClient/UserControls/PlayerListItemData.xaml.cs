@@ -431,7 +431,9 @@ namespace F1TelemetryApp.UserControls
 
         private void OnPropertyChanged(string propertyName)
         {
-            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+            //this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), DispatcherPriority.Background);
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), DispatcherPriority.Background);
+            //this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), System.Windows.Threading.DispatcherPriority.DataBind);
             // if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
@@ -653,8 +655,8 @@ namespace F1TelemetryApp.UserControls
         {
             var sb = new StringBuilder();
 
-            var par = u.Connention?.LastParticipantsPacket?.Participants[this.ArrayIndex];
-            var lap = u.Connention?.LastLapDataPacket?.Lapdata[this.arrayIndex];
+            var par = u.Connention?.CurrentParticipantsPacket?.Participants[this.ArrayIndex];
+            var lap = u.Connention?.CurrentLapDataPacket?.Lapdata[this.arrayIndex];
 
             sb.AppendLine("Driver name: " + this.DriverName + " | " + par?.ShortName);
             sb.AppendLine("Racenumber: " + this.RaceNumber);

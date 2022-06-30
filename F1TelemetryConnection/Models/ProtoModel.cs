@@ -18,6 +18,7 @@ namespace F1Telemetry.Models
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 22<br/>
         /// </summary>
         public byte[] RawData { get; private set; }
 
@@ -30,7 +31,6 @@ namespace F1Telemetry.Models
         /// Select reader by packetformat.
         /// </summary>
         /// <param name="format">packetformat</param>
-        /// <param name="index">startindex</param>
         /// <param name="array">raw data</param>
         protected void PickReader(int format, byte[] array)
         {
@@ -53,6 +53,9 @@ namespace F1Telemetry.Models
                     break;
                 case 2021:
                     this.Reader2021(array);
+                    break;
+                case 2022:
+                    this.Reader2022(array);
                     break;
             }
             //}
@@ -95,6 +98,15 @@ namespace F1Telemetry.Models
         /// </summary>
         /// <param name="array">raw data array</param>
         protected virtual void Reader2021(byte[] array)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Reads 2022 games data formats from specific startindex.
+        /// </summary>
+        /// <param name="array">raw data array</param>
+        protected virtual void Reader2022(byte[] array)
         {
             throw new NotImplementedException();
         }

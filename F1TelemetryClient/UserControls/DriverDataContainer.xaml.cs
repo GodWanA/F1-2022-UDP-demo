@@ -1,4 +1,5 @@
-﻿using F1Telemetry.Models.CarStatusPacket;
+﻿using F1Telemetry.Helpers;
+using F1Telemetry.Models.CarStatusPacket;
 using F1Telemetry.Models.CarTelemetryPacket;
 using F1Telemetry.Models.LapDataPacket;
 using F1Telemetry.Models.MotionPacket;
@@ -715,8 +716,9 @@ namespace F1TelemetryApp.UserControls
 
         private void OnPropertyChanged(string propertyName)
         {
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), DispatcherPriority.Background);
             // if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+            //this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), System.Windows.Threading.DispatcherPriority.DataBind);
         }
 
         private void UpdateLapdata(ref PacketLapData lapdata)
@@ -959,6 +961,7 @@ namespace F1TelemetryApp.UserControls
                     var player = participantsData.Participants[this.driverIndex];
                     var prevDriver = "";
                     var nextDriver = "";
+                    var year = participantsData.Header.PacketFormat;
 
                     if (this.prevIndex != -1) prevDriver = participantsData.Participants[this.prevIndex].ShortName;
                     else prevDriver = "---";
@@ -970,7 +973,7 @@ namespace F1TelemetryApp.UserControls
                     {
                         this.DriverName = player.Name;
                         this.RaceNumber = player.RaceNumber;
-                        this.TeamName = u.PickTeamName(player.TeamID);
+                        this.TeamName = player.TeamID.GetTeamName(year);
                         this.TeamColor = u.PickTeamColor(player.TeamID);
                         this.image_nationality.Source = u.NationalityImage(player.Nationality);
                         this.IsAi = player.IsAI;
@@ -1025,8 +1028,8 @@ namespace F1TelemetryApp.UserControls
                     }
                 });
 
-                var lastHistoryPacket = u.Connention.LastSessionHistoryPacket;
-                var lastLapData = u.Connention.LastLapDataPacket;
+                var lastHistoryPacket = u.Connention.CurrentSessionHistoryPacket;
+                var lastLapData = u.Connention.CurrentLapDataPacket;
 
                 Brush f = Brushes.White;
                 if (f.CanFreeze) f.Freeze();
@@ -1291,7 +1294,7 @@ namespace F1TelemetryApp.UserControls
             IGridResize.SetGridSettings(this.border_gForce, 10, 0, 2);
         }
 
-        internal void CalculateView(GridSizes gridSizes)
+        public void CalculateView(GridSizes gridSizes)
         {
             switch (gridSizes)
             {

@@ -24,11 +24,14 @@ namespace F1TelemetryClient
 
         private void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
-            throw new System.NotImplementedException();
-            this.Dispatcher.Invoke(() =>
-            {
+            u.Connention?.Close(true);
 
-            });
+            throw new System.NotImplementedException();
+
+            //this.Dispatcher.Invoke(() =>
+            //{
+
+            //});
         }
 
         private void Current_Exit(object sender, ExitEventArgs e)

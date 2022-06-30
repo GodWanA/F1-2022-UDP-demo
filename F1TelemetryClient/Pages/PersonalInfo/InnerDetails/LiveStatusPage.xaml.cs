@@ -93,7 +93,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
         //    }
         //}
 
-        internal void CalculateView(GridSizes res)
+        public void CalculateView(GridSizes res)
         {
             this.drivercontainer.CalculateView(res);
         }
@@ -147,13 +147,13 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
             {
                 //int i = (this.listBox_drivers.SelectedItem as PlayerListItemData).ArrayIndex;
                 int i = u.SelectedPlayer.ArrayIndex;
-                var demage = u.Connention.LastCarDemagePacket?.CarDamageData[i];
-                var status = u.Connention.LastCarStatusDataPacket?.CarStatusData[i];
-                var telemetry = u.Connention.LastCarTelmetryPacket?.CarTelemetryData[i];
-                var sessionHistory = u.Connention?.LastSessionHistoryPacket[i];
-                var participants = u.Connention?.LastParticipantsPacket;
-                var gForce = u.Connention?.LastMotionPacket?.CarMotionData[i]?.GForce ?? Vector3.Zero;
-                var lapdata = u.Connention?.LastLapDataPacket;
+                var demage = u.Connention.CurrentCarDemagePacket?.CarDamageData[i];
+                var status = u.Connention.CurrentCarStatusDataPacket?.CarStatusData[i];
+                var telemetry = u.Connention.CurrentCarTelmetryPacket?.CarTelemetryData[i];
+                var sessionHistory = u.Connention?.CurrentSessionHistoryPacket[i];
+                var participants = u.Connention?.CurrentParticipantsPacket;
+                var gForce = u.Connention?.CurrentMotionPacket?.CarMotionData[i]?.GForce ?? Vector3.Zero;
+                var lapdata = u.Connention?.CurrentLapDataPacket;
 
                 this.tyrecontainer.UpdateDatas(demage, status, telemetry, i);
                 this.drivercontainer.UpdateDatas(status, telemetry, sessionHistory, participants, gForce, lapdata, i);

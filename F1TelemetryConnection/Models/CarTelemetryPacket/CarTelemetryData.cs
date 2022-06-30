@@ -178,7 +178,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
             sbyte int8;
             bool b;
             Dictionary<string, ushort> d16;
-            Dictionary<string, byte> d8;
+            //Dictionary<string, byte> d8;
             Dictionary<string, float> df;
 
             //uint16 m_speed;                      // Speed of car in kilometres per hour

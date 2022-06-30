@@ -16,6 +16,7 @@ namespace F1Telemetry.Models.EventPacket
             this.Header = e.Header;
             this.EventCode = e.EventCode;
             this.EventType = e.EventType;
+            this.EventName = e.EventName;
             this.Index = e.Index;
 
             this.PickReader(this.Header.PacketFormat, array);
@@ -106,7 +107,7 @@ namespace F1Telemetry.Models.EventPacket
 
         protected override void Reader2021(byte[] array)
         {
-            this.Reader2019(array);
+            this.Reader2020(array);
         }
     }
 }

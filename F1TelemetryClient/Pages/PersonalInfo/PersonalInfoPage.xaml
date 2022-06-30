@@ -23,7 +23,9 @@
                 <InnerDetails:CarsetupPage x:Name="carsetupdata"/>
             </TabItem>
             <TabItem Header="Telemetry graphs" IsEnabled="False"/>
-            <TabItem Header="Lap history" IsEnabled="False"/>
+            <TabItem Header="Lap history">
+                <InnerDetails:LapHistoryPage x:Name="laphistorydata"/>
+            </TabItem>
         </TabControl>
     </Grid>
 </UserControl>

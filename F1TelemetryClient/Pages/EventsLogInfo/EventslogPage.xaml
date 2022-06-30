@@ -1,0 +1,73 @@
+﻿<UserControl x:Class="F1TelemetryApp.Pages.EventsLogInfo.EventslogPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:F1TelemetryApp.Pages.EventsLogInfo"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" Initialized="UserControl_Initialized">
+
+    <DataGrid x:Name="dgv_events" CanUserAddRows="False" RowHeaderWidth="0" AutoGenerateColumns="False" CanUserReorderColumns="False" CanUserResizeRows="False" CanUserDeleteRows="False" EnableColumnVirtualization="True" EnableRowVirtualization="True" BorderThickness="0,0,0,0">
+        <DataGrid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="#FF797979"/>
+                <GradientStop Color="#FF4E4E4E" Offset="1"/>
+            </LinearGradientBrush>
+        </DataGrid.Background>
+        <DataGrid.Columns>
+            <DataGridTemplateColumn Width="auto" Header="Event Name">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <Grid Background="{Binding background}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0">
+                            <TextBlock 
+                                Text="{Binding eventName}" 
+                                FontWeight="Bold" 
+                                HorizontalAlignment="Center" 
+                                VerticalAlignment="Center" 
+                                Foreground="{Binding foreground}"
+                                TextTrimming="None"
+                                TextWrapping="WrapWithOverflow"
+                                Margin="5"/>
+                        </Grid>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <DataGridTemplateColumn Width="1*" Header="Message">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0">
+                            <TextBlock
+                                Text="{Binding message}" 
+                                HorizontalAlignment="Left" 
+                                VerticalAlignment="Center" 
+                                Foreground="Black"
+                                TextTrimming="None"
+                                TextWrapping="WrapWithOverflow"
+                                Margin="5"/>
+                        </Grid>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <DataGridTemplateColumn Width="auto" Header="Timestamp">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0">
+                            <TextBlock
+                                Text="{Binding timeStamp, StringFormat='HH:mm:ss.fff'}" 
+                                HorizontalAlignment="Left" 
+                                VerticalAlignment="Center" 
+                                Foreground="Black"
+                                TextTrimming="None"
+                                TextWrapping="WrapWithOverflow"
+                                Margin="5"/>
+                        </Grid>
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+        </DataGrid.Columns>
+    </DataGrid>
+
+</UserControl>

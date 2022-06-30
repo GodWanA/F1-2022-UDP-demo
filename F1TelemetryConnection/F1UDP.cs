@@ -3,6 +3,7 @@ using F1Telemetry.Models.CarDamagePacket;
 using F1Telemetry.Models.CarSetupsPacket;
 using F1Telemetry.Models.CarStatusPacket;
 using F1Telemetry.Models.CarTelemetryPacket;
+using F1Telemetry.Models.CustomModels.SessionHistoryPacket2;
 using F1Telemetry.Models.EventPacket;
 using F1Telemetry.Models.FinalClassificationPacket;
 using F1Telemetry.Models.LapDataPacket;
@@ -27,7 +28,7 @@ namespace F1Telemetry
         /// <summary>
         /// Connection's IP address
         /// </summary>
-        public string IPAddress { get; private set; }
+        public string IPString { get; private set; }
         /// <summary>
         /// Connection's Port address
         /// </summary>
@@ -41,6 +42,16 @@ namespace F1Telemetry
         protected UdpClient Connection { get; set; }
 
         private CancellationTokenSource CancelToken;
+        private bool isUpdating_CarMotion;
+        private bool isUpdating_Session;
+        private bool isUpdating_Lapdata;
+        private bool isUpdating_Participants;
+        private bool isUpdating_CarSetups;
+        private bool isUpdating_CarTelemetry;
+        private bool isUpdating_CarStatus;
+        private bool isUpdating_LobbyInfo;
+        private bool isUpdating_CarDamage;
+        private bool isUpdating_SessionHistory;
 
         /// <summary>
         /// Version of the F1Telmetry dll.
@@ -57,34 +68,48 @@ namespace F1Telemetry
         /// Is connection is still alive
         /// </summary>
         public bool IsConnecting { get; private set; }
+        public PacketMotionData LastCarMotionPacket { get; private set; }
+
         /// <summary>
         /// Last recived motion packet.
         /// </summary>
-        public PacketMotionData LastMotionPacket { get; private set; }
+        public PacketMotionData CurrentMotionPacket { get; private set; }
+        public PacketSessionData LastSessionDataPacket { get; private set; }
+
         /// <summary>
         /// Last recived session data packet.
         /// </summary>
-        public PacketSessionData LastSessionDataPacket { get; private set; }
+        public PacketSessionData CurrentSessionDataPacket { get; private set; }
+        public PacketLapData LastLapDataPacket { get; private set; }
+
         /// <summary>
         /// Last recived lap data packet.
         /// </summary>
-        public PacketLapData LastLapDataPacket { get; private set; }
+        public PacketLapData CurrentLapDataPacket { get; private set; }
+        public PacketParticipantsData LastParticipantsPacket { get; private set; }
+
         /// <summary>
         /// Last recived participants packet.
         /// </summary>
-        public PacketParticipantsData LastParticipantsPacket { get; private set; }
+        public PacketParticipantsData CurrentParticipantsPacket { get; private set; }
+        public PacketCarSetupData LastCarSetupPacket { get; private set; }
+
         /// <summary>
         /// Last recived car setup packet.
         /// </summary>
-        public PacketCarSetupData LastCarSetupPacket { get; private set; }
+        public PacketCarSetupData CurrentCarSetupPacket { get; private set; }
+        public PacketCarTelemetryData LastCarTelmetryPacket { get; private set; }
+
         /// <summary>
         /// Last recieved car telemetry packet.
         /// </summary>
-        public PacketCarTelemetryData LastCarTelmetryPacket { get; private set; }
+        public PacketCarTelemetryData CurrentCarTelmetryPacket { get; private set; }
+        public PacketCarStatusData LastCarStatusDataPacket { get; private set; }
+
         /// <summary>
         /// Last recieved car status data packet.
         /// </summary>
-        public PacketCarStatusData LastCarStatusDataPacket { get; private set; }
+        public PacketCarStatusData CurrentCarStatusDataPacket { get; private set; }
         /// <summary>
         /// Last recieved car final classification packet.
         /// </summary>
@@ -92,15 +117,15 @@ namespace F1Telemetry
         /// <summary>
         /// Last recieved lobby info packet.
         /// </summary>
-        public PacketLobbyInfoData LastLobbyInfoPacket { get; private set; }
+        public PacketLobbyInfoData CurrentLobbyInfoPacket { get; private set; }
         /// <summary>
         /// Collects and contain all cars last aviable session history packets.
         /// </summary>
-        public PacketSessionHistoryData[] LastSessionHistoryPacket { get; private set; } = new PacketSessionHistoryData[22];
+        public PacketSessionHistoryData[] CurrentSessionHistoryPacket { get; private set; } = new PacketSessionHistoryData[22];
         /// <summary>
         /// Last recieved car demage packet.
         /// </summary>
-        public PacketCarDamageData LastCarDemagePacket { get; private set; }
+        public PacketCarDamageData CurrentCarDemagePacket { get; private set; }
         /// <summary>
         /// last time when car motion event delegated.
         /// </summary>
@@ -117,6 +142,8 @@ namespace F1Telemetry
         /// last time when car status event delegated.
         /// </summary>
         public DateTime LastTime_CarStatus { get; private set; }
+
+        public SessionHistory2 CurrentSessionHistory2Data { get; private set; } = new SessionHistory2();
 
         // udp events:
 
@@ -163,6 +190,9 @@ namespace F1Telemetry
         public delegate void StopGoPenaltyServedEventHandler(StopGoPenaltyServed packet, EventArgs e);
         public delegate void FlashbackEventHandler(Flashback packet, EventArgs e);
         public delegate void ButtonsEventHandler(Buttons packet, EventArgs e);
+
+        public delegate void Warning2EventHandler(Warning2 packet, EventArgs e);
+        public delegate void DriverOnPits2Handler(DriverOnPits2 packet, EventArgs e);
 
         /// <summary>
         /// Raw recieved byte array.
@@ -281,9 +311,48 @@ namespace F1Telemetry
         public event FlashbackEventHandler EventPacketFlashback;
 
         /// <summary>
-        /// Occours on any undefined event. Sender is a Buttons object.
+        /// Occours on any undefined event. Sender is a EventPacket object.
         /// </summary>
         public event ButtonsEventHandler EventPacketButtons;
+
+        /// <summary>
+        /// Occours when all start light lights out (race start). Sender is a EventPacket object.
+        /// </summary>
+        public event BasicEventHandler EventPacketLightsOut;
+
+        /// <summary>
+        /// Occours when DRS disbaled. Sender is a EventPacket object.
+        /// </summary>
+        public event BasicEventHandler EventPacketDRSDisabled;
+
+        /// <summary>
+        /// Occours when DRS enabled. Sender is a EventPacket object.
+        /// </summary>
+        public event BasicEventHandler EventPacketDRSEnabled;
+
+        /// <summary>
+        /// Occours when Chequered Flag (first driver finisshed). Sender is a EventPacket object.
+        /// </summary>
+        public event BasicEventHandler EventPacketChequeredFlag;
+
+        /// <summary>
+        /// Occours on session end. Sender is a EventPacket object.
+        /// </summary>
+        public event BasicEventHandler EventPacketSessionEnded;
+        /// <summary>
+        /// Occours on session start. Sender is a EventPacket object.
+        /// </summary>
+        public event BasicEventHandler EventPacketSessionStart;
+
+        /// <summary>
+        /// Occours on any drivers recieves warning. Sender is a Warning2 object.
+        /// </summary>
+        public event Warning2EventHandler EventPacketWarning2;
+
+        /// <summary>
+        /// Occours on any drivers enters to pit on race. Sender is a Warning2 object.
+        /// </summary>
+        public event DriverOnPits2Handler EventPacketDriverOnPits2;
 
         /// <summary>
         /// Create and connects to Codemaster's F1 games UDP service.
@@ -304,17 +373,15 @@ namespace F1Telemetry
         {
             try
             {
-                this.IPAddress = ip;
+                this.IPString = ip;
                 this.Port = port;
                 this.IsConnecting = true;
-                //this.EndPoint = new IPEndPoint(IPAddress.Parse(this.IPAdress), this.Port);
-                this.EndPoint = new IPEndPoint(System.Net.IPAddress.Any, this.Port);
+                this.EndPoint = new IPEndPoint(IPAddress.Parse(this.IPString), this.Port);
+                //this.EndPoint = new IPEndPoint(System.Net.IPAddress.Any, this.Port);
                 this.CancelToken = new CancellationTokenSource();
 
-                this.Connection = new UdpClient(this.EndPoint);
-                this.Connection.DontFragment = true;
-                this.Connection.Client.ReceiveTimeout = int.MaxValue;
-                this.Connection.Client.SendTimeout = int.MaxValue;
+                this.Connection = new UdpClient(this.Port, AddressFamily.InterNetwork);
+                this.Connection.EnableBroadcast = true;
 
                 //this.Connection.BeginReceive(new AsyncCallback(recv), null);
                 this.recv();
@@ -344,7 +411,10 @@ namespace F1Telemetry
                                 else this.ByteArrayProcess(array);
                             }
                         }
-                        catch (Exception) { }
+                        catch (Exception ex)
+                        {
+                            Debug.Print(ex.Message);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -360,30 +430,27 @@ namespace F1Telemetry
 
         private void recv(IAsyncResult res)
         {
-            if (this.IsConnecting)
-            {
-                IPEndPoint RemoteIpEndPoint = this.EndPoint;
-                byte[] received = this.Connection.EndReceive(res, ref RemoteIpEndPoint);
+            IPEndPoint RemoteIpEndPoint = this.EndPoint;
+            byte[] received = this.Connection.EndReceive(res, ref RemoteIpEndPoint);
 
-                if (received != null)
+            if (received != null)
+            {
+                if (!this.IsAsyncPacketProcessEnabled)
                 {
-                    if (!this.IsAsyncPacketProcessEnabled)
+                    this.ByteArrayProcess(received);
+                }
+                else
+                {
+                    Task.Run(() =>
                     {
                         this.ByteArrayProcess(received);
-                    }
-                    else
-                    {
-                        Task.Run(() =>
-                        {
-                            this.ByteArrayProcess(received);
-                        }, this.CancelToken.Token);
-                    }
+                    }, this.CancelToken.Token);
                 }
-
-                //received = null;
-
-                if (this.IsConnecting) this?.Connection?.BeginReceive(new AsyncCallback(recv), null);
             }
+
+            //received = null;
+
+            if (this.IsConnecting) this?.Connection?.BeginReceive(new AsyncCallback(recv), null);
         }
 
         /// <summary>
@@ -411,7 +478,7 @@ namespace F1Telemetry
         public void Reconnect()
         {
             this.Close();
-            this.Connect(this.IPAddress, this.Port);
+            this.Connect(this.IPString, this.Port);
         }
 
 
@@ -485,40 +552,61 @@ namespace F1Telemetry
 
         private void CarMotion(ref byte[] array, ref PacketHeader head)
         {
-            try
+            if (!this.isUpdating_CarMotion)
             {
-                var data = new PacketMotionData(head, array);
-                this.OnCarMotionPacket(data);
-            }
-            catch (Exception ex)
-            {
-                this.OnDataReadError(ex);
+                this.isUpdating_CarMotion = true;
+
+                try
+                {
+                    var data = new PacketMotionData(head, array);
+                    this.OnCarMotionPacket(data);
+                }
+                catch (Exception ex)
+                {
+                    this.OnDataReadError(ex);
+                }
+
+                this.isUpdating_CarMotion = false;
             }
         }
 
         private void Session(ref byte[] array, ref PacketHeader head)
         {
-            try
+            if (!this.isUpdating_Session)
             {
-                var data = new PacketSessionData(head, array);
-                this.OnSessionPacket(data);
-            }
-            catch (Exception ex)
-            {
-                this.OnDataReadError(ex);
+                this.isUpdating_Session = true;
+
+                try
+                {
+                    var data = new PacketSessionData(head, array);
+                    this.OnSessionPacket(data);
+                }
+                catch (Exception ex)
+                {
+                    this.OnDataReadError(ex);
+                }
+
+                this.isUpdating_Session = false;
             }
         }
 
         private void Lapdata(ref byte[] array, ref PacketHeader head)
         {
-            try
+            if (!this.isUpdating_Lapdata)
             {
-                var data = new PacketLapData(head, array);
-                this.OnLapDataPacket(data);
-            }
-            catch (Exception ex)
-            {
-                if (ex.GetType() != typeof(TaskCanceledException)) this.OnDataReadError(ex);
+                this.isUpdating_Lapdata = true;
+
+                try
+                {
+                    var data = new PacketLapData(head, array);
+                    this.OnLapDataPacket(data);
+                }
+                catch (Exception ex)
+                {
+                    if (ex.GetType() != typeof(TaskCanceledException)) this.OnDataReadError(ex);
+                }
+
+                this.isUpdating_Lapdata = false;
             }
         }
 
@@ -532,49 +620,71 @@ namespace F1Telemetry
                     default:
                         this.OnEventPacket(data);
                         break;
+
+                    // basic event types:
+                    case EventTypes.SessionStarted:
+                        this.OnSessionStart(data);
+                        break;
+                    case EventTypes.SessionEnded:
+                        this.OnSessionEnded(data);
+                        break;
+                    case EventTypes.ChequeredFlag:
+                        this.OnChequeredFlag(data);
+                        break;
+                    case EventTypes.DRSenabled:
+                        this.OnDRSEnabled(data);
+                        break;
+                    case EventTypes.DRSdisabled:
+                        this.OnDRSDisabled(data);
+                        break;
+                    case EventTypes.LightsOut:
+                        this.OnLightsOut(data);
+                        break;
+
+                    // custom event types:
                     case EventTypes.FastestLap:
                         data = new FastestLap(data, array);
-                        this.OnEventPacketFastestLap((FastestLap)data);
+                        this.OnEventPacketFastestLap(data as FastestLap);
                         break;
                     case EventTypes.Retirement:
                         data = new Retirement(data, array);
-                        this.OnEventPacketRetirement((Retirement)data);
+                        this.OnEventPacketRetirement(data as Retirement);
                         break;
                     case EventTypes.TeamMateInPits:
                         data = new TeamMateInPits(data, array);
-                        this.OnEventPacketTeamMateInPits((TeamMateInPits)data);
+                        this.OnEventPacketTeamMateInPits(data as TeamMateInPits);
                         break;
                     case EventTypes.RaceWinner:
                         data = new RaceWinner(data, array);
-                        this.OnEventPacketRaceWinner((RaceWinner)data);
+                        this.OnEventPacketRaceWinner(data as RaceWinner);
                         break;
                     case EventTypes.PenaltyIssued:
                         data = new Penalty(data, array);
-                        this.OnEventPacketPenalty((Penalty)data);
+                        this.OnEventPacketPenalty(data as Penalty);
                         break;
                     case EventTypes.SpeedTrapTriggered:
                         data = new SpeedTrap(data, array);
-                        this.OnEventPacketSpeedTrap((SpeedTrap)data);
+                        this.OnEventPacketSpeedTrap(data as SpeedTrap);
                         break;
                     case EventTypes.StartLights:
                         data = new StartLights(data, array);
-                        this.OnEventPacketStartLights((StartLights)data);
+                        this.OnEventPacketStartLights(data as StartLights);
                         break;
                     case EventTypes.DriveThroughServed:
                         data = new DriveThroughPenaltyServed(data, array);
-                        this.OnEventDriveThroughPenaltyServed((DriveThroughPenaltyServed)data);
+                        this.OnEventDriveThroughPenaltyServed(data as DriveThroughPenaltyServed);
                         break;
                     case EventTypes.StopGoServed:
                         data = new StopGoPenaltyServed(data, array);
-                        this.OnEventStopGoPenaltyServed((StopGoPenaltyServed)data);
+                        this.OnEventStopGoPenaltyServed(data as StopGoPenaltyServed);
                         break;
                     case EventTypes.Flashback:
                         data = new Flashback(data, array);
-                        this.OnEventPacketFlashback((Flashback)data);
+                        this.OnEventPacketFlashback(data as Flashback);
                         break;
                     case EventTypes.ButtonStatus:
                         data = new Buttons(data, array);
-                        this.OnEventPacketButtons((Buttons)data);
+                        this.OnEventPacketButtons(data as Buttons);
                         break;
                 }
             }
@@ -586,57 +696,85 @@ namespace F1Telemetry
 
         private void Participants(ref byte[] array, ref PacketHeader head)
         {
-            try
+            if (!this.isUpdating_Participants)
             {
-                var data = new PacketParticipantsData(head, array);
-                this.OnParticipantsPacket(data);
-            }
-            catch (Exception ex)
-            {
-                this.OnDataReadError(ex);
+                this.isUpdating_Participants = true;
+
+                try
+                {
+                    var data = new PacketParticipantsData(head, array);
+                    this.OnParticipantsPacket(data);
+                }
+                catch (Exception ex)
+                {
+                    this.OnDataReadError(ex);
+                }
+
+                this.isUpdating_Participants = false;
             }
         }
 
         private void CarSetups(ref byte[] array, ref PacketHeader head)
         {
-            try
+            if (!this.isUpdating_CarSetups)
             {
-                var data = new PacketCarSetupData(head, array);
-                this.OnCarSetupsPacket(data);
-            }
-            catch (Exception ex)
-            {
-                this.OnDataReadError(ex);
+                this.isUpdating_CarSetups = true;
+
+                try
+                {
+                    var data = new PacketCarSetupData(head, array);
+                    this.OnCarSetupsPacket(data);
+                }
+                catch (Exception ex)
+                {
+                    this.OnDataReadError(ex);
+                }
+
+                this.isUpdating_CarSetups = false;
             }
         }
 
         private void CarTelemetry(ref byte[] array, ref PacketHeader head)
         {
-            try
+            if (!this.isUpdating_CarTelemetry)
             {
-                var data = new PacketCarTelemetryData(head, array);
-                this.OnCarTelemetryPacket(data);
+                this.isUpdating_CarTelemetry = true;
 
-                if (head.PacketFormat <= 2020) this.OnEventPacketButtons(data.BuildButtonEvent());
-            }
-            catch (Exception ex)
-            {
-                this.OnDataReadError(ex);
+                try
+                {
+                    var data = new PacketCarTelemetryData(head, array);
+                    this.OnCarTelemetryPacket(data);
+
+                    if (head.PacketFormat <= 2020) this.OnEventPacketButtons(data.BuildButtonEvent());
+                }
+                catch (Exception ex)
+                {
+                    this.OnDataReadError(ex);
+                }
+
+                this.isUpdating_CarTelemetry = false;
             }
         }
 
         private void CarStatus(ref byte[] array, ref PacketHeader head)
         {
-            try
+            if (!this.isUpdating_CarStatus)
             {
-                var data = new PacketCarStatusData(head, array);
-                this.OnCarStatusPacket(data);
+                this.isUpdating_CarStatus = true;
 
-                if (head.PacketFormat <= 2020) this.OnCarDemagePacket(data.BuildCarDemagePacket());
-            }
-            catch (Exception ex)
-            {
-                this.OnDataReadError(ex);
+                try
+                {
+                    var data = new PacketCarStatusData(head, array);
+                    this.OnCarStatusPacket(data);
+
+                    if (head.PacketFormat <= 2020) this.OnCarDemagePacket(data.BuildCarDemagePacket());
+                }
+                catch (Exception ex)
+                {
+                    this.OnDataReadError(ex);
+                }
+
+                this.isUpdating_CarStatus = false;
             }
         }
 
@@ -655,43 +793,64 @@ namespace F1Telemetry
 
         private void LobbyInfo(ref byte[] array, ref PacketHeader head)
         {
-            try
+            if (!this.isUpdating_LobbyInfo)
             {
-                var data = new PacketLobbyInfoData(head, array);
+                this.isUpdating_LobbyInfo = true;
 
-                if (head.PacketFormat == 2020) data.BuildRaceNumbers(this.LastParticipantsPacket.Participants);
+                try
+                {
+                    var data = new PacketLobbyInfoData(head, array);
 
-                this.OnLobbyInfoPacket(data);
-            }
-            catch (Exception ex)
-            {
-                this.OnDataReadError(ex);
+                    if (head.PacketFormat == 2020) data.BuildRaceNumbers(this.CurrentParticipantsPacket.Participants);
+
+                    this.OnLobbyInfoPacket(data);
+                }
+                catch (Exception ex)
+                {
+                    this.OnDataReadError(ex);
+                }
+
+                this.isUpdating_LobbyInfo = false;
             }
         }
 
         private void CarDamage(ref byte[] array, ref PacketHeader head)
         {
-            try
+            if (!this.isUpdating_CarDamage)
             {
-                var data = new PacketCarDamageData(head, array);
-                this.OnCarDemagePacket(data);
-            }
-            catch (Exception ex)
-            {
-                this.OnDataReadError(ex);
+                this.isUpdating_CarDamage = true;
+
+                try
+                {
+                    var data = new PacketCarDamageData(head, array);
+                    this.OnCarDemagePacket(data);
+                }
+                catch (Exception ex)
+                {
+                    this.OnDataReadError(ex);
+                }
+
+                this.isUpdating_CarDamage = false;
             }
         }
 
         private void SessionHistory(ref byte[] array, ref PacketHeader head)
         {
-            try
+            if (!this.isUpdating_SessionHistory)
             {
-                var data = new PacketSessionHistoryData(head, array);
-                this.OnSessionHistoryPacket(data);
-            }
-            catch (Exception ex)
-            {
-                this.OnDataReadError(ex);
+                this.isUpdating_SessionHistory = true;
+
+                try
+                {
+                    var data = new PacketSessionHistoryData(head, array);
+                    this.OnSessionHistoryPacket(data);
+                }
+                catch (Exception ex)
+                {
+                    this.OnDataReadError(ex);
+                }
+
+                this.isUpdating_SessionHistory = false;
             }
         }
 
@@ -715,13 +874,21 @@ namespace F1Telemetry
             if (this.ClosedConnection != null) this.ClosedConnection(sender, new EventArgs());
         }
 
+        protected bool IsTimeElapsed(DateTime lastTime)
+        {
+            return this.NumberOfPacketPerSecond == 0
+                || DateTime.Now - lastTime >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond);
+        }
+
         protected virtual void OnCarMotionPacket(PacketMotionData sender)
         {
-            //this.LastMotionPacket?.Dispose();
-            //this.LastMotionPacket = null;
-            this.LastMotionPacket = sender;
+            this.LastCarMotionPacket = this.CurrentMotionPacket;
+            this.CurrentMotionPacket = sender;
 
-            if (this.NumberOfPacketPerSecond == 0 || DateTime.Now - this.LastTime_CarMotion >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond))
+            if (
+                this.LastCarMotionPacket != this.CurrentMotionPacket
+                && IsTimeElapsed(this.LastTime_CarMotion)
+            )
             {
                 if (this.CarMotionPacket != null) this.CarMotionPacket(sender, new EventArgs());
                 this.LastTime_CarMotion = DateTime.Now;
@@ -730,30 +897,57 @@ namespace F1Telemetry
 
         protected virtual void OnSessionPacket(PacketSessionData sender)
         {
-            //this.LastSessionDataPacket?.Dispose();
-            //this.LastSessionDataPacket = null;
-            this.LastSessionDataPacket = sender;
-            if (this.SessionPacket != null) this.SessionPacket(sender, new EventArgs());
+            this.LastSessionDataPacket = this.CurrentSessionDataPacket;
+            this.CurrentSessionDataPacket = sender;
+
+            if (this.LastSessionDataPacket != this.CurrentSessionDataPacket && this.SessionPacket != null)
+            {
+                this.SessionPacket(sender, new EventArgs());
+            }
         }
 
         protected virtual void OnLapDataPacket(PacketLapData sender)
         {
-            if (sender.Header.PacketFormat < 2021 && this.LastSessionDataPacket != null && this.LastLapDataPacket != null)
-            {
-                for (int i = 0; i < sender.Lapdata.Length; i++)
-                {
-                    var c = sender.Lapdata[i];
-                    var l = this.LastLapDataPacket.Lapdata[i];
+            //if (sender.Header.PacketFormat < 2021 && this.CurrentSessionDataPacket != null && this.CurrentLapDataPacket != null)
+            //{
+            //    for (int i = 0; i < sender.Lapdata.Length; i++)
+            //    {
+            //        var c = sender.Lapdata[i];
+            //        var l = this.CurrentLapDataPacket.Lapdata[i];
 
-                    c.SetLastPitLap(l.GetLastPitLap());
-                    c.CalculateStatus(this.LastSessionDataPacket.SessionType);
-                }
+            //        c.SetLastPitLap(l.GetLastPitLap());
+            //        c.CalculateStatus(this.CurrentSessionDataPacket.SessionType);
+
+            //        if (sender.Header.PacketFormat < 2020 && c.Warnings != l.Warnings)
+            //        {
+            //            this.OnEventWarning2(new Warning2(i, c.Warnings, c.CurrentLapNum, InfringementTypes.CornerCuttingGainedTime));
+            //        }
+
+            //        if (
+            //            (this.CurrentSessionDataPacket.SessionType == SessionTypes.Race || this.CurrentSessionDataPacket.SessionType == SessionTypes.Race2 || this.CurrentSessionDataPacket.SessionType == SessionTypes.Race3)
+            //            && (c.PitStatus == PitStatuses.InPitArea || c.PitStatus == PitStatuses.Pitting)
+            //            && (l.PitStatus == PitStatuses.None || l.PitStatus == PitStatuses.Unknown)
+            //        )
+            //        {
+            //            this.OnEventDriverOnPits2(new DriverOnPits2(i, c.CurrentLapNum));
+            //        }
+            //    }
+            //}
+
+            for (int i = 0; i < sender.Lapdata.Length; i++)
+            {
+                var current = sender.Lapdata[i];
+                current.SetLapPercentage(this.CurrentSessionDataPacket.TrackLength);
+                this.CurrentSessionHistory2Data.UpdateDriverHistory(ref current, i);
             }
 
-            //this.LastLapDataPacket?.Dispose();
-            //this.LastLapDataPacket = null;
-            this.LastLapDataPacket = sender;
-            if (this.NumberOfPacketPerSecond == 0 || DateTime.Now - this.LastTime_LapData >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond))
+            this.LastLapDataPacket = this.CurrentLapDataPacket;
+            this.CurrentLapDataPacket = sender;
+
+            if (
+                this.LastLapDataPacket != this.CurrentLapDataPacket
+                && this.IsTimeElapsed(this.LastTime_LapData)
+            )
             {
                 if (this.LapDataPacket != null) this.LapDataPacket(sender, new EventArgs());
                 this.LastTime_LapData = DateTime.Now;
@@ -762,27 +956,41 @@ namespace F1Telemetry
 
         protected virtual void OnParticipantsPacket(PacketParticipantsData sender)
         {
-            //this.LastParticipantsPacket?.Dispose();
-            //this.LastParticipantsPacket = null;
-            this.LastParticipantsPacket = sender;
-            if (this.ParticipantsPacket != null) this.ParticipantsPacket(sender, new EventArgs());
+            this.LastParticipantsPacket = this.CurrentParticipantsPacket;
+            this.CurrentParticipantsPacket = sender;
+
+            if (
+                this.ParticipantsPacket != null
+                && this.LastParticipantsPacket != this.CurrentParticipantsPacket
+            )
+            {
+                this.ParticipantsPacket(sender, new EventArgs());
+            }
         }
 
         protected virtual void OnCarSetupsPacket(PacketCarSetupData sender)
         {
-            //this.LastCarSetupPacket?.Dispose();
-            //this.LastCarSetupPacket = null;
-            this.LastCarSetupPacket = sender;
-            if (this.CarSetupsPacket != null) this.CarSetupsPacket(sender, new EventArgs());
+            this.LastCarSetupPacket = this.CurrentCarSetupPacket;
+            this.CurrentCarSetupPacket = sender;
+
+            if (
+                this.CarSetupsPacket != null
+                && this.LastCarSetupPacket != this.CurrentCarSetupPacket
+            )
+            {
+                this.CarSetupsPacket(sender, new EventArgs());
+            }
         }
 
         protected virtual void OnCarTelemetryPacket(PacketCarTelemetryData sender)
         {
-            //this.LastCarTelmetryPacket?.Dispose();
-            //this.LastCarTelmetryPacket = null;
-            this.LastCarTelmetryPacket = sender;
+            this.LastCarTelmetryPacket = this.CurrentCarTelmetryPacket;
+            this.CurrentCarTelmetryPacket = sender;
 
-            if (this.NumberOfPacketPerSecond == 0 || DateTime.Now - this.LastTime_Cartelemetry >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond))
+            if (
+                this.LastCarTelmetryPacket != this.CurrentCarTelmetryPacket
+                && IsTimeElapsed(this.LastTime_Cartelemetry)
+            )
             {
                 if (this.CarTelemetryPacket != null) this.CarTelemetryPacket(sender, new EventArgs());
                 this.LastTime_Cartelemetry = DateTime.Now;
@@ -791,11 +999,13 @@ namespace F1Telemetry
 
         protected virtual void OnCarStatusPacket(PacketCarStatusData sender)
         {
-            //this.LastCarStatusDataPacket?.Dispose();
-            //this.LastCarStatusDataPacket = null;
-            this.LastCarStatusDataPacket = sender;
+            this.LastCarStatusDataPacket = this.CurrentCarStatusDataPacket;
+            this.CurrentCarStatusDataPacket = sender;
 
-            if (this.NumberOfPacketPerSecond == 0 || DateTime.Now - this.LastTime_CarStatus >= TimeSpan.FromMilliseconds(1000 / this.NumberOfPacketPerSecond))
+            if (
+                this.LastCarStatusDataPacket != this.CurrentCarStatusDataPacket
+                && this.IsTimeElapsed(this.LastTime_CarStatus)
+            )
             {
                 if (this.CarStatusPacket != null) this.CarStatusPacket(sender, new EventArgs());
                 this.LastTime_CarStatus = DateTime.Now;
@@ -804,33 +1014,25 @@ namespace F1Telemetry
 
         protected virtual void OnFinalClassificationPacket(PacketFinalClassificationData sender)
         {
-            //this.LastFinalClassificationPacket?.Dispose();
-            //this.LastFinalClassificationPacket = null;
             this.LastFinalClassificationPacket = sender;
             if (this.FinalClassificationPacket != null) this.FinalClassificationPacket(sender, new EventArgs());
         }
 
         protected virtual void OnLobbyInfoPacket(PacketLobbyInfoData sender)
         {
-            this.LastLobbyInfoPacket?.Dispose();
-            this.LastLobbyInfoPacket = null;
-            this.LastLobbyInfoPacket = sender;
+            this.CurrentLobbyInfoPacket = sender;
             if (this.LobbyInfoPacket != null) this.LobbyInfoPacket(sender, new EventArgs());
         }
 
         protected virtual void OnSessionHistoryPacket(PacketSessionHistoryData sender)
         {
-            //this.LastSessionHistoryPacket[sender.CarIndex]?.Dispose();
-            //this.LastSessionHistoryPacket[sender.CarIndex] = null;
-            this.LastSessionHistoryPacket[sender.CarIndex] = sender;
+            this.CurrentSessionHistoryPacket[sender.CarIndex] = sender;
             if (this.SessionHistoryPacket != null) this.SessionHistoryPacket(sender, new EventArgs());
         }
 
         protected virtual void OnCarDemagePacket(PacketCarDamageData sender)
         {
-            //this.LastCarDemagePacket?.Dispose();
-            //this.LastCarDemagePacket = null;
-            this.LastCarDemagePacket = sender;
+            this.CurrentCarDemagePacket = sender;
             if (this.CarDemagePacket != null) this.CarDemagePacket(sender, new EventArgs());
         }
 
@@ -861,6 +1063,13 @@ namespace F1Telemetry
 
         protected virtual void OnEventPacketPenalty(Penalty sender)
         {
+            if (sender.Time.TotalSeconds >= 255)
+            {
+                var warningNumber = this.CurrentLapDataPacket?.Lapdata[sender.VehicleIndex]?.Warnings ?? -1;
+                this.OnEventWarning2(new Warning2(sender.VehicleIndex, warningNumber, sender.LapNumber, sender.InfragmentType));
+                return;
+            }
+
             if (this.EventPacketPenalty != null) this.EventPacketPenalty(sender, new EventArgs());
         }
 
@@ -894,9 +1103,51 @@ namespace F1Telemetry
             if (this.EventPacketButtons != null) this.EventPacketButtons(sender, new EventArgs());
         }
 
+        private void OnLightsOut(PacketEventData data)
+        {
+            if (this.EventPacketLightsOut != null) this.EventPacketLightsOut(data, new EventArgs());
+        }
+
+        private void OnDRSDisabled(PacketEventData data)
+        {
+            if (this.EventPacketDRSDisabled != null) this.EventPacketDRSDisabled(data, new EventArgs());
+        }
+
+        private void OnDRSEnabled(PacketEventData data)
+        {
+            if (this.EventPacketDRSEnabled != null) this.EventPacketDRSEnabled(data, new EventArgs());
+        }
+
+        private void OnChequeredFlag(PacketEventData data)
+        {
+            if (this.EventPacketChequeredFlag != null) this.EventPacketChequeredFlag(data, new EventArgs());
+        }
+
+        private void OnSessionEnded(PacketEventData data)
+        {
+            if (this.EventPacketSessionEnded != null) this.EventPacketSessionEnded(data, new EventArgs());
+        }
+
+        private void OnSessionStart(PacketEventData data)
+        {
+            if (this.EventPacketSessionStart != null) this.EventPacketSessionStart(data, new EventArgs());
+        }
+
+        protected virtual void OnEventWarning2(Warning2 sender)
+        {
+            if (this.EventPacketWarning2 != null) this.EventPacketWarning2(sender, new EventArgs());
+        }
+
+        protected virtual void OnEventDriverOnPits2(DriverOnPits2 sender)
+        {
+            if (this.EventPacketDriverOnPits2 != null) this.EventPacketDriverOnPits2(sender, new EventArgs());
+        }
+
         protected virtual void OnRawDataRecive(byte[] sender, PacketHeader head)
         {
             if (this.RawDataRecieved != null) this.RawDataRecieved(sender, head, new EventArgs());
         }
+
+
     }
 }

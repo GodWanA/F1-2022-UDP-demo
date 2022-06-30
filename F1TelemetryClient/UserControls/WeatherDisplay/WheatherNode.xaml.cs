@@ -26,7 +26,7 @@ namespace F1TelemetryApp.UserControls
         private void OnPropertyChanged(string propertyName)
         {
             // if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), System.Windows.Threading.DispatcherPriority.DataBind);
         }
 
         private TimeSpan? offsetTime;

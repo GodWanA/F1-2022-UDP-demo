@@ -7,11 +7,12 @@ namespace F1TelemetryApp.Classes
     {
         public enum GridSizes
         {
-            XS,
-            XM,
-            MD,
-            LG,
-            XL,
+            NotSet = -1,
+            XS = 0,
+            XM = 1,
+            MD = 2,
+            LG = 3,
+            XL = 4,
         }
 
         /// <summary>
@@ -53,5 +54,11 @@ namespace F1TelemetryApp.Classes
             Grid.SetRow(container, row);
             Grid.SetRowSpan(container, rowSpan);
         }
+
+        /// <summary>
+        /// Selects and call the perfect resize method
+        /// </summary>
+        /// <param name="res">Resize view</param>
+        public void CalculateView(GridSizes res = GridSizes.NotSet);
     }
 }

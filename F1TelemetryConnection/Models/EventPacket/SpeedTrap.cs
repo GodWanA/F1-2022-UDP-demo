@@ -14,6 +14,7 @@ namespace F1Telemetry.Models.EventPacket
             this.Header = e.Header;
             this.EventCode = e.EventCode;
             this.EventType = e.EventType;
+            this.EventName = e.EventName;
             this.Index = e.Index;
 
             this.PickReader(this.Header.PacketFormat, array);
@@ -58,15 +59,15 @@ namespace F1Telemetry.Models.EventPacket
             this.VehicleIndex = valb;
             //float speed;            // Top speed achieved in kilometres per hour
             this.Index += ByteReader.ToFloat(array, this.Index, out valf);
-            this.Speed = valf;            
+            this.Speed = valf;
         }
 
         protected override void Reader2021(byte[] array)
         {
             bool valbo;
-         
+
             this.Reader2020(array);
-            
+
             //uint8 overallFastestInSession;   // Overall fastest speed in session = 1, otherwise 0
             this.Index += ByteReader.ToBoolFromUint8(array, this.Index, out valbo);
             this.IsOverallFastestInSession = valbo;

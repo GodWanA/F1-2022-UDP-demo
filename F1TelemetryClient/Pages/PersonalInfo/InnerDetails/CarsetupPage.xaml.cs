@@ -1,6 +1,7 @@
 ﻿using F1Telemetry.Models.CarSetupsPacket;
 using F1TelemetryApp.Classes;
 using F1TelemetryApp.UserControls;
+using F1TelemetryClient;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,10 +14,13 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
+using System.Xml;
 using static F1TelemetryApp.Classes.IGridResize;
 
 namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
@@ -348,6 +352,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
         }
 
         private float _fuel;
+        private GridSizes lastSize;
 
         public float Fuel
         {
@@ -415,31 +420,31 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
                         var tyre_rl = MathF.Round(userSetup.TyrePressure["RearLeft"], 2);
                         var tyre_rr = MathF.Round(userSetup.TyrePressure["RearRight"], 2);
 
-                        this.Dispatcher.Invoke(() =>
-                        {
-                            this.FrontWing = userSetup.FrontWing;
-                            this.RearWing = userSetup.RearWing;
-                            this.DifferentialOnThrottle = userSetup.DifferentialOnThrottle;
-                            this.DifferentialOffThrottle = userSetup.DifferentialOffThrottle;
-                            this.FrontChamber = fc;
-                            this.RearChamber = rc;
-                            this.FrontToe = ft;
-                            this.RearToe = rt;
-                            this.FrontSuspension = userSetup.FrontSuspension;
-                            this.RearSuspension = userSetup.RearSuspension;
-                            this.FrontAntiRollBar = userSetup.FrontAntiRollBar;
-                            this.RearAntiRollBar = userSetup.RearAntiRollBar;
-                            this.FrontSuspensionHeight = userSetup.FrontSuspensionHeight;
-                            this.RearSuspensionHeight = userSetup.RearSuspensionHeight;
-                            this.BrakePressure = userSetup.BrakePressure;
-                            this.BrakeBias = userSetup.BrakeBias;
-                            this.TyreFrontLeft = tyre_fl;
-                            this.TyreFrontRight = tyre_fr;
-                            this.TyreRearLeft = tyre_rl;
-                            this.TyreRearRight = tyre_rr;
-                            this.Ballast = userSetup.Ballast;
-                            this.Fuel = f;
-                        });
+                        //this.Dispatcher.Invoke(() =>
+                        //{
+                        this.FrontWing = userSetup.FrontWing;
+                        this.RearWing = userSetup.RearWing;
+                        this.DifferentialOnThrottle = userSetup.DifferentialOnThrottle;
+                        this.DifferentialOffThrottle = userSetup.DifferentialOffThrottle;
+                        this.FrontChamber = fc;
+                        this.RearChamber = rc;
+                        this.FrontToe = ft;
+                        this.RearToe = rt;
+                        this.FrontSuspension = userSetup.FrontSuspension;
+                        this.RearSuspension = userSetup.RearSuspension;
+                        this.FrontAntiRollBar = userSetup.FrontAntiRollBar;
+                        this.RearAntiRollBar = userSetup.RearAntiRollBar;
+                        this.FrontSuspensionHeight = userSetup.FrontSuspensionHeight;
+                        this.RearSuspensionHeight = userSetup.RearSuspensionHeight;
+                        this.BrakePressure = userSetup.BrakePressure;
+                        this.BrakeBias = userSetup.BrakeBias;
+                        this.TyreFrontLeft = tyre_fl;
+                        this.TyreFrontRight = tyre_fr;
+                        this.TyreRearLeft = tyre_rl;
+                        this.TyreRearRight = tyre_rr;
+                        this.Ballast = userSetup.Ballast;
+                        this.Fuel = f;
+                        //});
                     }
                 }
             }
@@ -447,7 +452,8 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
 
         private void OnPropertyChanged(string propertyName)
         {
-            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), DispatcherPriority.Background);
+            //this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), System.Windows.Threading.DispatcherPriority.DataBind);
         }
 
         private bool CanUpdateEvent()
@@ -461,6 +467,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
         {
             this.SubscribeUDPEvents();
             this.LoadSetup();
+            this.CalculateView();
         }
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
@@ -472,7 +479,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
         {
             if (u.Connention != null)
             {
-                var p = u.Connention.LastCarSetupPacket;
+                var p = u.Connention.CurrentCarSetupPacket;
                 this.UpdateCarSetup(ref p);
             }
         }
@@ -510,6 +517,46 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
 
         private void button_copyToClipboard_Click(object sender, RoutedEventArgs e)
         {
+            var dt = this.CreateClipboardTable();
+
+
+            var sb = new StringBuilder();
+            var html = new StringBuilder().Append("<table>");
+
+            int padKey = dt.AsEnumerable().Max(x => (x["Key"] as string).Length);
+            int padValue = dt.AsEnumerable().Max(x => (x["Value"] as string).Length);
+
+            sb.AppendLine("+-" + "".PadRight(padKey, '-') + "-+-" + "".PadLeft(padValue, '-') + "-+");
+
+            foreach (DataRow row in dt.Rows)
+            {
+                var k = row["Key"] as string;
+                var v = row["Value"] as string;
+
+                sb.AppendLine("| " + k.PadRight(padKey, ' ') + " | " + v.PadLeft(padValue, ' ') + " |");
+                sb.AppendLine("+-" + "".PadRight(padKey, '-') + "-+-" + "".PadLeft(padValue, '-') + "-+");
+
+                html.Append("<tr>").Append("<td>" + k + "</td>").Append("<td>" + v + "</td>").Append("</tr>");
+            }
+
+            html.Append("</table>");
+
+            Clipboard.Clear();
+
+            var dataObject = new DataObject();
+
+            dataObject.SetText(sb.ToString(), TextDataFormat.UnicodeText);
+            dataObject.SetText(CarsetupPage.ConvertHtmlToClipboardData(html.ToString()), TextDataFormat.Html);
+            //dataObject.SetText(xdoc.OuterXml, TextDataFormat.Xaml);
+            //dataObject.SetText(, TextDataFormat.Rtf);
+            //dataObject.SetData(doc);
+
+            Clipboard.SetDataObject(dataObject);
+            Clipboard.Flush();
+        }
+
+        private DataTable CreateClipboardTable()
+        {
             var dt = new DataTable("Car Setup");
             dt.Columns.Add(new DataColumn("Key"));
             dt.Columns.Add(new DataColumn("Value"));
@@ -546,37 +593,24 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
             // Fuel:
             CarsetupPage.AppendRow(ref dt, "Fuel Load", this.Fuel.ToString());
 
+            return dt;
+        }
 
+        private void button_copyAsText_Click(object sender, RoutedEventArgs e)
+        {
             var sb = new StringBuilder();
-            var html = new StringBuilder().Append("<table><tbody>");
-
-            int padKey = dt.AsEnumerable().Max(x => (x["Key"] as string).Length);
-            int padValue = dt.AsEnumerable().Max(x => (x["Value"] as string).Length);
-
-            sb.AppendLine("+-" + "".PadRight(padKey, '-') + "-+-" + "".PadLeft(padValue, '-') + "-+");
+            var dt = this.CreateClipboardTable();
 
             foreach (DataRow row in dt.Rows)
             {
-                var k = row["Key"] as string;
-                var v = row["Value"] as string;
-
-                sb.AppendLine("| " + k.PadRight(padKey, ' ') + " | " + v.PadLeft(padValue, ' ') + " |");
-                sb.AppendLine("+-" + "".PadRight(padKey, '-') + "-+-" + "".PadLeft(padValue, '-') + "-+");
-                html.Append("<tr>").Append("<td>" + k + "</td>").Append("<td>" + v + "</td>").Append("</tr>");
+                if (sb.Length > 0) sb.Append(" | ");
+                sb.Append(row[0] as string).Append(" - ").Append(row[1] as string);
             }
 
-            html.Append("</tbody></table>");
+            // sb.Append("\r\nby Jeff+ telemetry");
 
             Clipboard.Clear();
-
-            var dataObject = new DataObject();
-
-            dataObject.SetText(sb.ToString(), TextDataFormat.UnicodeText);
-            dataObject.SetText(html.ToString(), TextDataFormat.Html);
-
-
-            Clipboard.SetDataObject(dataObject);
-            Clipboard.Flush();
+            Clipboard.SetText(sb.ToString());
         }
 
         private static void AppendRow(ref DataTable dt, string key, string value)
@@ -587,7 +621,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
             dt.Rows.Add(row);
         }
 
-        internal void CalculateView(GridSizes gridSizes)
+        public void CalculateView(GridSizes gridSizes = GridSizes.NotSet)
         {
             switch (gridSizes)
             {
@@ -608,32 +642,128 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
                     break;
             }
 
+            this.lastSize = gridSizes;
             // this.UpdateLayout();
+        }
+
+        private static void SetUIElement(UIElement control, int col, int row, int colSpan = 1, int rowSpan = 1)
+        {
+            Grid.SetColumn(control, col);
+            Grid.SetColumnSpan(control, colSpan);
+            Grid.SetRow(control, row);
+            Grid.SetRowSpan(control, rowSpan);
         }
 
         public void ResizeXS()
         {
+            //throw new NotImplementedException();
+            int r = 0;
 
+            IGridResize.SetGridSettings(this.groupBox_aero, 0, r++, 12);
+            IGridResize.SetGridSettings(this.groupBox_transmission, 0, r++, 12);
+            IGridResize.SetGridSettings(this.groupBox_suspensionGeometry, 0, r++, 12);
+            IGridResize.SetGridSettings(this.groupBox_suspension, 0, r++, 12);
+            IGridResize.SetGridSettings(this.groupbox_brake, 0, r++, 12);
+            IGridResize.SetGridSettings(this.groupBox_tyre, 0, r++, 12);
+            IGridResize.SetGridSettings(this.groubBox_weight, 0, r++, 12);
+            IGridResize.SetGridSettings(this.groupBox_fuel, 0, r++, 12);
         }
 
         public void ResizeXM()
         {
             //throw new NotImplementedException();
+            this.ResizeXS();
         }
 
         public void ResizeMD()
         {
             //throw new NotImplementedException();
+            this.ResizeXS();
         }
 
         public void ResizeLG()
         {
             //throw new NotImplementedException();
+            int r = 0;
+
+            IGridResize.SetGridSettings(this.groupBox_aero, 0, r, 6);
+            IGridResize.SetGridSettings(this.groupBox_transmission, 6, r++, 6);
+            IGridResize.SetGridSettings(this.groupBox_suspensionGeometry, 0, r, 6);
+            IGridResize.SetGridSettings(this.groupBox_suspension, 6, r++, 6, 2);
+            IGridResize.SetGridSettings(this.groupbox_brake, 0, r++, 6);
+            IGridResize.SetGridSettings(this.groupBox_tyre, 0, r++, 12);
+            IGridResize.SetGridSettings(this.groubBox_weight, 0, r, 6);
+            IGridResize.SetGridSettings(this.groupBox_fuel, 6, r++, 6);
         }
 
         public void ResizeXL()
         {
             //throw new NotImplementedException();
+            this.ResizeLG();
+        }
+
+        static readonly string HEADER =
+        "Version:0.9\r\n" +
+        "StartHTML:{0:0000000000}\r\n" +
+        "EndHTML:{1:0000000000}\r\n" +
+        "StartFragment:{2:0000000000}\r\n" +
+        "EndFragment:{3:0000000000}\r\n";
+
+        static readonly string HTML_START =
+            "<html>\r\n" +
+                "<style>\r\n" +
+                    "* {\r\n" +
+                        "margin: 0;\r\n" +
+                        "padding: 0;\r\n" +
+                        "font-family: 'Courier New', Courier, monospace;\r\n" +
+                    "}\r\n" +
+                    "table {\r\n" +
+                        "border-collapse: collapse;\r\n" +
+                    "}\r\n" +
+                    "td, th {\r\n" +
+                        "padding: 2px 5px;\r\n" +
+                        "margin: 0;\r\n" +
+                        "border: 2px solid black;\r\n" +
+                        "font-weight: bold;\r\n" +
+                        "font-size: 11pt;\r\n" +
+                    "}\r\n" +
+                "</style>\r\n" +
+            "<body>\r\n" +
+            "<!--StartFragment-->";
+
+        static readonly string HTML_END =
+            "<!--EndFragment-->\r\n" +
+            "</body>\r\n" +
+            "</html>";
+
+        public static string ConvertHtmlToClipboardData(string html)
+        {
+            var encoding = new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+            var data = Array.Empty<byte>();
+
+            var header = encoding.GetBytes(String.Format(HEADER, 0, 1, 2, 3));
+            data = data.Concat(header).ToArray();
+
+            var startHtml = data.Length;
+            data = data.Concat(encoding.GetBytes(HTML_START)).ToArray();
+
+            var startFragment = data.Length;
+            data = data.Concat(encoding.GetBytes(html)).ToArray();
+
+            var endFragment = data.Length;
+            data = data.Concat(encoding.GetBytes(HTML_END)).ToArray();
+
+            var endHtml = data.Length;
+
+            var newHeader = encoding.GetBytes(
+                String.Format(HEADER, startHtml, endHtml, startFragment, endFragment));
+            if (newHeader.Length != startHtml)
+            {
+                throw new InvalidOperationException(nameof(ConvertHtmlToClipboardData));
+            }
+
+            Array.Copy(newHeader, data, length: startHtml);
+            return encoding.GetString(data);
         }
     }
 }

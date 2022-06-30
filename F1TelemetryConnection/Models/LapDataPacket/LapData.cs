@@ -112,34 +112,34 @@ namespace F1Telemetry.Models.LapDataPacket
             this.BestLapTime = TimeSpan.FromSeconds(f);
             //uint8 m_bestLapNum;                // Lap number best time achieved on
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.BestLapNumber = uint8;
+            //this.BestLapNumber = uint8;
             //uint16 m_bestLapSector1TimeInMS;    // Sector 1 time of best lap in the session in milliseconds
             this.Index += ByteReader.ToUInt16(array, this.Index, out uint16);
-            this.BestLapSector1Time = TimeSpan.FromMilliseconds(uint16);
+            //this.BestLapSector1Time = TimeSpan.FromMilliseconds(uint16);
             //uint16 m_bestLapSector2TimeInMS;    // Sector 2 time of best lap in the session in milliseconds
             this.Index += ByteReader.ToUInt16(array, this.Index, out uint16);
-            this.BestLapSector2Time = TimeSpan.FromMilliseconds(uint16);
+            //this.BestLapSector2Time = TimeSpan.FromMilliseconds(uint16);
             //uint16 m_bestLapSector3TimeInMS;    // Sector 3 time of best lap in the session in milliseconds
             this.Index += ByteReader.ToUInt16(array, this.Index, out uint16);
-            this.BestLapSector3Time = TimeSpan.FromMilliseconds(uint16);
+            //this.BestLapSector3Time = TimeSpan.FromMilliseconds(uint16);
             //uint16 m_bestOverallSector1TimeInMS;// Best overall sector 1 time of the session in milliseconds
             this.Index += ByteReader.ToUInt16(array, this.Index, out uint16);
-            this.BestOverallLapSector1Time = TimeSpan.FromMilliseconds(uint16);
+            //this.BestOverallLapSector1Time = TimeSpan.FromMilliseconds(uint16);
             //uint8 m_bestOverallSector1LapNum;  // Lap number best overall sector 1 time achieved on
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.BestOverallSector1LapNumber = uint8;
+            //this.BestOverallSector1LapNumber = uint8;
             //uint16 m_bestOverallSector2TimeInMS;// Best overall sector 2 time of the session in milliseconds
             this.Index += ByteReader.ToUInt16(array, this.Index, out uint16);
-            this.BestOverallLapSector2Time = TimeSpan.FromMilliseconds(uint16);
+            //this.BestOverallLapSector2Time = TimeSpan.FromMilliseconds(uint16);
             //uint8 m_bestOverallSector2LapNum;  // Lap number best overall sector 2 time achieved on
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.BestOverallSector2LapNumber = uint8;
+            //this.BestOverallSector2LapNumber = uint8;
             //uint16 m_bestOverallSector3TimeInMS;// Best overall sector 3 time of the session in milliseconds
             this.Index += ByteReader.ToUInt16(array, this.Index, out uint16);
-            this.BestOverallLapSector3Time = TimeSpan.FromMilliseconds(uint16);
+            //this.BestOverallLapSector3Time = TimeSpan.FromMilliseconds(uint16);
             //uint8 m_bestOverallSector3LapNum;  // Lap number best overall sector 3 time achieved on
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.BestOverallSector3LapNumber = uint8;
+            //this.BestOverallSector3LapNumber = uint8;
             //float m_lapDistance;               // Distance vehicle is around current lap in metres – could
             //                                   // be negative if line hasn’t been crossed yet
             this.Index += ByteReader.ToFloat(array, this.Index, out f);
@@ -288,6 +288,11 @@ namespace F1Telemetry.Models.LapDataPacket
             return this.lastPitLap;
         }
 
+        internal void SetLapPercentage(ushort trackLength)
+        {
+            this.LapPercentege = MathF.Round(this.LapDistance / trackLength * 100f, 2);
+        }
+
         internal void CalculateStatus(SessionTypes session)
         {
             switch (session)
@@ -322,6 +327,11 @@ namespace F1Telemetry.Models.LapDataPacket
             }
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
+        }
+
         /// <summary>
         /// Last lap time.<br/>
         /// Supports:<br/>
@@ -329,6 +339,7 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan LastLapTime { get; private set; }
         /// <summary>
@@ -338,6 +349,7 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan CurrentLapTime { get; private set; }
         /// <summary>
@@ -347,6 +359,7 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan Sector1Time { get; private set; }
         /// <summary>
@@ -356,6 +369,7 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan Sector2Time { get; private set; }
         /// <summary>
@@ -365,18 +379,21 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan Penalties { get; private set; }
         /// <summary>
         /// Pit stop timer.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan PitStopTimer { get; private set; }
         /// <summary>
         /// Pit lane timer.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan PitLaneTimeInLane { get; private set; }
         /// <summary>
@@ -386,6 +403,7 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public PitStatuses PitStatus { get; private set; }
         /// <summary>
@@ -395,6 +413,7 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public DriverSatuses DriverStatus { get; private set; }
         /// <summary>
@@ -404,6 +423,7 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public ResultSatuses ResultStatus { get; private set; }
         /// <summary>
@@ -412,7 +432,8 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2018<br/>
         ///     - 2019<br/>
         ///     - 2020<br/>
-        ///     - 2021<br/>
+        ///     - 2021<br
+        ///     - 2022<br/>
         /// </summary>
         public float LapDistance { get; private set; }
         /// <summary>
@@ -422,6 +443,7 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float TotalLapDistance { get; private set; }
         /// <summary>
@@ -431,6 +453,7 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte CarPosition { get; private set; }
         /// <summary>
@@ -440,6 +463,7 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte CurrentLapNum { get; private set; }
         /// <summary>
@@ -447,6 +471,7 @@ namespace F1Telemetry.Models.LapDataPacket
         /// Supports:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte NumberOfPitStops { get; private set; }
         /// <summary>
@@ -456,24 +481,28 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsCurrentLapInvalid { get; private set; }
         /// <summary>
         /// Number of warnings.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte Warnings { get; private set; }
         /// <summary>
         /// Number of unserved drive through penalties.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte NumberOfUnservedDriveThroughPenalties { get; private set; }
         /// <summary>
         /// Number of unserved stop-go penalties.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte NumberOfUnservedStopGoPenalties { get; private set; }
         /// <summary>
@@ -483,18 +512,21 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte GridPosition { get; private set; }
         /// <summary>
         /// Indicates Pit Lane timer is active.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsPitLaneTimerActive { get; private set; }
         /// <summary>
         /// Indicates driver going to serve penalty at next pit stop.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsPitStopServePenalty { get; private set; }
         /// <summary>
@@ -503,6 +535,8 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2018<br/>
         ///     - 2019<br/>
         ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan BestLapTime { get; private set; }
         /// <summary>
@@ -512,6 +546,7 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan SafetyCarDelta { get; private set; }
         /// <summary>
@@ -520,68 +555,19 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2018<br/>
         ///     - 2019<br/>
         ///     - 2020<br/>
-        ///     - 2021<br/>
+        ///     - 2021<br
+        ///     - 2022<br/>
         /// </summary>
         public Sectors Sector { get; private set; }
         /// <summary>
-        /// Lap number of best lap time.<br/>
+        /// Driven distance in track.<br/>
         /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
         ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
-        public byte BestLapNumber { get; private set; }
-        /// <summary>
-        /// Best sector 1 time.<br/>
-        /// Supports:<br/>
-        ///     - 2020<br/>
-        /// </summary>
-        public TimeSpan BestLapSector1Time { get; private set; }
-        /// <summary>
-        /// Best sector 2 time.<br/>
-        /// Supports:<br/>
-        ///     - 2020<br/>
-        /// </summary>
-        public TimeSpan BestLapSector2Time { get; private set; }
-        /// <summary>
-        /// Best sector 3 time.<br/>
-        /// Supports:<br/>
-        ///     - 2020<br/>
-        /// </summary>
-        public TimeSpan BestLapSector3Time { get; private set; }
-        /// <summary>
-        /// Best overall sector 1 time.<br/>
-        /// Supports:<br/>
-        ///     - 2020<br/>
-        /// </summary>
-        public TimeSpan BestOverallLapSector1Time { get; private set; }
-        /// <summary>
-        /// Lap number of best overall sector 1 time.<br/>
-        /// Supports:<br/>
-        ///     - 2020<br/>
-        /// </summary>
-        public byte BestOverallSector1LapNumber { get; private set; }
-        /// <summary>
-        /// Best overall sector 2 time.<br/>
-        /// Supports:<br/>
-        ///     - 2020<br/>
-        /// </summary>
-        public TimeSpan BestOverallLapSector2Time { get; private set; }
-        /// <summary>
-        /// Lap number of best overall sector 2 time.<br/>
-        /// Supports:<br/>
-        ///     - 2020<br/>
-        /// </summary>
-        public byte BestOverallSector2LapNumber { get; private set; }
-        /// <summary>
-        /// Best overall sector 3 time.<br/>
-        /// Supports:<br/>
-        ///     - 2020<br/>
-        /// </summary>
-        public TimeSpan BestOverallLapSector3Time { get; private set; }
-        /// <summary>
-        /// Lap number of best overall sector 3 time.<br/>
-        /// Supports:<br/>
-        ///     - 2020<br/>
-        /// </summary>
-        public byte BestOverallSector3LapNumber { get; private set; }
+        public float LapPercentege { get; private set; }
     }
 }

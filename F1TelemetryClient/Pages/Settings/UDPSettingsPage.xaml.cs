@@ -99,13 +99,13 @@ namespace F1TelemetryApp.Pages.Settings
 
                             this.Dispatcher.Invoke(() => this.combobox_addresses.Items.Add(sb.ToString()));
 
-                            if (item["IP"] == u.Connention?.IPAddress) savedIndex = i;
+                            if (item["IP"] == u.Connention?.IPString) savedIndex = i;
 
                             i++;
                         }
                     }
 
-                    var tmp = u.Connention.IPAddress.Split('.', StringSplitOptions.TrimEntries);
+                    var tmp = u.Connention.IPString.Split('.', StringSplitOptions.TrimEntries);
 
                     if (tmp != null)
                     {
@@ -132,7 +132,7 @@ namespace F1TelemetryApp.Pages.Settings
             {
                 if (this.IsValidIP())
                 {
-                    string oIP = u.Connention.IPAddress;
+                    string oIP = u.Connention.IPString;
                     int oPort = u.Connention.Port;
 
                     try

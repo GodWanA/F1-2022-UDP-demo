@@ -14,6 +14,7 @@ using F1Telemetry.Models.MotionPacket;
 using F1Telemetry.Models.CarStatusPacket;
 using F1Telemetry.Models.LapDataPacket;
 using F1Telemetry.Models;
+using F1Telemetry.Helpers;
 
 namespace F1TelemetryApp.UserControls
 {
@@ -229,7 +230,7 @@ namespace F1TelemetryApp.UserControls
 
 
                     var e = Map.CreateEllipse(teamBrush, b, p.RaceNumber);
-                    e.ToolTip = p.Name + " | " + p.RaceNumber + "\r\n" + u.PickTeamName(p.TeamID);
+                    e.ToolTip = p.Name + " | " + p.RaceNumber + "\r\n" + p.TeamID.GetTeamName(data.Header.PacketFormat);
                     carsGrid.Add(e);
                 }
             }
@@ -241,7 +242,7 @@ namespace F1TelemetryApp.UserControls
                     var b = Map.BorderColor(teamBrush);
                     if (b.CanFreeze) b.Freeze();
 
-                    string s = data.Participants[i].Name + " | " + data.Participants[i].RaceNumber + "\r\n" + u.PickTeamName(data.Participants[i].TeamID);
+                    string s = data.Participants[i].Name + " | " + data.Participants[i].RaceNumber + "\r\n" + data.Participants[i].TeamID.GetTeamName(data.Header.PacketFormat);
                     this.Dispatcher.Invoke(() => ((Border)carsGrid[i]).ToolTip = s);
                 }
             }
@@ -516,8 +517,8 @@ namespace F1TelemetryApp.UserControls
                     this.isSessionRunning = true;
                     this.isCarmotionRunning = true;
 
-                    var ses = u.Connention?.LastSessionDataPacket;
-                    var mot = u.Connention?.LastMotionPacket;
+                    var ses = u.Connention?.CurrentSessionDataPacket;
+                    var mot = u.Connention?.CurrentMotionPacket;
 
                     this.UpdateSession(ref ses, true);
                     this.UpdateMotion(ref mot);

@@ -171,6 +171,15 @@ namespace F1Telemetry.Models
         }
 
         /// <summary>
+        /// Reads byte array in 2022 game format.
+        /// </summary>
+        /// <param name="array">source byte array</param>
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
+        }
+
+        /// <summary>
         /// Reads game version data, and fills game version properties.
         /// </summary>
         /// <param name="array"></param>
@@ -194,6 +203,7 @@ namespace F1Telemetry.Models
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public ushort PacketFormat { get; private set; }
         /// <summary>
@@ -203,6 +213,7 @@ namespace F1Telemetry.Models
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public PacketTypes PacketID { get; private set; }
         /// <summary>
@@ -212,6 +223,7 @@ namespace F1Telemetry.Models
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public ulong SessionID { get; private set; }
         /// <summary>
@@ -221,6 +233,7 @@ namespace F1Telemetry.Models
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan SessionTime { get; private set; }
         /// <summary>
@@ -230,6 +243,7 @@ namespace F1Telemetry.Models
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public uint FrameIdentifier { get; private set; }
         /// <summary>
@@ -237,6 +251,7 @@ namespace F1Telemetry.Models
         /// Supported:<br/>
         ///     - 2018<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte Player1CarIndex { get; private set; }
         /// <summary>
@@ -246,6 +261,7 @@ namespace F1Telemetry.Models
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte Player2CarIndex { get; private set; }
         /// <summary>
@@ -253,6 +269,7 @@ namespace F1Telemetry.Models
         /// Supported:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte GameMajorVersion { get; private set; }
         /// <summary>
@@ -261,6 +278,7 @@ namespace F1Telemetry.Models
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte GameMinorVersion { get; private set; }
         /// <summary>
@@ -269,6 +287,7 @@ namespace F1Telemetry.Models
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float GameVersion { get; private set; }
         /// <summary>
@@ -278,6 +297,7 @@ namespace F1Telemetry.Models
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte PacketVersion { get; private set; }
     }

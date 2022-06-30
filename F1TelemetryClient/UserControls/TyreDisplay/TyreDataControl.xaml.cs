@@ -258,7 +258,7 @@ namespace F1TelemetryApp.UserControls
             //{
             //    this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             //}
-            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), System.Windows.Threading.DispatcherPriority.DataBind);
         }
 
         private void UserControl_Initialized(object sender, EventArgs e)

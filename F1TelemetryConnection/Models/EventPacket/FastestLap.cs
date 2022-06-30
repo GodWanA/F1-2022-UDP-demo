@@ -15,6 +15,7 @@ namespace F1Telemetry.Models.EventPacket
             this.Header = e.Header;
             this.EventCode = e.EventCode;
             this.EventType = e.EventType;
+            this.EventName = e.EventName;
             this.Index = e.Index;
 
             this.PickReader(this.Header.PacketFormat, array);

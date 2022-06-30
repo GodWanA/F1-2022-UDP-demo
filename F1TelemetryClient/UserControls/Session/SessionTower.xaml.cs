@@ -172,8 +172,8 @@ namespace F1TelemetryApp.UserControls.Session
 
         private void UpdateSessionHistory(PacketSessionHistoryData curHistory)
         {
-            var arrayHistory = u.Connention.LastSessionHistoryPacket;
-            var lapData = u.Connention.LastLapDataPacket;
+            var arrayHistory = u.Connention.CurrentSessionHistoryPacket;
+            var lapData = u.Connention.CurrentLapDataPacket;
 
             //var itemSource = this.ParticipantsList;
             var curItem = this.ParticipantsList?.Where(x => x.ArrayIndex == curHistory.CarIndex).FirstOrDefault();
@@ -228,8 +228,9 @@ namespace F1TelemetryApp.UserControls.Session
 
         private void OnPropertyChanged(string propertyName)
         {
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), DispatcherPriority.Background);
             // if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+            //this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), System.Windows.Threading.DispatcherPriority.DataBind);
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)

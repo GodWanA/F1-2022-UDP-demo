@@ -1,5 +1,6 @@
 ﻿using F1Telemetry.Models.SessionPacket;
 using F1TelemetryApp.Classes;
+using F1TelemetryApp.Pages.PersonalInfo.InnerDetails;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -80,34 +81,70 @@ namespace F1TelemetryApp.Pages.PersonalInfo
             }
         }
 
-        internal void CalculateView(GridSizes res)
+        public void CalculateView(GridSizes res)
         {
+            //if (this.tabcontrol_content?.SelectedContent is IGridResize)
+            //{
+            //    var page = this.tabcontrol_content?.SelectedContent as IGridResize;
+            //    page?.CalculateView(res);
+            //}
             this.livestatusdata.CalculateView(res);
+            this.carsetupdata.CalculateView(res);
         }
 
         public void ResizeXS()
         {
+            //if (this.tabcontrol_content?.SelectedContent is IGridResize)
+            //{
+            //    var page = this.tabcontrol_content?.SelectedItem as IGridResize;
+            //    page?.ResizeXS();
+            //}
             this.livestatusdata.ResizeXS();
+            this.carsetupdata.ResizeXS();
         }
 
         public void ResizeXM()
         {
+            //if (this.tabcontrol_content?.SelectedContent is IGridResize)
+            //{
+            //    var page = this.tabcontrol_content?.SelectedItem as IGridResize;
+            //    page?.ResizeXM();
+            //}
             this.livestatusdata.ResizeXM();
+            this.carsetupdata.ResizeXM();
         }
 
         public void ResizeMD()
         {
+            //if (this.tabcontrol_content?.SelectedContent is IGridResize)
+            //{
+            //    var page = this.tabcontrol_content?.SelectedItem as IGridResize;
+            //    page?.ResizeMD();
+            //}
             this.livestatusdata.ResizeMD();
+            this.carsetupdata.ResizeMD();
         }
 
         public void ResizeLG()
         {
+            //if (this.tabcontrol_content?.SelectedContent is IGridResize)
+            //{
+            //    var page = this.tabcontrol_content?.SelectedItem as IGridResize;
+            //    page?.ResizeLG();
+            //}
             this.livestatusdata.ResizeLG();
+            this.carsetupdata.ResizeLG();
         }
 
         public void ResizeXL()
         {
+            //if (this.tabcontrol_content?.SelectedContent is IGridResize)
+            //{
+            //    var page = this.tabcontrol_content?.SelectedItem as IGridResize;
+            //    page?.ResizeXL();
+            //}
             this.livestatusdata.ResizeXL();
+            this.carsetupdata.ResizeXL();
         }
 
         protected virtual void Dispose(bool disposing)

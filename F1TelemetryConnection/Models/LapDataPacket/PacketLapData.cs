@@ -1,4 +1,6 @@
 ﻿
+using F1Telemetry.Helpers;
+
 namespace F1Telemetry.Models.LapDataPacket
 {
     public class PacketLapData : ProtoModel
@@ -45,6 +47,25 @@ namespace F1Telemetry.Models.LapDataPacket
             this.ReaderCommon(array, 22);
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.ReaderCommon(array, 22);
+
+            byte uin8;
+
+            //uint8 m_timeTrialPBCarIdx;  // Index of Personal Best car in time trial (255 if invalid)
+            this.Index = ByteReader.ToUInt8(array, this.Index, out uin8);
+
+            if (uin8 != 255) this.TT_PersonalBest = this.Lapdata[uin8];
+            else this.TT_PersonalBest = null;
+
+            //uint8 m_timeTrialRivalCarIdx; 	// Index of Rival car in time trial (255 if invalid)
+            this.Index = ByteReader.ToUInt8(array, this.Index, out uin8);
+
+            if (uin8 != 255) this.TT_Rival = this.Lapdata[uin8];
+            else this.TT_Rival = null;
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -72,6 +93,15 @@ namespace F1Telemetry.Models.LapDataPacket
         ///     - 2021<br/>
         /// </summary>
         public LapData[] Lapdata { get; private set; }
-
+        /// <summary>
+        /// Personal Best car in time trial (null if invalid)<br/>
+        ///     - 2022<br/>
+        /// </summary>
+        public LapData TT_PersonalBest { get; private set; }
+        /// <summary>
+        /// Rival car in time trial (null if invalid)<br/>
+        ///     - 2022<br/>
+        /// </summary>
+        public LapData TT_Rival { get; private set; }
     }
 }

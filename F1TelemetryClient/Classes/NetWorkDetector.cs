@@ -48,32 +48,35 @@ namespace F1TelemetryApp.Classes
             string gate_ip = NetworkGateway();
 
             //Extracting and pinging all other ip's.
-            string[] array = gate_ip.Split('.');
+            string[] array = gate_ip?.Split('.');
             var t = new List<Task>();
 
             for (int i = 0; i <= 255; i++)
             {
-                string ping_var = array[0] + "." + array[1] + "." + array[2] + "." + i;
-
-                t.Add(Task.Run(delegate ()
+                if (array[0] != null && array[1] != null && array[2] != null)
                 {
-                    try
+                    string ping_var = array[0] + "." + array[1] + "." + array[2] + "." + i;
+
+                    t.Add(Task.Run(delegate ()
                     {
-                        Ping ping = new Ping();
-                        //ping.PingCompleted += new PingCompletedEventHandler(PingCompleted);
-                        var reply = ping.Send(ping_var, 100);
-                        if (reply != null && reply.Status == IPStatus.Success)
+                        try
                         {
-                            NetWorkDetector.TryAppendClient(ping_var);
+                            Ping ping = new Ping();
+                            //ping.PingCompleted += new PingCompletedEventHandler(PingCompleted);
+                            var reply = ping.Send(ping_var, 100);
+                            if (reply != null && reply.Status == IPStatus.Success)
+                            {
+                                NetWorkDetector.TryAppendClient(ping_var);
+                            }
                         }
-                    }
-                    catch
-                    {
-                        // Do nothing and let it try again until the attempts are exausted.
-                        // Exceptions are thrown for normal ping failurs like address lookup
-                        // failed.  For this reason we are supressing errors.
-                    }
-                }));
+                        catch
+                        {
+                            // Do nothing and let it try again until the attempts are exausted.
+                            // Exceptions are thrown for normal ping failurs like address lookup
+                            // failed.  For this reason we are supressing errors.
+                        }
+                    }));
+                }
             }
 
             Task.WaitAll(t.ToArray());

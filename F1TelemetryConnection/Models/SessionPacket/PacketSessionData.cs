@@ -181,6 +181,28 @@ namespace F1Telemetry.Models.SessionPacket
             this.DynamicRacingLineType = (RacingLineTypes)uint8;
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
+
+            byte uint8;
+            uint uint32;
+
+            //uint8 m_gameMode;                  // Game mode id - see appendix
+            this.Index = ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.GameMode = (GameModes)uint8;
+            //uint8 m_ruleSet;                   // Ruleset - see appendix
+            this.Index = ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.RuleSet = (Rulesets)uint8;
+            //uint32 m_timeOfDay;                 // Local time of day - minutes since midnight
+            this.Index = ByteReader.ToUInt32(array, this.Index, out uint32);
+            this.TimeOfDay = TimeSpan.FromMinutes(uint32);
+            //uint8 m_sessionLength;             // 0 = None, 2 = Very Short, 3 = Short, 4 = Medium
+            //                                   // 5 = Medium Long, 6 = Long, 7 = Full
+            this.Index = ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.SessionLength = (SessionLengths)uint8;
+        }
+
         private void ReadWeatherForecast(byte[] array, int numberOfArray)
         {
             byte uint8;
@@ -197,53 +219,6 @@ namespace F1Telemetry.Models.SessionPacket
             }
         }
 
-        public string GetSessionType(bool shortName)
-        {
-            switch (this.SessionType)
-            {
-                default:
-                    if (shortName) return "UNK";
-                    else return "Unknown";
-                case SessionTypes.Practice1:
-                    if (shortName) return "P1";
-                    else return "Practice 1";
-                case SessionTypes.Practice2:
-                    if (shortName) return "P2";
-                    else return "Practice 2";
-                case SessionTypes.Practice3:
-                    if (shortName) return "P3";
-                    else return "Practice 3";
-                case SessionTypes.ShortPractice:
-                    if (shortName) return "SP";
-                    else return "Short Practice";
-                case SessionTypes.Quallifying1:
-                    if (shortName) return "Q1";
-                    else return "Quallifying 1";
-                case SessionTypes.Quallifying2:
-                    if (shortName) return "Q2";
-                    else return "Quallifying 2";
-                case SessionTypes.Quallifying3:
-                    if (shortName) return "Q3";
-                    else return "Quallifying 3";
-                case SessionTypes.ShortQuallifying:
-                    if (shortName) return "SQ";
-                    else return "Short Quallifying";
-                case SessionTypes.OneShotQuallifying:
-                    if (shortName) return "OSQ";
-                    else return "OneShotQuallifying";
-                case SessionTypes.Race:
-                    if (shortName) return "RACE";
-                    else return "Race";
-                case SessionTypes.TimeTrial:
-                    if (shortName) return "TT";
-                    else return "Time Trial";
-                case SessionTypes.Race2:
-                case SessionTypes.Race3:
-                    if (shortName) return "UNK";
-                    else return "Unknown";
-            }
-        }
-
         /// <summary>
         /// Packet's header<br/>
         /// All game has to support.
@@ -256,6 +231,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public WeatherTypes Weather { get; private set; }
         /// <summary>
@@ -265,6 +241,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public sbyte TrackTemperature { get; private set; }
         /// <summary>
@@ -274,6 +251,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public sbyte AirTemperature { get; private set; }
         /// <summary>
@@ -283,6 +261,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte TotalLaps { get; private set; }
         /// <summary>
@@ -292,6 +271,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public ushort TrackLength { get; private set; }
         /// <summary>
@@ -301,6 +281,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public SessionTypes SessionType { get; private set; }
         /// <summary>
@@ -310,6 +291,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Tracks TrackID { get; private set; }
         /// <summary>
@@ -319,6 +301,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Formulas Formula { get; private set; }
         /// <summary>
@@ -328,6 +311,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan SessionTimeLeft { get; private set; }
         /// <summary>
@@ -337,6 +321,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan SessionDuration { get; private set; }
         /// <summary>
@@ -346,6 +331,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte PitSpeedLimit { get; private set; }
         /// <summary>
@@ -355,6 +341,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsGamePaused { get; private set; }
         /// <summary>
@@ -364,6 +351,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsSpectating { get; private set; }
         /// <summary>
@@ -373,6 +361,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte SpectatorCarIndex { get; private set; }
         /// <summary>
@@ -382,6 +371,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsSLIProNativeSupport { get; private set; }
         /// <summary>
@@ -391,6 +381,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte NumberOfMarshalZones { get; private set; }
         /// <summary>
@@ -400,6 +391,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public MarshalZone[] MarshalZones { get; private set; }
         /// <summary>
@@ -409,6 +401,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public SafetyCarStatuses SafetyCarStatus { get; private set; }
         /// <summary>
@@ -418,6 +411,7 @@ namespace F1Telemetry.Models.SessionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsNetworkGame { get; private set; }
         /// <summary>
@@ -425,6 +419,7 @@ namespace F1Telemetry.Models.SessionPacket
         /// Supports:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte NumberOfWeatherForcastSamples { get; private set; }
         /// <summary>
@@ -432,110 +427,148 @@ namespace F1Telemetry.Models.SessionPacket
         /// Supports:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public WeatherForecastSample[] WeatherForcastSample { get; private set; }
         /// <summary>
         /// Indicates weather forecast is approximate.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsForecastApproximate { get; private set; }
         /// <summary>
         /// AI difficulty.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte AIDifficulty { get; private set; }
         /// <summary>
         /// Identifier for season - persists across saves.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public uint SeasonLinkIdentifier { get; private set; }
         /// <summary>
         /// Identifier for weekend - persists across saves.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public uint WeekendLinkIdentifier { get; private set; }
         /// <summary>
         /// Identifier for session - persists across saves.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public uint SessionLinkIdentifier { get; private set; }
         /// <summary>
         /// Ideal lap to pit on for current strategy (player).<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte PitStopWindowIdealLap { get; private set; }
         /// <summary>
         /// Last lap to pit on for current strategy (player).<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte PitStopWindowLastestLap { get; private set; }
         /// <summary>
         /// Predicted position to rejoin at (player).<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte PitStopRejoinPosition { get; private set; }
         /// <summary>
         /// Indicates steering assist on/off.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsSteeringAssist { get; private set; }
         /// <summary>
         /// Indicates Pit assist current status.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsPitAssist { get; private set; }
         /// <summary>
         /// Indicates Pit release assist current status.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsPitReleaseAssist { get; private set; }
         /// <summary>
         /// Indicates Pit release assist current status.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsERSAssist { get; private set; }
         /// <summary>
         /// Indicates ERS assist current status.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsDRSAssist { get; private set; }
         /// <summary>
         /// Indicates DRS assist current status.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public BreakingAssists BreakingAssist { get; private set; }
         /// <summary>
         /// Indicates dynamic racing type assist current status.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public RacingLineSatuses DynamicRacingLine { get; private set; }
         /// <summary>
         /// Indicates dynamic racing line type.<br/>
         /// Supports:<br/>
-        ///     - 2021<br/>
+        ///     - 2021<br
+        ///     - 2022<br/>
         /// </summary>
         public RacingLineTypes DynamicRacingLineType { get; private set; }
         /// <summary>
         /// Indicates gearbox assist current status.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public GearboxAssists GearboxAssist { get; private set; }
+        /// <summary>
+        /// Game mode id - see appendix.<br/>
+        ///     - 2022<br/>
+        /// </summary>
+        public GameModes GameMode { get; private set; }
+        /// <summary>
+        /// Ruleset - see appendix.<br/>
+        ///     - 2022<br/>
+        /// </summary>
+        public Rulesets RuleSet { get; private set; }
+        /// <summary>
+        /// Local time of day - minutes since midnight.<br/>
+        ///     - 2022<br/>
+        /// </summary>
+        public TimeSpan TimeOfDay { get; private set; }
+        /// <summary>
+        /// 0 = None, 2 = Very Short, 3 = Short, 4 = Medium, 5 = Medium Long, 6 = Long, 7 = Full<br/>
+        ///     - 2022<br/>
+        /// </summary>
+        public SessionLengths SessionLength { get; private set; }
 
         protected override void Dispose(bool disposing)
         {

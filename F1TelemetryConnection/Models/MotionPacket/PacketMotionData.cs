@@ -100,6 +100,11 @@ namespace F1Telemetry.Models.MotionPacket
             this.Reader2020(array);
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2020(array);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -137,6 +142,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public CarMotionData[] CarMotionData { get; private set; }
         /// <summary>
@@ -151,6 +157,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Dictionary<string, float> SuspensionPosition { get; private set; }
         /// <summary>
@@ -165,6 +172,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Dictionary<string, float> SuspensionVelocity { get; private set; }
         /// <summary>
@@ -179,6 +187,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Dictionary<string, float> SuspensionAcceleration { get; private set; }
         /// <summary>
@@ -193,6 +202,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Dictionary<string, float> WheelSpeed { get; private set; }
         /// <summary>
@@ -207,6 +217,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Dictionary<string, float> WheelSlip { get; private set; }
         /// <summary>
@@ -221,6 +232,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Vector3 LocalVelocity { get; private set; }
         /// <summary>
@@ -230,6 +242,7 @@ namespace F1Telemetry.Models.MotionPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float FrontWheelAngle { get; private set; }
 

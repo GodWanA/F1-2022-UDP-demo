@@ -11,10 +11,13 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Button x:Name="button_copyToClipboard" Content="Copy to Clipboard" Click="button_copyToClipboard_Click" Width="auto" HorizontalAlignment="Left" Padding="10,3" Margin="1"/>
-            <Button Content="Copy to Clipboard" Width="auto" HorizontalAlignment="Left" Padding="10,3" Margin="1"/>
-        </StackPanel>
+        <Border Grid.Row="0" Margin="2,5,2,0" Padding="4" Background="Black" CornerRadius="3">
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="button_copyToClipboard" Content="Copy as table" ToolTip="Copies current car setup as a formatted table to clipborad." Click="button_copyToClipboard_Click" Width="auto" HorizontalAlignment="Left" Padding="10,3" Margin="1"/>
+                <Button x:Name="button_copyAsText" Content="Copy as text" Click="button_copyAsText_Click" ToolTip="Copies current car setup as simple text to clipborad." Width="auto" HorizontalAlignment="Left" Padding="10,3" Margin="1"/>
+                <Button Content="Share your settings" IsEnabled="False" HorizontalAlignment="Left" Width="auto" Padding="10,3" Margin="1"/>
+            </StackPanel>
+        </Border>
         <ScrollViewer Grid.Row="1">
             <Grid>
                 <Grid.RowDefinitions>

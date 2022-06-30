@@ -29,10 +29,7 @@ namespace F1TelemetryClient
         private DispatcherTimer performanceTimer = new DispatcherTimer();
         private string regPath;
         private PerformanceCounter performance = new PerformanceCounter("Process", "% Processor Time", Process.GetCurrentProcess().ProcessName);
-        private bool isWorking_SessionData = false;
-        private bool isWorking_CarStatusData = false;
         //private bool isWorking_CarTelemetryData = false;                
-        private Flags lastFlag = Flags.InvalidOrUnknown;
         private bool disposedValue;
         private double maxCPU;
         private double maxRAM;
@@ -199,7 +196,8 @@ namespace F1TelemetryClient
 
         private void OnPropertyChanged(string propertyName)
         {
-            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+            this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), DispatcherPriority.Background);
+            //this.Dispatcher.Invoke(() => this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)), System.Windows.Threading.DispatcherPriority.DataBind);
             // this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName)
             // if (this.PropertyChanged != null) this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -209,14 +207,14 @@ namespace F1TelemetryClient
             this.CalculateView();
         }
 
-        private void CalculateView()
+        public void CalculateView(GridSizes res = GridSizes.XS)
         {
             this.lockTimer.Stop();
             u.CanDoUdp = false;
 
             // New UserControl under construction, so i disable reordering.
 
-            var res = GridSizes.XS;
+            res = GridSizes.XS;
             var d = this.ActualWidth;
 
             if (d > 1600) res = GridSizes.XL;
@@ -231,6 +229,7 @@ namespace F1TelemetryClient
                 this.PrevRes = res;
                 //this.drivercontainer.CalculateView(res);
                 this.personalInfo.CalculateView(res);
+                this.eventlogInfo.CalculateView(res);
                 this.Render();
             }
 

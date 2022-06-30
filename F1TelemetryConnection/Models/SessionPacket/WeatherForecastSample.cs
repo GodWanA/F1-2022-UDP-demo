@@ -92,11 +92,17 @@ namespace F1Telemetry.Models.SessionPacket
             this.RainPercentage = (int)valb;
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
+        }
+
         /// <summary>
         /// Type of the session.<br/>
         /// Supports:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public SessionTypes SeassonType { get; private set; }
         /// <summary>
@@ -104,6 +110,7 @@ namespace F1Telemetry.Models.SessionPacket
         /// Supports:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan TimeOffset { get; private set; }
         /// <summary>
@@ -111,6 +118,7 @@ namespace F1Telemetry.Models.SessionPacket
         /// Supports:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public WeatherTypes Weather { get; private set; }
         /// <summary>
@@ -118,12 +126,14 @@ namespace F1Telemetry.Models.SessionPacket
         /// Supports:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public sbyte TrackTemperature { get; private set; }
         /// <summary>
         /// Indicates type of change in track temperature.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TemperatureChanges TrackTemperatureChage { get; private set; }
         /// <summary>
@@ -131,18 +141,21 @@ namespace F1Telemetry.Models.SessionPacket
         /// Supports:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public sbyte AirTemperature { get; private set; }
         /// <summary>
         /// Indicates type of change in air temperature.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TemperatureChanges AirTemperatureChage { get; private set; }
         /// <summary>
         /// Chance of rain in percentage.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public int RainPercentage { get; private set; }
     }
