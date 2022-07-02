@@ -189,17 +189,17 @@ namespace F1Telemetry.Models.SessionPacket
             uint uint32;
 
             //uint8 m_gameMode;                  // Game mode id - see appendix
-            this.Index = ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.GameMode = (GameModes)uint8;
             //uint8 m_ruleSet;                   // Ruleset - see appendix
-            this.Index = ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.RuleSet = (Rulesets)uint8;
             //uint32 m_timeOfDay;                 // Local time of day - minutes since midnight
-            this.Index = ByteReader.ToUInt32(array, this.Index, out uint32);
+            this.Index += ByteReader.ToUInt32(array, this.Index, out uint32);
             this.TimeOfDay = TimeSpan.FromMinutes(uint32);
             //uint8 m_sessionLength;             // 0 = None, 2 = Very Short, 3 = Short, 4 = Medium
             //                                   // 5 = Medium Long, 6 = Long, 7 = Full
-            this.Index = ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.SessionLength = (SessionLengths)uint8;
         }
 

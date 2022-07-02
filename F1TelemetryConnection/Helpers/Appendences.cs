@@ -151,6 +151,7 @@ namespace F1Telemetry.Helpers
             Imola = 27,
             Portimao = 28,
             Jeddah = 29,
+            Miami = 30,
         }
 
         public enum Drivers

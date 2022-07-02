@@ -401,21 +401,21 @@ namespace F1Telemetry
                 {
                     while (this.IsConnecting)
                     {
-                        try
-                        {
-                            var ep = this.EndPoint;
-                            var array = this.Connection?.Receive(ref ep);
+                        //try
+                        //{
+                        var ep = this.EndPoint;
+                        var array = this.Connection?.Receive(ref ep);
 
-                            if (array != null)
-                            {
-                                if (this.IsAsyncPacketProcessEnabled) Task.Run(() => this.ByteArrayProcess(array.Clone() as byte[]));
-                                else this.ByteArrayProcess(array);
-                            }
-                        }
-                        catch (Exception ex)
+                        if (array != null)
                         {
-                            Debug.Print(ex.Message);
+                            if (this.IsAsyncPacketProcessEnabled) Task.Run(() => this.ByteArrayProcess(array.Clone() as byte[]));
+                            else this.ByteArrayProcess(array);
                         }
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    Debug.Print(ex.Message);
+                        //}
                     }
                 }
                 catch (Exception ex)
@@ -866,7 +866,11 @@ namespace F1Telemetry
         {
             Debug.WriteLine(error.Message);
             Debug.WriteLine(error.StackTrace);
-            if (this.DataReadError != null) this.DataReadError(this, error, new EventArgs());
+            if (this.DataReadError != null)
+            {
+                this.DataReadError(this, error, new EventArgs());
+                this.Close(true);
+            }
         }
 
         protected virtual void OnClosedConnection(object sender)

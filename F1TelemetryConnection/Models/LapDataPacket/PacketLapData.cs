@@ -59,13 +59,13 @@ namespace F1Telemetry.Models.LapDataPacket
             byte uin8;
 
             //uint8 m_timeTrialPBCarIdx;  // Index of Personal Best car in time trial (255 if invalid)
-            this.Index = ByteReader.ToUInt8(array, this.Index, out uin8);
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uin8);
 
             if (uin8 != 255) this.TT_PersonalBest = this.Lapdata[uin8];
             else this.TT_PersonalBest = null;
 
             //uint8 m_timeTrialRivalCarIdx; 	// Index of Rival car in time trial (255 if invalid)
-            this.Index = ByteReader.ToUInt8(array, this.Index, out uin8);
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uin8);
 
             if (uin8 != 255) this.TT_Rival = this.Lapdata[uin8];
             else this.TT_Rival = null;

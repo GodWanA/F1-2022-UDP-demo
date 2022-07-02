@@ -149,17 +149,17 @@ namespace F1Telemetry.Models.CarDamagePacket
             this.ReaderCommon(array);
 
             // uint8     m_ersFault;                         // Indicator for ERS fault, 0 = OK, 1 = fault
-            this.Index = ByteReader.ToBoolFromUint8(array, this.Index, out b);
+            this.Index += ByteReader.ToBoolFromUint8(array, this.Index, out b);
             this.IsERSFault = b;
 
             this.ReaderCommon2(array);
 
             // uint8     m_engineBlown;                      // Engine blown, 0 = OK, 1 = fault
-            this.Index = ByteReader.ToBoolFromUint8(array, this.Index, out b);
+            this.Index += ByteReader.ToBoolFromUint8(array, this.Index, out b);
             this.IsEngineBlown = b;
 
             // uint8 m_engineSeized;                     // Engine seized, 0 = OK, 1 = fault
-            this.Index = ByteReader.ToBoolFromUint8(array, this.Index, out b);
+            this.Index += ByteReader.ToBoolFromUint8(array, this.Index, out b);
             this.IsEngeineSiezed = b;
         }
 

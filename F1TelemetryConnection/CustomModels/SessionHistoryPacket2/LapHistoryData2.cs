@@ -105,7 +105,7 @@ namespace F1Telemetry.CustomModels.SessionHistoryPacket2
         internal void UpdateSectorsTime(TimeSpan sector1Time, TimeSpan sector2Time)
         {
             var row = this.GetLastLapDatasRow();
-            var sector3Time = (TimeSpan)row["100%"] - sector2Time - sector1Time;
+
 
             if (sector1Time > TimeSpan.Zero)
             {
@@ -123,12 +123,17 @@ namespace F1Telemetry.CustomModels.SessionHistoryPacket2
                 if (minSectorTime > TimeSpan.Zero && this.BestSector1 != sector1Time) this.BestSector2 = minSectorTime;
             }
 
-            if (sector3Time > TimeSpan.Zero)
+            if (row["100%"] != DBNull.Value)
             {
-                row["Sector3"] = sector3Time;
+                var sector3Time = (TimeSpan)row["100%"] - sector2Time - sector1Time;
 
-                var minSectorTime = this.LapDatas.AsEnumerable().Where(x => x["Sector3"] != DBNull.Value).Min(x => (TimeSpan)x["Sector3"]);
-                if (minSectorTime > TimeSpan.Zero && this.BestSector1 != sector1Time) this.BestSector3 = minSectorTime;
+                if (sector3Time > TimeSpan.Zero)
+                {
+                    row["Sector3"] = sector3Time;
+
+                    var minSectorTime = this.LapDatas.AsEnumerable().Where(x => x["Sector3"] != DBNull.Value).Min(x => (TimeSpan)x["Sector3"]);
+                    if (minSectorTime > TimeSpan.Zero && this.BestSector1 != sector1Time) this.BestSector3 = minSectorTime;
+                }
             }
         }
 

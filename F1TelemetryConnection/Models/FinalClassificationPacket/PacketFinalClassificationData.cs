@@ -37,6 +37,11 @@ namespace F1Telemetry.Models.FinalClassificationPacket
             this.Reader2020(array);
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2020(array);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

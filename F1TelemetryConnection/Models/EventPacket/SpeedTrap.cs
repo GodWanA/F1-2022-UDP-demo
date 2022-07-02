@@ -142,11 +142,11 @@ namespace F1Telemetry.Models.EventPacket
 
             //uint8 fastestVehicleIdxInSession;// Vehicle index of the vehicle that is the fastest
             //                                 // in this session
-            this.Index = ByteReader.ToUInt8(array, this.Index, out uint8);
+            this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.FastestVehicleIndexInSession = uint8;
             //float fastestSpeedInSession;      // Speed of the vehicle that is the fastest
             //                                  // in this session
-            this.Index = ByteReader.ToFloat(array, this.Index, out f);
+            this.Index += ByteReader.ToFloat(array, this.Index, out f);
             this.FastestSpeedInSession = f;
         }
 

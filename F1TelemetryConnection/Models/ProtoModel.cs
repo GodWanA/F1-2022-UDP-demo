@@ -9,7 +9,6 @@ namespace F1Telemetry.Models
         public ProtoModel() { }
 
         public int Index { get; protected set; }
-        //public bool Supported { get; protected set; } = true;
 
         /// <summary>
         /// RawData of the packet.
@@ -117,7 +116,8 @@ namespace F1Telemetry.Models
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects)                    
+                    // TODO: dispose managed state (managed objects)
+                    this.RawData = null;
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

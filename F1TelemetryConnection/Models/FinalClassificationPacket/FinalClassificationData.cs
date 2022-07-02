@@ -185,7 +185,7 @@ namespace F1Telemetry.Models.FinalClassificationPacket
 
             Dictionary<string, byte> dict;
             //uint8 m_tyreStintsEndLaps[8];  // The lap number stints end on
-            this.Index = ByteReader.ToWheelData.FromUint8(array, this.Index, out dict);
+            this.Index += ByteReader.ToWheelData.FromUint8(array, this.Index, out dict);
             this.TyreStintsEndLaps = dict;
         }
 
