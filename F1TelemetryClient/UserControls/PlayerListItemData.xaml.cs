@@ -570,7 +570,7 @@ namespace F1TelemetryApp.UserControls
                 if (this.ArrayIndex > -1 && this.ArrayIndex < packet.Participants.Length)
                 {
                     var current = packet.Participants[this.ArrayIndex];
-                    this.DriverName = current.Name;
+                    this.DriverName = current.ParticipantName;
                     this.Nationality = current.Nationality;
                     this.TeamID = current.TeamID;
                     this.IsMyTeam = current.IsMyTeam;

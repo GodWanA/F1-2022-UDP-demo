@@ -194,7 +194,7 @@ namespace F1Telemetry.Helpers
             return count;
         }
 
-        public static int TyreArray(byte[] array, int index, out TyreCompounds[] result, int size)
+        public static int TyreArray(byte[] array, int index, out TyreCompounds[] result, int size, bool isVisual)
         {
             int ret = 0;
             result = new TyreCompounds[size];
@@ -203,7 +203,9 @@ namespace F1Telemetry.Helpers
             for (int i = 0; i < result.Length; i++)
             {
                 ret += ByteReader.ToUInt8(array, index + ret, out valb);
-                result[i] = (TyreCompounds)valb;
+
+                if (isVisual) result[i] = Appendences.SetVisualTyre(valb);
+                else result[i] = (TyreCompounds)valb;
             }
 
             return ret;

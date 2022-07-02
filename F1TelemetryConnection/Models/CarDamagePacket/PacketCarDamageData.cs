@@ -14,7 +14,13 @@ namespace F1Telemetry.Models.CarDamagePacket
             this.PickReader(this.Header.PacketFormat, array);
         }
 
+        /// <summary>
+        /// Packet header
+        /// </summary>
         public PacketHeader Header { get; private set; }
+        /// <summary>
+        /// All cardemage data
+        /// </summary>
         public CarDamageData[] CarDamageData { get; private set; }
 
         protected override void Reader2021(byte[] array)
@@ -33,6 +39,11 @@ namespace F1Telemetry.Models.CarDamagePacket
             this.Index = index;
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -46,6 +57,11 @@ namespace F1Telemetry.Models.CarDamagePacket
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// Fills up car demage data pack from carstatus pack (for older games)
+        /// </summary>
+        /// <param name="head">Packet header</param>
+        /// <param name="source">source car status datas</param>
         internal void LoadRawDatas(PacketHeader head, CarStatusData[] source)
         {
             this.Header = head;

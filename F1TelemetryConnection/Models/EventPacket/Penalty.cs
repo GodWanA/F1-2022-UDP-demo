@@ -27,6 +27,7 @@ namespace F1Telemetry.Models.EventPacket
         /// Supported:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte VehicleIndex { get; private set; }
         /// <summary>
@@ -34,6 +35,7 @@ namespace F1Telemetry.Models.EventPacket
         /// Supported:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public PenalytyTypes PenaltyType { get; private set; }
         /// <summary>
@@ -41,6 +43,7 @@ namespace F1Telemetry.Models.EventPacket
         /// Supported:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public InfringementTypes InfragmentType { get; private set; }
         /// <summary>
@@ -48,6 +51,7 @@ namespace F1Telemetry.Models.EventPacket
         /// Supported:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte OtherVehicleIndex { get; private set; }
         /// <summary>
@@ -55,6 +59,7 @@ namespace F1Telemetry.Models.EventPacket
         /// Supported:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TimeSpan Time { get; private set; }
         /// <summary>
@@ -62,6 +67,7 @@ namespace F1Telemetry.Models.EventPacket
         /// Supported:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte LapNumber { get; private set; }
         /// <summary>
@@ -69,6 +75,7 @@ namespace F1Telemetry.Models.EventPacket
         /// Supported:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte PlacesGained { get; private set; }
 
@@ -106,6 +113,11 @@ namespace F1Telemetry.Models.EventPacket
         }
 
         protected override void Reader2021(byte[] array)
+        {
+            this.Reader2020(array);
+        }
+
+        protected override void Reader2022(byte[] array)
         {
             this.Reader2020(array);
         }

@@ -38,5 +38,10 @@ namespace F1Telemetry.Models.EventPacket
 
             this.Index = index;
         }
+
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
+        }
     }
 }

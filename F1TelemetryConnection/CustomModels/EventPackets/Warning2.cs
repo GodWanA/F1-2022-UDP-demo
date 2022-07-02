@@ -1,6 +1,7 @@
-﻿using static F1Telemetry.Helpers.Appendences;
+﻿using F1Telemetry.Models.EventPacket;
+using static F1Telemetry.Helpers.Appendences;
 
-namespace F1Telemetry.Models.EventPacket
+namespace F1Telemetry.CustomModels.EventPackets
 {
     /// <summary>
     /// Custom event to log warnings.
@@ -16,14 +17,14 @@ namespace F1Telemetry.Models.EventPacket
         /// <param name="reason">The reason why he get this warning.</param>
         public Warning2(int vehicleIndex, int totalWarnings, int lapNumber, InfringementTypes reason)
         {
-            this.EventCode = "WAR2";
-            this.EventType = EventTypes.Warning;
-            this.EventName = "Warning";
+            EventCode = "WAR2";
+            EventType = EventTypes.Warning;
+            EventName = "Warning";
 
-            this.VehicleIndex = vehicleIndex;
-            this.TotalWarnings = totalWarnings;
-            this.LapNumber = lapNumber;
-            this.Reason = reason;
+            VehicleIndex = vehicleIndex;
+            TotalWarnings = totalWarnings;
+            LapNumber = lapNumber;
+            Reason = reason;
         }
 
         /// <summary>

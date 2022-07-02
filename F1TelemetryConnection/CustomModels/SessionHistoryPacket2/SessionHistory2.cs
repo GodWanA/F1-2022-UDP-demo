@@ -1,8 +1,9 @@
-﻿using F1Telemetry.Models.LapDataPacket;
+﻿using F1Telemetry.Models;
+using F1Telemetry.Models.LapDataPacket;
 using System;
 using System.Linq;
 
-namespace F1Telemetry.Models.CustomModels.SessionHistoryPacket2
+namespace F1Telemetry.CustomModels.SessionHistoryPacket2
 {
     public class SessionHistory2 : ProtoModel
     {

@@ -293,6 +293,18 @@ namespace F1Telemetry.Helpers
             RightStickLeft = 0x00008000,
             RightStickRight = 0x00010000,
             RightStickUp = 0x00020000,
+            UDPAction1 = 0x00100000,
+            UDPAction2 = 0x00200000,
+            UDPAction3 = 0x00400000,
+            UDPAction4 = 0x00800000,
+            UDPAction5 = 0x01000000,
+            UDPAction6 = 0x02000000,
+            UDPAction7 = 0x04000000,
+            UDPAction8 = 0x08000000,
+            UDPAction9 = 0x10000000,
+            UDPAction10 = 0x20000000,
+            UDPAction11 = 0x40000000,
+            // UDPAction12 = 0x80000000, - Currently can't cast to enum value
         }
 
         public static List<ButtonFlags> KeyChecker(UInt32 uint32b)
@@ -841,6 +853,37 @@ namespace F1Telemetry.Helpers
             MediumLong = 5,
             Long = 6,
             Full = 7,
+        }
+
+        internal static TyreCompounds SetVisualTyre(byte val)
+        {
+            // F1 visual (can be different from actual compound)
+            // 16 = soft, 17 = medium, 18 = hard, 7 = inter, 8 = wet
+            // F1 Classic – same as above
+            // F2 ‘19, 15 = wet, 19 – super soft, 20 = soft
+            // 21 = medium , 22 = hard
+            switch (val)
+            {
+                case 15:
+                    return TyreCompounds.F2Wet;
+                    break;
+                case 19:
+                    return TyreCompounds.F2SuperSoft;
+                    break;
+                case 20:
+                    return TyreCompounds.F2Soft;
+                    break;
+                case 21:
+                    return TyreCompounds.F2Medium;
+                    break;
+                case 22:
+                    return TyreCompounds.F2Hard;
+                    break;
+
+                default:
+                    return (TyreCompounds)val;
+                    break;
+            }
         }
     }
 }

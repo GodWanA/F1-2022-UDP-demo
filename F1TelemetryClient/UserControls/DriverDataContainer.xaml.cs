@@ -971,7 +971,7 @@ namespace F1TelemetryApp.UserControls
 
                     this.Dispatcher.Invoke(() =>
                     {
-                        this.DriverName = player.Name;
+                        this.DriverName = player.ParticipantName;
                         this.RaceNumber = player.RaceNumber;
                         this.TeamName = player.TeamID.GetTeamName(year);
                         this.TeamColor = u.PickTeamColor(player.TeamID);

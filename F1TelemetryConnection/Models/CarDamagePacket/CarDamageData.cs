@@ -44,8 +44,11 @@ namespace F1Telemetry.Models.CarDamagePacket
         public byte EngineMGUHWear { get; private set; }
         public byte EngineTCWear { get; private set; }
         public byte EngineCEWear { get; private set; }
+        public bool IsERSFault { get; private set; }
+        public bool IsEngineBlown { get; private set; }
+        public bool IsEngeineSiezed { get; private set; }
 
-        protected override void Reader2021(byte[] array)
+        private void ReaderCommon(byte[] array)
         {
             Dictionary<string, float> df;
             Dictionary<string, byte> d8;
@@ -91,6 +94,11 @@ namespace F1Telemetry.Models.CarDamagePacket
             //uint8 m_drsFault;                         // Indicator for DRS fault, 0 = OK, 1 = fault
             this.Index += ByteReader.ToBoolFromUint8(array, this.Index, out b);
             this.IsDRSFault = b;
+        }
+
+        private void ReaderCommon2(byte[] array)
+        {
+            byte uint8;
 
             //uint8 m_gearBoxDamage;                    // Gear box damage (percentage)
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
@@ -123,6 +131,36 @@ namespace F1Telemetry.Models.CarDamagePacket
             //uint8 m_engineTCWear;                     // Engine wear TC (percentage)
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.EngineTCWear = uint8;
+        }
+
+        protected override void Reader2021(byte[] array)
+        {
+            this.ReaderCommon(array);
+            this.ReaderCommon2(array);
+
+            if (this.EngineMGUHWear == 100 || this.EngineMGUKWear == 100) this.IsERSFault = true;
+            if (this.EngineDemage == 100) this.IsEngineBlown = true;
+        }
+
+        protected override void Reader2022(byte[] array)
+        {
+            bool b;
+
+            this.ReaderCommon(array);
+
+            // uint8     m_ersFault;                         // Indicator for ERS fault, 0 = OK, 1 = fault
+            this.Index = ByteReader.ToBoolFromUint8(array, this.Index, out b);
+            this.IsERSFault = b;
+
+            this.ReaderCommon2(array);
+
+            // uint8     m_engineBlown;                      // Engine blown, 0 = OK, 1 = fault
+            this.Index = ByteReader.ToBoolFromUint8(array, this.Index, out b);
+            this.IsEngineBlown = b;
+
+            // uint8 m_engineSeized;                     // Engine seized, 0 = OK, 1 = fault
+            this.Index = ByteReader.ToBoolFromUint8(array, this.Index, out b);
+            this.IsEngeineSiezed = b;
         }
 
         protected override void Dispose(bool disposing)

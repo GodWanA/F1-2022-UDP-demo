@@ -26,6 +26,7 @@ namespace F1Telemetry.Models.ParticipantsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsAI { get; private set; }
         /// <summary>
@@ -35,12 +36,14 @@ namespace F1Telemetry.Models.ParticipantsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Drivers DriverID { get; private set; }
         /// <summary>
         /// Network id – unique identifier for network players.<br/>
         /// Supports:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte NetworkID { get; private set; }
         /// <summary>
@@ -50,6 +53,7 @@ namespace F1Telemetry.Models.ParticipantsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Teams TeamID { get; private set; }
         /// <summary>
@@ -59,6 +63,7 @@ namespace F1Telemetry.Models.ParticipantsPacket
         ///     - 2019 (emulated)<br/>
         ///     - 2020 (emulated)<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsMyTeam { get; private set; }
         /// <summary>
@@ -68,6 +73,7 @@ namespace F1Telemetry.Models.ParticipantsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte RaceNumber { get; private set; }
         /// <summary>
@@ -77,6 +83,7 @@ namespace F1Telemetry.Models.ParticipantsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Nationalities Nationality { get; private set; }
         /// <summary>
@@ -87,13 +94,17 @@ namespace F1Telemetry.Models.ParticipantsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
-        public string Name { get; private set; }
+        public string ParticipantName { get; private set; }
         /// <summary>
         /// The player's UDP setting, (restricted|public).<br/>
         /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public TelemetrySettings YouTelemetry { get; private set; }
         /// <summary>
@@ -104,6 +115,7 @@ namespace F1Telemetry.Models.ParticipantsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public string ShortName { get; private set; }
 
@@ -135,7 +147,7 @@ namespace F1Telemetry.Models.ParticipantsPacket
             //char m_name[48];               // Name of participant in UTF-8 format – null terminated
             //                               // Will be truncated with … (U+2026) if too long
             this.Index += ByteReader.toStringFromUint8(array, this.Index, 48, out s);
-            this.Name = s;
+            this.ParticipantName = s;
             this.CreateShortName(this.DriverID);
         }
 
@@ -183,7 +195,7 @@ namespace F1Telemetry.Models.ParticipantsPacket
             //char m_name[48];               // Name of participant in UTF-8 format – null terminated
             //                               // Will be truncated with … (U+2026) if too long
             this.Index += ByteReader.toStringFromUint8(array, this.Index, 48, out s);
-            this.Name = s;
+            this.ParticipantName = s;
             //uint8 m_yourTelemetry;          // The player's UDP setting, 0 = restricted, 1 = public
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.YouTelemetry = (TelemetrySettings)uint8;
@@ -240,11 +252,16 @@ namespace F1Telemetry.Models.ParticipantsPacket
             }
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                this.Name = null;
+                this.ParticipantName = null;
             }
 
             base.Dispose(disposing);

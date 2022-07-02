@@ -28,6 +28,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public ushort Speed { get; private set; }
         /// <summary>
@@ -37,6 +38,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float Throttle { get; private set; }
         /// <summary>
@@ -46,6 +48,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float Steer { get; private set; }
         /// <summary>
@@ -55,6 +58,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float Brake { get; private set; }
         /// <summary>
@@ -64,6 +68,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float Clutch { get; private set; }
         /// <summary>
@@ -73,6 +78,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Gears Gear { get; private set; }
         /// <summary>
@@ -82,6 +88,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public string GearString { get; private set; }
         /// <summary>
@@ -91,6 +98,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public ushort EngineRPM { get; private set; }
         /// <summary>
@@ -100,6 +108,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public bool IsDRS { get; private set; }
         /// <summary>
@@ -109,6 +118,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte RevLightPercent { get; private set; }
         /// <summary>
@@ -118,6 +128,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public ushort RevLightBitValue { get; private set; }
         /// <summary>
@@ -133,6 +144,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Dictionary<string, byte> TyresSurfaceTemperature { get; private set; }
         /// <summary>
@@ -142,6 +154,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Dictionary<string, byte> TyresInnerTemperature { get; private set; }
         /// <summary>
@@ -151,6 +164,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public ushort EngineTemperature { get; private set; }
         /// <summary>
@@ -160,6 +174,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Dictionary<string, float> TyresPressure { get; private set; }
         /// <summary>
@@ -168,6 +183,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Dictionary<string, SurfaceTypes> SurfaceType { get; private set; }
 
@@ -330,6 +346,11 @@ namespace F1Telemetry.Models.CarTelemetryPacket
             this.TyresPressure = df;
             //uint8 m_surfaceType[4];           // Driving surface, see appendices
             this.ReadSurfaceType(array);
+        }
+
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
         }
 
         /// <summary>

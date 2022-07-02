@@ -1,9 +1,10 @@
-﻿using System;
+﻿using F1Telemetry.Models;
+using System;
 using System.Data;
 using System.Linq;
 using static F1Telemetry.Helpers.Appendences;
 
-namespace F1Telemetry.Models.CustomModels.SessionHistoryPacket2
+namespace F1Telemetry.CustomModels.SessionHistoryPacket2
 {
     public class LapHistoryData2 : ProtoModel
     {

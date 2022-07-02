@@ -17,6 +17,11 @@ namespace F1Telemetry.Models.LapDataPacket
             this.PickReader(this.Header.PacketFormat, array);
         }
 
+        /// <summary>
+        /// Common byte reader method.
+        /// </summary>
+        /// <param name="array">Raw bytearray</param>
+        /// <param name="arraySize">Participants list length</param>
         private void ReaderCommon(byte[] array, int arraySize)
         {
             this.Lapdata = new LapData[arraySize];

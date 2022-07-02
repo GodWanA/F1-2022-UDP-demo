@@ -1,7 +1,7 @@
-﻿
+﻿using F1Telemetry.Models.EventPacket;
 using static F1Telemetry.Helpers.Appendences;
 
-namespace F1Telemetry.Models.EventPacket
+namespace F1Telemetry.CustomModels.EventPackets
 {
     /// <summary>
     /// Custom event to log pit stops on race.
@@ -15,12 +15,12 @@ namespace F1Telemetry.Models.EventPacket
         /// <param name="lap">Lap, when entered to pit</param>
         public DriverOnPits2(int vehicleIndex, int lap)
         {
-            this.EventCode = "DOP2";
-            this.EventType = EventTypes.PitStop;
-            this.EventName = "Pit Stop";
+            EventCode = "DOP2";
+            EventType = EventTypes.PitStop;
+            EventName = "Pit Stop";
 
-            this.VehicleIndex = vehicleIndex;
-            this.LapNumber = lap;
+            VehicleIndex = vehicleIndex;
+            LapNumber = lap;
         }
 
         /// <summary>

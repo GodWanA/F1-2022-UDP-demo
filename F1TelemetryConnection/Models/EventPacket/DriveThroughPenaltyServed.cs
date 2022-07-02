@@ -24,6 +24,7 @@ namespace F1Telemetry.Models.EventPacket
         /// Vehicle index of the vehicle serving drive through.<br/>
         /// Supported:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte VehicleIndex { get; private set; }
 
@@ -34,6 +35,11 @@ namespace F1Telemetry.Models.EventPacket
             //uint8 vehicleIdx;                 // Vehicle index of the vehicle serving drive through
             this.Index += ByteReader.ToUInt8(array, this.Index, out valb);
             this.VehicleIndex = valb;
+        }
+
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
         }
     }
 }

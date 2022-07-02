@@ -30,6 +30,7 @@ namespace F1Telemetry.Models.CarStatusPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public CarStatusData[] CarStatusData { get; private set; }
 
@@ -49,6 +50,11 @@ namespace F1Telemetry.Models.CarStatusPacket
         }
 
         protected override void Reader2021(byte[] array)
+        {
+            this.Reader2020(array);
+        }
+
+        protected override void Reader2022(byte[] array)
         {
             this.Reader2020(array);
         }

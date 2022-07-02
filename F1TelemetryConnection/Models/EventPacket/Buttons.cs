@@ -56,6 +56,11 @@ namespace F1Telemetry.Models.EventPacket
             this.PressedButtons = Appendences.KeyChecker(val);
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

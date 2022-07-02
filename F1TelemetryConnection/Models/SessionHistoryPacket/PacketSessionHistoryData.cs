@@ -12,17 +12,86 @@ namespace F1Telemetry.Models.SessionHistoryPacket
             this.PickReader(this.Header.PacketFormat, array);
         }
 
+        /// <summary>
+        /// Packet header
+        /// </summary>
         public PacketHeader Header { get; private set; }
+        /// <summary>
+        /// Index of the car this lap data relates to
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public byte CarIndex { get; private set; }
+        /// <summary>
+        /// 
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public byte NumberOfLaps { get; private set; }
+        /// <summary>
+        /// 
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public byte NumberOfTyreStints { get; private set; }
+        /// <summary>
+        /// 
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public byte BestLapTimeLapNumber { get; private set; }
+        /// <summary>
+        /// 
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public byte BestSector1LapNumber { get; private set; }
+        /// <summary>
+        /// 
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public byte BestSector2LapNumber { get; private set; }
+        /// <summary>
+        /// 
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public byte BestSector3LapNumber { get; private set; }
+        /// <summary>
+        /// 
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public LapHistoryData[] LapHistoryData { get; private set; }
+        /// <summary>
+        /// 
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public TimeSpan TotalSectorTimes { get; private set; }
+        /// <summary>
+        /// 
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public TimeSpan TotalLapTimes { get; private set; }
+        /// <summary>
+        /// 
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public TyreStintHistoryData[] TyreStintsHistoryData { get; private set; }
 
         protected override void Reader2021(byte[] array)
@@ -89,6 +158,17 @@ namespace F1Telemetry.Models.SessionHistoryPacket
             this.Index = index;
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
+        }
+
+        /// <summary>
+        /// Returns driver total race time in specific lap and sectors. (Needed to calculate intervals)
+        /// </summary>
+        /// <param name="lap">Requered lap nubmer</param>
+        /// <param name="sector">requered sector</param>
+        /// <returns>Total race time</returns>
         public TimeSpan GetTimeSum(int lap, int sector)
         {
             var ret = new TimeSpan();

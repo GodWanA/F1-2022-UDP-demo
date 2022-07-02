@@ -26,6 +26,7 @@ namespace F1Telemetry.Models.EventPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte VehicleIndex { get; private set; }
 
@@ -46,6 +47,11 @@ namespace F1Telemetry.Models.EventPacket
         protected override void Reader2021(byte[] array)
         {
             base.Reader2019(array);
+        }
+
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2019(array);
         }
     }
 }

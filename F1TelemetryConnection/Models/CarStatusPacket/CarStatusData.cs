@@ -26,32 +26,269 @@ namespace F1Telemetry.Models.CarStatusPacket
             this.PickReader(format, array);
         }
 
+        /// <summary>
+        /// Traction control - 0 = off, 1 = medium, 2 = full
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public TractionControlSettings TractionControl { get; private set; }
+        /// <summary>
+        /// Indicates ABS on or off.
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public bool IsAntiLockBrakes { get; private set; }
+        /// <summary>
+        /// Fuel mix - 0 = lean, 1 = standard, 2 = rich, 3 = max
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public FuelMixis FuelMix { get; private set; }
+        /// <summary>
+        /// Front brake bias (percentage)
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public byte FrontBrakeBias { get; private set; }
+        /// <summary>
+        /// Pit limiter status - 0 = off, 1 = on
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public bool IsPitLimiter { get; private set; }
+        /// <summary>
+        /// Current fuel mass (kg).
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public float FuelInTank { get; private set; }
+        /// <summary>
+        /// Fuel capacity (kg)
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public float FuelCapacity { get; private set; }
+        /// <summary>
+        /// Fuel remaining in terms of laps (value on MFD)
+        /// Supports:<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public float FuelRemainingLaps { get; private set; }
+        /// <summary>
+        /// Cars max RPM, point of rev limiter
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public ushort MaxRPM { get; private set; }
+        /// <summary>
+        /// Cars idle RPM
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public ushort IdleRPM { get; private set; }
+        /// <summary>
+        /// Maximum number of gears
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public byte MaxGears { get; private set; }
+        /// <summary>
+        /// Indicates DRS is allowed to use, or not.
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public bool IsDRSAllowed { get; private set; }
+        /// <summary>
+        /// 0 = DRS not available, non-zero - DRS will be available in [X] metres
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public ushort DRSActivationDistance { get; private set; }
+        /// <summary>
+        /// Actual tyre compound variant. (Not same as visible tyre compound)
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public TyreCompounds ActualTyreCompound { get; private set; }
+        /// <summary>
+        /// Tyres age in laps.
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public byte TyresAgeLaps { get; private set; }
+        /// <summary>
+        /// Current FIA flag for vehicle
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public Flags VehicleFIAFlag { get; private set; }
+        /// <summary>
+        /// ERS energy store in Joules
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public float ERSStoreEnergy { get; private set; }
+        /// <summary>
+        /// Current percent of battery charge.
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public float ERSStoreEnergyPercent { get; private set; }
+        /// <summary>
+        /// ERS deploxe mode.
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public ERSModes ERSDeployMode { get; private set; }
+        /// <summary>
+        /// How many energy harvested on this lap by MGU-K (in Joules)
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public float ERSHarvestedThisLapMGUK { get; private set; }
+        /// <summary>
+        /// How many energy harvested on this lap by MGU-K (percent of battery charge).
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public float ERSHarvestedThisLapMGUKPercent { get; private set; }
+        /// <summary>
+        /// How many energy harvested on this lap by MGU-H (in Joules)
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public float ERSHarvestedThisLapMGUH { get; private set; }
+        /// <summary>
+        /// How many energy harvested on this lap by MGU-H (percent of battery charge).
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public float ERSHarvestedThisLapMGUHPercent { get; private set; }
+        /// <summary>
+        /// ERS energy deployed this lap (in Joules)
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public float ERSDeployedThisLap { get; private set; }
+        /// <summary>
+        /// ERS energy deployed this lap (percent of battery charge)
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public float ERSDeployedThisLapPercent { get; private set; }
+        /// <summary>
+        /// Whether the car is paused in a network game
+        /// Supports:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public bool IsNetworkPaused { get; private set; }
+        /// <summary>
+        /// F1 visual (can be different from actual compound)
+        /// Supports:<br/>
+        ///     - 2018<br/>
+        ///     - 2019<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public TyreCompounds VisualTyreCompound { get; private set; }
 
         protected override void Reader2018(byte[] array)
@@ -105,7 +342,8 @@ namespace F1Telemetry.Models.CarStatusPacket
             //                                  // Classic - 0-6 = dry, 7-8 = wet
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.ActualTyreCompound = (TyreCompounds)uint8;
-            this.VisualTyreCompound = (TyreCompounds)uint8;
+            //this.VisualTyreCompound = (TyreCompounds)uint8;
+            this.VisualTyreCompound = Appendences.SetVisualTyre(uint8);
             //uint8 m_tyresDamage[4];           // Tyre damage (percentage)
             this.Index += ByteReader.ToWheelData.FromUint8(array, this.Index, out d8);
             this.tyreDemage = d8;
@@ -215,7 +453,8 @@ namespace F1Telemetry.Models.CarStatusPacket
             //                                  // F1 Classic – same as above
             //                                  // F2 – same as above
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.VisualTyreCompound = (TyreCompounds)uint8;
+            //this.VisualTyreCompound = (TyreCompounds)uint8;
+            this.VisualTyreCompound = Appendences.SetVisualTyre(uint8);
             //uint8 m_tyresDamage[4];           // Tyre damage (percentage)
             this.Index += ByteReader.ToWheelData.FromUint8(array, this.Index, out d8);
             this.tyreDemage = d8;
@@ -327,7 +566,8 @@ namespace F1Telemetry.Models.CarStatusPacket
             //                                   // F1 Classic – same as above
             //                                   // F2 – same as above
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.VisualTyreCompound = (TyreCompounds)uint8;
+            //this.VisualTyreCompound = (TyreCompounds)uint8;
+            this.VisualTyreCompound = Appendences.SetVisualTyre(uint8);
             //uint8 m_tyresAgeLaps;             // Age in laps of the current set of tyres
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.TyresAgeLaps = uint8;
@@ -442,7 +682,7 @@ namespace F1Telemetry.Models.CarStatusPacket
             //                                  // F2 ‘19, 15 = wet, 19 – super soft, 20 = soft
             //                                  // 21 = medium , 22 = hard
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.VisualTyreCompound = (TyreCompounds)uint8;
+            this.VisualTyreCompound = Appendences.SetVisualTyre(uint8);
             //uint8 m_tyresAgeLaps;             // Age in laps of the current set of tyres
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.TyresAgeLaps = uint8;
@@ -526,6 +766,11 @@ namespace F1Telemetry.Models.CarStatusPacket
                 );
 
             return ret;
+        }
+
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
         }
     }
 }

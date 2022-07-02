@@ -13,8 +13,17 @@ namespace F1Telemetry.Models.LobbyInfoPacket
             this.PickReader(this.Header.PacketFormat, array);
         }
 
+        /// <summary>
+        /// Packet header
+        /// </summary>
         public PacketHeader Header { get; private set; }
+        /// <summary>
+        /// Number of players
+        /// </summary>
         public byte NumberOfPlayers { get; private set; }
+        /// <summary>
+        /// All players in lobby
+        /// </summary>
         public LobbyInfoData[] LobbyPlayers { get; private set; }
 
         protected override void Reader2020(byte[] array)
@@ -40,6 +49,11 @@ namespace F1Telemetry.Models.LobbyInfoPacket
             this.Reader2020(array);
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2020(array);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -53,6 +67,10 @@ namespace F1Telemetry.Models.LobbyInfoPacket
             base.Dispose(disposing);
         }
 
+        /// <summary>
+        /// Fills up racenumbers from participants data
+        /// </summary>
+        /// <param name="participants">source participants</param>
         internal void BuildRaceNumbers(ParticipantData[] participants)
         {
             if (this.LobbyPlayers != null && participants != null)

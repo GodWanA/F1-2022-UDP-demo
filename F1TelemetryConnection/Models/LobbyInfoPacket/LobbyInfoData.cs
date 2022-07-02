@@ -12,11 +12,52 @@ namespace F1Telemetry.Models.LobbyInfoPacket
             this.PickReader(format, array);
         }
 
+        /// <summary>
+        /// Whether the vehicle is AI (1) or Human (0) controlled
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public bool IsAIControlled { get; private set; }
+        /// <summary>
+        /// Team id - see appendix
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public Teams TeamID { get; private set; }
+        /// <summary>
+        /// Nationality of the driver
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public Nationalities Natinonality { get; private set; }
+        /// <summary>
+        /// Name of participant in UTF-8 format – null terminated<br/>
+        /// Will be truncated with ... (U+2026) if too long
+        /// Supports:<br/>
+        ///     - 2020<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public string Name { get; private set; }
+        /// <summary>
+        /// Car number of the player
+        /// Supports:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public byte RaceNumber { get; private set; }
+        /// <summary>
+        /// Ready status
+        /// Supports:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public ReadyStatuses ReadyStatus { get; private set; }
 
         protected override void Reader2020(byte[] array)

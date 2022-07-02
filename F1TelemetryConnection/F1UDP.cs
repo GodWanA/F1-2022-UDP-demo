@@ -3,7 +3,7 @@ using F1Telemetry.Models.CarDamagePacket;
 using F1Telemetry.Models.CarSetupsPacket;
 using F1Telemetry.Models.CarStatusPacket;
 using F1Telemetry.Models.CarTelemetryPacket;
-using F1Telemetry.Models.CustomModels.SessionHistoryPacket2;
+using F1Telemetry.CustomModels.SessionHistoryPacket2;
 using F1Telemetry.Models.EventPacket;
 using F1Telemetry.Models.FinalClassificationPacket;
 using F1Telemetry.Models.LapDataPacket;
@@ -20,6 +20,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using static F1Telemetry.Helpers.Appendences;
+using F1Telemetry.CustomModels.EventPackets;
 
 namespace F1Telemetry
 {
@@ -1125,12 +1126,20 @@ namespace F1Telemetry
 
         private void OnSessionEnded(PacketEventData data)
         {
-            if (this.EventPacketSessionEnded != null) this.EventPacketSessionEnded(data, new EventArgs());
+            if (this.EventPacketSessionEnded != null)
+            {
+                this.EventPacketSessionEnded(data, new EventArgs());
+                SpeedTrap.ResetHelpers();
+            }
         }
 
         private void OnSessionStart(PacketEventData data)
         {
-            if (this.EventPacketSessionStart != null) this.EventPacketSessionStart(data, new EventArgs());
+            if (this.EventPacketSessionStart != null)
+            {
+                SpeedTrap.ResetHelpers();
+                this.EventPacketSessionStart(data, new EventArgs());
+            }
         }
 
         protected virtual void OnEventWarning2(Warning2 sender)

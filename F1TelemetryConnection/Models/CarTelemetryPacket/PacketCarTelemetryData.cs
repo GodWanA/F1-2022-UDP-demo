@@ -37,6 +37,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public CarTelemetryData[] CarTelemetryData { get; private set; }
         /// <summary>
@@ -46,6 +47,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public MFDPanels MFDPanelScreenPlayer1 { get; private set; }
         /// <summary>
@@ -53,6 +55,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         /// Supports:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public MFDPanels MFDPanelScreenPlayer2 { get; private set; }
         /// <summary>
@@ -61,6 +64,7 @@ namespace F1Telemetry.Models.CarTelemetryPacket
         /// Supports:<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Gears SuggesterGear { get; private set; }
 
@@ -127,6 +131,11 @@ namespace F1Telemetry.Models.CarTelemetryPacket
             //                            // 0 if no gear suggested
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.SuggesterGear = (Gears)uint8;
+        }
+
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
         }
 
         /// <summary>

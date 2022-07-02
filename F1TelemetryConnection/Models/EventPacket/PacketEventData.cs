@@ -117,6 +117,11 @@ namespace F1Telemetry.Models.EventPacket
             this.Reader2018(array);
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2018(array);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -140,6 +145,7 @@ namespace F1Telemetry.Models.EventPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public string EventCode { get; protected set; }
         /// Event code as enum.<br/>
@@ -148,6 +154,7 @@ namespace F1Telemetry.Models.EventPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public EventTypes EventType { get; protected set; }
         /// Event's full name as string.<br/>
@@ -156,6 +163,7 @@ namespace F1Telemetry.Models.EventPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public string EventName { get; protected set; }
     }

@@ -24,6 +24,7 @@ namespace F1Telemetry.Models.EventPacket
         /// Vehicle index of the vehicle serving drive through.<br/>
         /// Supported:<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte NumberOfLight { get; private set; }
 
@@ -37,6 +38,11 @@ namespace F1Telemetry.Models.EventPacket
             this.NumberOfLight = valb;
 
             this.Index = index;
+        }
+
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
         }
     }
 }

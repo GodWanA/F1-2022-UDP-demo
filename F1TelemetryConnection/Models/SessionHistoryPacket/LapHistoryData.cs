@@ -12,10 +12,40 @@ namespace F1Telemetry.Models.SessionHistoryPacket
             this.PickReader(format, array);
         }
 
+        /// <summary>
+        /// Laptime
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public TimeSpan LapTime { get; private set; }
+        /// <summary>
+        /// Sector 1 time
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public TimeSpan Sector1Time { get; private set; }
+        /// <summary>
+        /// Sector 2 time
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public TimeSpan Sector2Time { get; private set; }
+        /// <summary>
+        /// Sector 3 time
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public TimeSpan Sector3Time { get; private set; }
+        /// <summary>
+        /// Flags all sector what valid
+        /// <br/>Supported:<br/>
+        ///     - 2021<br/>
+        ///     - 2022<br/>
+        /// </summary>
         public List<Appendences.LapValid> LapValids { get; private set; }
 
         protected override void Reader2021(byte[] array)
@@ -48,6 +78,11 @@ namespace F1Telemetry.Models.SessionHistoryPacket
 
 
             this.Index = index;
+        }
+
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
         }
 
         protected override void Dispose(bool disposing)

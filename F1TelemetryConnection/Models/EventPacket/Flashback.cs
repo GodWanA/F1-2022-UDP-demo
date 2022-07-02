@@ -46,9 +46,14 @@ namespace F1Telemetry.Models.EventPacket
 
             //float flashbackSessionTime;       // Session time flashed back to
             index += ByteReader.ToFloat(array, index, out valf);
-            this.FlashbackSessionTime = TimeSpan.FromMilliseconds(valf);
+            this.FlashbackSessionTime = TimeSpan.FromSeconds(valf);
 
             this.Index = index;
+        }
+
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
         }
     }
 }

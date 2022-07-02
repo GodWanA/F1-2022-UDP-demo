@@ -230,7 +230,7 @@ namespace F1TelemetryApp.UserControls
 
 
                     var e = Map.CreateEllipse(teamBrush, b, p.RaceNumber);
-                    e.ToolTip = p.Name + " | " + p.RaceNumber + "\r\n" + p.TeamID.GetTeamName(data.Header.PacketFormat);
+                    e.ToolTip = p.ParticipantName + " | " + p.RaceNumber + "\r\n" + p.TeamID.GetTeamName(data.Header.PacketFormat);
                     carsGrid.Add(e);
                 }
             }
@@ -242,7 +242,7 @@ namespace F1TelemetryApp.UserControls
                     var b = Map.BorderColor(teamBrush);
                     if (b.CanFreeze) b.Freeze();
 
-                    string s = data.Participants[i].Name + " | " + data.Participants[i].RaceNumber + "\r\n" + data.Participants[i].TeamID.GetTeamName(data.Header.PacketFormat);
+                    string s = data.Participants[i].ParticipantName + " | " + data.Participants[i].RaceNumber + "\r\n" + data.Participants[i].TeamID.GetTeamName(data.Header.PacketFormat);
                     this.Dispatcher.Invoke(() => ((Border)carsGrid[i]).ToolTip = s);
                 }
             }

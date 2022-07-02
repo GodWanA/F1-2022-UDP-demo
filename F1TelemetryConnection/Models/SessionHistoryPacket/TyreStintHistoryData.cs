@@ -11,9 +11,21 @@ namespace F1Telemetry.Models.SessionHistoryPacket
             this.PickReader(format, array);
         }
 
+        /// <summary>
+        /// Lap the tyre usage ends on (255 of current tyre)
+        /// </summary>
         public byte EndLap { get; private set; }
+        /// <summary>
+        /// True if current tyre in usage
+        /// </summary>
         public bool IsCurrentTyre { get; private set; }
+        /// <summary>
+        /// Actual tyres used by this driver
+        /// </summary>
         public TyreCompounds TyreActualCompound { get; private set; }
+        /// <summary>
+        /// Visual tyres used by this driver
+        /// </summary>
         public TyreCompounds TyreVisualCompound { get; private set; }
 
         protected override void Reader2021(byte[] array)
@@ -34,9 +46,14 @@ namespace F1Telemetry.Models.SessionHistoryPacket
 
             //uint8 m_tyreVisualCompound;    // Visual tyres used by this driver
             index += ByteReader.ToUInt8(array, index, out valb);
-            this.TyreVisualCompound = (TyreCompounds)valb;
+            this.TyreVisualCompound = Appendences.SetVisualTyre(valb);
 
             this.Index = index;
+        }
+
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
         }
     }
 }

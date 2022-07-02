@@ -1,4 +1,5 @@
-﻿using F1Telemetry.Helpers;
+﻿using F1Telemetry.CustomModels.EventPackets;
+using F1Telemetry.Helpers;
 using F1Telemetry.Models.ParticipantsPacket;
 using F1TelemetryApp.Classes;
 using F1TelemetryClient;
@@ -262,25 +263,25 @@ namespace F1TelemetryApp.Pages.EventsLogInfo
             this.AddRow(packet.EventName, packet.EventType, "Chequered flag.");
         }
 
-        private void Connention_EventPacketDriverOnPits2(F1Telemetry.Models.EventPacket.DriverOnPits2 packet, EventArgs e)
+        private void Connention_EventPacketDriverOnPits2(DriverOnPits2 packet, EventArgs e)
         {
             var driver = EventslogPage.GetDriver(packet.VehicleIndex);
             var sb = new StringBuilder();
 
             sb.Append("Driver \"");
-            sb.Append(driver.Name + " (" + driver.RaceNumber + ") ");
+            sb.Append(driver.ParticipantName + " (" + driver.RaceNumber + ") ");
             sb.Append(" Entered PIT on lap" + packet.LapNumber);
 
             this.AddRow(packet.EventName, packet.EventType, sb.ToString());
         }
 
-        private void Connention_EventPacketWarning2(F1Telemetry.Models.EventPacket.Warning2 packet, EventArgs e)
+        private void Connention_EventPacketWarning2(Warning2 packet, EventArgs e)
         {
             var driver = EventslogPage.GetDriver(packet.VehicleIndex);
             var sb = new StringBuilder();
 
             sb.Append("Driver \"");
-            sb.Append(driver.Name + " (" + driver.RaceNumber + ") ");
+            sb.Append(driver.ParticipantName + " (" + driver.RaceNumber + ") ");
             sb.Append("\" recieved a warning. ");
             sb.Append("Total number of driver's warnings: " + packet.TotalWarnings);
 
@@ -293,7 +294,7 @@ namespace F1TelemetryApp.Pages.EventsLogInfo
             var sb = new StringBuilder();
 
             sb.Append("Team mate ");
-            sb.Append("- " + driver.Name + " (" + driver.RaceNumber + ") -");
+            sb.Append("- " + driver.ParticipantName + " (" + driver.RaceNumber + ") -");
             sb.Append(" in PIT.");
 
             this.AddRow(packet.EventName, packet.EventType, sb.ToString());
@@ -305,7 +306,7 @@ namespace F1TelemetryApp.Pages.EventsLogInfo
             var sb = new StringBuilder();
 
             sb.Append("Driver ");
-            sb.Append("- " + driver.Name + " (" + driver.RaceNumber + ") -");
+            sb.Append("- " + driver.ParticipantName + " (" + driver.RaceNumber + ") -");
             sb.Append(" in PIT for serve Stop'n'Go penalty.");
 
             this.AddRow(packet.EventName, packet.EventType, sb.ToString());
@@ -324,7 +325,7 @@ namespace F1TelemetryApp.Pages.EventsLogInfo
                 var sb = new StringBuilder();
 
                 sb.Append("Driver ");
-                sb.Append("- " + driver.Name + " (" + driver.RaceNumber + ") -");
+                sb.Append("- " + driver.ParticipantName + " (" + driver.RaceNumber + ") -");
                 sb.Append(" in speed trap. His speed: " + packet.Speed + " km/h\r\n");
 
                 this.AddRow(packet.EventName, packet.EventType, sb.ToString());
@@ -337,7 +338,7 @@ namespace F1TelemetryApp.Pages.EventsLogInfo
             var sb = new StringBuilder();
 
             sb.Append("Driver ");
-            sb.Append("- " + driver.Name + " (" + driver.RaceNumber + ") -");
+            sb.Append("- " + driver.ParticipantName + " (" + driver.RaceNumber + ") -");
             sb.Append(" retired for session.");
 
             //this.AddEventToListView(packet.EventCode, sb.ToString());
@@ -351,7 +352,7 @@ namespace F1TelemetryApp.Pages.EventsLogInfo
             var sb = new StringBuilder();
 
             sb.Append("Driver ");
-            sb.Append("- " + driver1.Name + " (" + driver1.RaceNumber + ") -");
+            sb.Append("- " + driver1.ParticipantName + " (" + driver1.RaceNumber + ") -");
             sb.Append(" recieved ");
 
             /*if (packet.Time > TimeSpan.Zero)*/
@@ -362,7 +363,7 @@ namespace F1TelemetryApp.Pages.EventsLogInfo
             if (driver2 != null)
             {
                 sb.Append(" Other driver was ");
-                sb.Append(driver1.Name + " (" + driver1.RaceNumber + ").");
+                sb.Append(driver1.ParticipantName + " (" + driver1.RaceNumber + ").");
             }
 
             if (packet.PlacesGained > 0)
@@ -384,7 +385,7 @@ namespace F1TelemetryApp.Pages.EventsLogInfo
             var sb = new StringBuilder();
 
             sb.Append("Driver ");
-            sb.Append("- " + driver.Name + " (" + driver.RaceNumber + ") -");
+            sb.Append("- " + driver.ParticipantName + " (" + driver.RaceNumber + ") -");
             sb.Append(" fastest in session. Laptime: " + packet.LapTime.ToString("hh\\:mm\\:ss\\.fff"));
 
             this.AddRow(packet.EventName, packet.EventType, sb.ToString());
@@ -396,7 +397,7 @@ namespace F1TelemetryApp.Pages.EventsLogInfo
             var sb = new StringBuilder();
 
             sb.Append("Driver ");
-            sb.Append("- " + driver.Name + " (" + driver.RaceNumber + ") -");
+            sb.Append("- " + driver.ParticipantName + " (" + driver.RaceNumber + ") -");
             sb.Append(" serving Drive Through Penalty.");
 
             this.AddRow(packet.EventName, packet.EventType, sb.ToString());

@@ -26,6 +26,7 @@ namespace F1Telemetry.Models.EventPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte VehicleIndex { get; private set; }
 

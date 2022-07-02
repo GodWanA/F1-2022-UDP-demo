@@ -28,6 +28,7 @@ namespace F1Telemetry.Models.ParticipantsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte NumberOfActiveCars { get; private set; }
         /// <summary>
@@ -37,6 +38,7 @@ namespace F1Telemetry.Models.ParticipantsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public ParticipantData[] Participants { get; private set; }
 
@@ -79,6 +81,11 @@ namespace F1Telemetry.Models.ParticipantsPacket
         }
 
         protected override void Reader2021(byte[] array)
+        {
+            this.ReaderCommon(array, 22);
+        }
+
+        protected override void Reader2022(byte[] array)
         {
             this.ReaderCommon(array, 22);
         }

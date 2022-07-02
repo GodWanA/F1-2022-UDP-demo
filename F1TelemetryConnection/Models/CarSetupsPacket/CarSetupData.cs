@@ -24,6 +24,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte FrontWing { get; private set; }
         /// <summary>
@@ -33,6 +34,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte RearWing { get; private set; }
         /// <summary>
@@ -42,6 +44,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte DifferentialOnThrottle { get; private set; }
         /// <summary>
@@ -51,6 +54,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte DifferentialOffThrottle { get; private set; }
         /// <summary>
@@ -60,6 +64,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float FrontChamber { get; private set; }
         /// <summary>
@@ -69,6 +74,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float RearChamber { get; private set; }
         /// <summary>
@@ -78,6 +84,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float FrontToe { get; private set; }
         /// <summary>
@@ -87,6 +94,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float RearToe { get; private set; }
         /// <summary>
@@ -96,6 +104,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte FrontSuspension { get; private set; }
         /// <summary>
@@ -105,6 +114,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte RearSuspension { get; private set; }
         /// <summary>
@@ -114,6 +124,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte FrontAntiRollBar { get; private set; }
         /// <summary>
@@ -123,6 +134,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte RearAntiRollBar { get; private set; }
         /// <summary>
@@ -132,6 +144,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte FrontSuspensionHeight { get; private set; }
         /// <summary>
@@ -141,6 +154,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte RearSuspensionHeight { get; private set; }
         /// <summary>
@@ -150,6 +164,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte BrakePressure { get; private set; }
         /// <summary>
@@ -159,6 +174,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte BrakeBias { get; private set; }
         /// <summary>
@@ -168,6 +184,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public Dictionary<string, float> TyrePressure { get; private set; }
         /// <summary>
@@ -177,6 +194,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public float FuelLoad { get; private set; }
         /// <summary>
@@ -186,6 +204,7 @@ namespace F1Telemetry.Models.CarSetupsPacket
         ///     - 2019<br/>
         ///     - 2020<br/>
         ///     - 2021<br/>
+        ///     - 2022<br/>
         /// </summary>
         public byte Ballast { get; private set; }
 
@@ -329,6 +348,11 @@ namespace F1Telemetry.Models.CarSetupsPacket
         }
 
         protected override void Reader2021(byte[] array)
+        {
+            this.Reader2020(array);
+        }
+
+        protected override void Reader2022(byte[] array)
         {
             this.Reader2020(array);
         }
