@@ -122,7 +122,7 @@ namespace F1Telemetry.Models.FinalClassificationPacket
         /// Supports:<br/>
         ///     - 2022<br/>
         /// </summary>
-        public Dictionary<string, byte> TyreStintsEndLaps { get; private set; }
+        public byte[] TyreStintsEndLaps { get; private set; }
 
         protected override void Reader2020(byte[] array)
         {
@@ -183,10 +183,12 @@ namespace F1Telemetry.Models.FinalClassificationPacket
         {
             this.Reader2020(array);
 
-            Dictionary<string, byte> dict;
-            //uint8 m_tyreStintsEndLaps[8];  // The lap number stints end on
-            this.Index += ByteReader.ToWheelData.FromUint8(array, this.Index, out dict);
-            this.TyreStintsEndLaps = dict;
+            byte uint8;
+            for (int i = 0; i < 8; i++)
+            {
+                this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
+                this.TyreStintsEndLaps[i] = uint8;
+            }
         }
 
         protected override void Dispose(bool disposing)
