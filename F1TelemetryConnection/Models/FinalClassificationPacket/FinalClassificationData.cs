@@ -1,6 +1,5 @@
 ﻿using F1Telemetry.Helpers;
 using System;
-using System.Collections.Generic;
 using static F1Telemetry.Helpers.Appendences;
 
 namespace F1Telemetry.Models.FinalClassificationPacket
@@ -184,6 +183,7 @@ namespace F1Telemetry.Models.FinalClassificationPacket
             this.Reader2020(array);
 
             byte uint8;
+            this.TyreStintsEndLaps = new byte[8];
             for (int i = 0; i < 8; i++)
             {
                 this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
