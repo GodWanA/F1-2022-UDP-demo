@@ -1,18 +1,11 @@
-﻿using F1Telemetry.Models.CarStatusPacket;
-using F1Telemetry.Models.SessionPacket;
-using F1TelemetryApp.Classes;
+﻿using F1TelemetryApp.Classes;
 using F1TelemetryApp.Windows;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using static F1Telemetry.Helpers.Appendences;
@@ -92,6 +85,8 @@ namespace F1TelemetryClient
 
             this.performanceTimer.Interval = TimeSpan.FromSeconds(1);
             this.performanceTimer.Tick += PerformanceTimer_Tick;
+
+            //new RadioMessageWindow();
         }
 
         private void PerformanceTimer_Tick(object sender, EventArgs e)
@@ -286,6 +281,7 @@ namespace F1TelemetryClient
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             this.SaveWindowPosition(this.regPath);
+            Application.Current.Shutdown();
         }
 
         private void Window_LocationChanged(object sender, EventArgs e)

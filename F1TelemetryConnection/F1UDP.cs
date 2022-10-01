@@ -53,6 +53,8 @@ namespace F1Telemetry
         private bool isUpdating_LobbyInfo;
         private bool isUpdating_CarDamage;
         private bool isUpdating_SessionHistory;
+        private IPAddress any;
+        private int v;
 
         /// <summary>
         /// Version of the F1Telmetry dll.
@@ -145,6 +147,7 @@ namespace F1Telemetry
         public DateTime LastTime_CarStatus { get; private set; }
 
         public SessionHistory2 CurrentSessionHistory2Data { get; private set; } = new SessionHistory2();
+        public PacketCarDamageData LastCarDemagePacket { get; private set; }
 
         // udp events:
 
@@ -365,6 +368,27 @@ namespace F1Telemetry
             this.Connect(ipAddress, port);
         }
 
+        public F1UDP(IPAddress ipAddress, int port)
+        {
+            this.Connect(ipAddress, port);
+        }
+
+        public void Connect(IPAddress ip, int port)
+        {
+            try
+            {
+                this.IPString = ip.ToString();
+                this.Port = port;
+                this.EndPoint = new IPEndPoint(ip, port);
+
+                this.ConnectCommon();
+            }
+            catch (Exception ex)
+            {
+                this.OnConnectionError(ex);
+            }
+        }
+
         /// <summary>
         /// Opens connection to selected ip and port.
         /// </summary>
@@ -376,21 +400,26 @@ namespace F1Telemetry
             {
                 this.IPString = ip;
                 this.Port = port;
-                this.IsConnecting = true;
-                this.EndPoint = new IPEndPoint(IPAddress.Parse(this.IPString), this.Port);
-                //this.EndPoint = new IPEndPoint(System.Net.IPAddress.Any, this.Port);
-                this.CancelToken = new CancellationTokenSource();
+                this.EndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
 
-                this.Connection = new UdpClient(this.Port, AddressFamily.InterNetwork);
-                this.Connection.EnableBroadcast = true;
-
-                //this.Connection.BeginReceive(new AsyncCallback(recv), null);
-                this.recv();
+                this.ConnectCommon();
             }
             catch (Exception e)
             {
                 this.OnConnectionError(e);
             }
+        }
+
+        private void ConnectCommon()
+        {
+            this.IsConnecting = true;
+            this.CancelToken = new CancellationTokenSource();
+
+            this.Connection = new UdpClient(this.Port, AddressFamily.InterNetwork);
+            this.Connection.EnableBroadcast = true;
+
+            //this.Connection.BeginReceive(new AsyncCallback(recv), null);
+            this.recv();
         }
 
         private void recv()
@@ -942,7 +971,7 @@ namespace F1Telemetry
             for (int i = 0; i < sender.Lapdata.Length; i++)
             {
                 var current = sender.Lapdata[i];
-                current.SetLapPercentage(this.CurrentSessionDataPacket.TrackLength);
+                if (this.CurrentSessionDataPacket != null) current.SetLapPercentage(this.CurrentSessionDataPacket.TrackLength);
                 this.CurrentSessionHistory2Data.UpdateDriverHistory(ref current, i);
             }
 
@@ -1037,6 +1066,7 @@ namespace F1Telemetry
 
         protected virtual void OnCarDemagePacket(PacketCarDamageData sender)
         {
+            this.LastCarDemagePacket = this.CurrentCarDemagePacket;
             this.CurrentCarDemagePacket = sender;
             if (this.CarDemagePacket != null) this.CarDemagePacket(sender, new EventArgs());
         }

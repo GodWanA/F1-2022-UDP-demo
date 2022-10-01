@@ -89,7 +89,7 @@ namespace F1Telemetry.Models.EventPacket
 
             //uint8 infringementType;     // Infringement type – see Appendices
             this.Index += ByteReader.ToUInt8(array, this.Index, out valb);
-            this.InfragmentType = (InfringementTypes)valb;
+            this.InfragmentType = InfringementTypesExtension.Parse(valb, this.Header.PacketFormat);
 
             //uint8 vehicleIdx;           // Vehicle index of the car the penalty is applied to
             this.Index += ByteReader.ToUInt8(array, this.Index, out valb);

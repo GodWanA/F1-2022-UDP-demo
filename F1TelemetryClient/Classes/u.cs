@@ -80,7 +80,7 @@ namespace F1TelemetryApp.Classes
 
         internal static BitmapImage TyreCompoundToImage(TyreCompounds tyre)
         {
-            string src = "pack://application:,,,/Images/Tyres/";
+            const string src = "pack://application:,,,/Images/Tyres/";
             BitmapImage ret = null;
 
             switch (tyre)
@@ -379,6 +379,26 @@ namespace F1TelemetryApp.Classes
         {
             Vertical, // |
             Horizontal // ——
+        }
+
+        /// <summary>
+        /// Creates Image source from ember resource's relative path.
+        /// </summary>
+        /// <param name="path">relative path</param>
+        /// <returns></returns>
+        internal static BitmapImage GetBitmapImage(string path)
+        {
+            //path = "Images/Tyres/C5.png";
+            if (path == null || path == "") return null;
+
+            path = path.Replace('\\', '/');
+            path = path.TrimStart(new char[] { ' ', '\r', '\n', '.', '/', });
+            path = path.TrimEnd();
+
+            if (!Uri.IsWellFormedUriString(path, UriKind.Relative)) return null;
+
+            path = "pack://application:,,,/" + path;
+            return new BitmapImage(new Uri(path));
         }
     }
 }

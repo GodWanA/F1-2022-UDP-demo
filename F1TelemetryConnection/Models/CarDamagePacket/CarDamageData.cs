@@ -31,7 +31,7 @@ namespace F1Telemetry.Models.CarDamagePacket
         public byte FrontRightWingDemage { get; private set; }
         public byte RearWingDemage { get; private set; }
         public byte FloorDemage { get; private set; }
-        public byte DiffurerDemage { get; private set; }
+        public byte DiffuserDemage { get; private set; }
         public byte SidepodDemage { get; private set; }
         public bool IsDRSFault { get; private set; }
         public byte GearBoxDemage { get; private set; }
@@ -85,7 +85,7 @@ namespace F1Telemetry.Models.CarDamagePacket
 
             //uint8 m_diffuserDamage;                   // Diffuser damage (percentage)
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
-            this.DiffurerDemage = uint8;
+            this.DiffuserDemage = uint8;
 
             //uint8 m_sidepodDamage;                    // Sidepod damage (percentage)
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);

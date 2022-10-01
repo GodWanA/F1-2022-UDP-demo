@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="F1TelemetryApp.UserControls.RadioMessages.RadioMessageCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:F1TelemetryApp.UserControls.RadioMessages"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="200">
+    <Grid Margin="0,2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="6"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="6"/>
+        </Grid.ColumnDefinitions>
+        <Border x:Name="border_driver" BorderThickness="2,2,0,2" CornerRadius="3,0,0,3" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,0">
+            <Border.BorderBrush>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Rectangle StrokeDashArray="2 1.5" Stroke="{Binding TeamColor, FallbackValue=magenta}" StrokeThickness="2"
+                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Border.BorderBrush>
+        </Border>
+        <Image x:Name="image_icon" Source="/Images/icon.png" Width="24" Height="24" Grid.Row="0" HorizontalAlignment="Right" Grid.Column="1" Margin="5,0,5,0"/>
+        <TextBlock x:Name="textBlock_message" Foreground="White" TextWrapping="WrapWithOverflow" Text="{Binding MessageText,FallbackValue='Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam condimentum.'}" Grid.Row="1" Grid.Column="1" Margin="5,0,5,5" TextAlignment="Right"/>
+        <Border x:Name="border_engineer" BorderThickness="0,2,2,2" CornerRadius="0,3,3,0" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Margin="0,0,0,0">
+            <Border.BorderBrush>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Rectangle StrokeDashArray="2 1.5" Stroke="White" StrokeThickness="2"
+                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"/>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Border.BorderBrush>
+        </Border>
+    </Grid>
+</UserControl>

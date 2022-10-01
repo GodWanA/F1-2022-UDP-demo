@@ -1,25 +1,18 @@
 ﻿using F1TelemetryApp.Classes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 
 namespace F1TelemetryApp.Pages.Settings
 {
     /// <summary>
     /// Interaction logic for UDPSettingsPage.xaml
     /// </summary>
-    public partial class UDPSettingsPage : UserControl
+    public partial class UDPSettingsPage : UserControl, ISettingPage
     {
         private static readonly Regex numberRegex = new Regex("\\d");
 
@@ -69,7 +62,7 @@ namespace F1TelemetryApp.Pages.Settings
             this.IsValidIP();
         }
 
-        internal void LoadData()
+        public void LoadData()
         {
             Task.Run(() =>
             {
@@ -126,7 +119,7 @@ namespace F1TelemetryApp.Pages.Settings
             this.checkbox_multicore.IsChecked = u.Connention?.IsAsyncPacketProcessEnabled;
         }
 
-        internal void SaveData()
+        public void SaveData()
         {
             if (u.Connention != null)
             {

@@ -105,7 +105,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
                 this.demage_fwLeft.Percent = 100.0 - demage.FrontLeftWingDemage;
                 this.demage_fwRight.Percent = 100.0 - demage.FrontRightWingDemage;
                 this.demage_fl.Percent = 100.0 - demage.FloorDemage;
-                this.demage_df.Percent = 100.0 - demage.DiffurerDemage;
+                this.demage_df.Percent = 100.0 - demage.DiffuserDemage;
                 this.demage_en.Percent = 100.0 - demage.EngineDemage;
                 this.demage_gb.Percent = 100.0 - demage.GearBoxDemage;
                 this.demage_rw.Percent = 100.0 - demage.RearWingDemage;

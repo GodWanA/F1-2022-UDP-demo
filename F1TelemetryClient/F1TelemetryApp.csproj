@@ -4,7 +4,7 @@
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net5.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
-		<StartupObject></StartupObject>
+		<StartupObject>F1TelemetryClient.App</StartupObject>
 		<PlatformTarget>x64</PlatformTarget>
 		<UseWindowsForms>True</UseWindowsForms>
 		<PackageId>Jeff+</PackageId>
@@ -25,11 +25,18 @@
 		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 		<DocumentationFile></DocumentationFile>
+		<Nullable>warnings</Nullable>
+		<SignAssembly>False</SignAssembly>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DefineConstants>DEBUG;TRACE</DefineConstants>
 		<Optimize>False</Optimize>
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -145,6 +152,8 @@
 		<None Remove="Images\MenuIcons\settings.png" />
 		<None Remove="Images\MenuIcons\share.png" />
 		<None Remove="Images\Nationality\coverimage.png" />
+		<None Remove="Images\RadioMessages\icon_driver.png" />
+		<None Remove="Images\RadioMessages\icon_engineer.png" />
 		<None Remove="Images\Tyres\C3.png" />
 		<None Remove="Images\Tyres\C4.png" />
 		<None Remove="Images\Tyres\C5.png" />
@@ -179,6 +188,11 @@
 
 	<ItemGroup>
 		<Content Include="icon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Images\RadioMessages\icon_driver.png" />
+		<Resource Include="Images\RadioMessages\icon_engineer.png" />
 	</ItemGroup>
 
 	<ItemGroup>

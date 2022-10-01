@@ -21,6 +21,9 @@
             <TabItem Header="UDP settings">
                 <Settings:UDPSettingsPage x:Name="udpsettings" />
             </TabItem>
+            <TabItem Header="Radio settings">
+                <Settings:RadioSettingsPage x:Name="radiosettings" />
+            </TabItem>
         </TabControl>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="5,2,5,5" HorizontalAlignment="Right">
             <Button x:Name="button_save" Content="Save" Padding="20,5" Margin="2,0" Click="button_save_Click"/>
