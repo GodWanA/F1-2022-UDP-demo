@@ -37,9 +37,9 @@ namespace F1Telemetry.Helpers
                 case SessionTypes.TimeTrial:
                     return SessionTypesExtension.Selector("TT", "Time Trial");
                 case SessionTypes.Race2:
-                    return SessionTypesExtension.Selector("SPRINT", "Sprint race");
+                    return SessionTypesExtension.Selector("RACE 2", "Race 2");
                 case SessionTypes.Race3:
-                    return SessionTypesExtension.Selector("UNK", "Unknown");
+                    return SessionTypesExtension.Selector("RACE 2", "Race 2");
             }
         }
 
@@ -47,6 +47,13 @@ namespace F1Telemetry.Helpers
         {
             if (SessionTypesExtension.isShortName) return shortName;
             else return fullName;
+        }
+
+        public static bool IsRace(this SessionTypes session)
+        {
+            return session == SessionTypes.Race
+                || session == SessionTypes.Race2
+                || session == SessionTypes.Race3;
         }
     }
 }

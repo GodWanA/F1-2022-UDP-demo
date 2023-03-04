@@ -59,11 +59,11 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Text="Front Wing:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="0" Margin="5,2"/>
-                            <Slider Value="{Binding FrontWing, FallbackValue=0}" Minimum="1" Maximum="11" TickFrequency="1" Grid.Column="1" Grid.Row="0" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <Slider x:Name="slider_frontWing" Value="{Binding FrontWing, FallbackValue=0}" Minimum="1" Maximum="11" TickFrequency="1" Grid.Column="1" Grid.Row="0" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
                             <TextBlock Text="{Binding FrontWing, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="0" Margin="2"/>
 
                             <TextBlock Text="Rear Wing:" TextAlignment="Center" Foreground="White" Grid.Column="0" Grid.Row="1" Margin="5,2"/>
-                            <Slider Value="{Binding RearWing, FallbackValue=0}" Minimum="1" Maximum="11" TickFrequency="1" Grid.Column="1" Grid.Row="1" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
+                            <Slider x:Name="slider_rearWing" Value="{Binding RearWing, FallbackValue=0}" Minimum="1" Maximum="11" TickFrequency="1" Grid.Column="1" Grid.Row="1" Margin="2" SmallChange="1" TickPlacement="Both" AutoToolTipPlacement="None" IsEnabled="False"/>
                             <TextBlock Text="{Binding RearWing, FallbackValue=0}" TextAlignment="Center" Foreground="White" Grid.Column="2" Grid.Row="1" Margin="2"/>
                         </Grid>
                     </Border>

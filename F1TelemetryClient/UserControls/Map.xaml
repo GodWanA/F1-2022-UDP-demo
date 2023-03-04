@@ -5,19 +5,29 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:F1TelemetryApp.UserControls"
              mc:Ignorable="d" 
-             d:Width="265" d:Height="265" MaxHeight="265" MaxWidth="265" Initialized="UserControl_Initialized" SizeChanged="UserControl_SizeChanged">
+             d:Width="265" d:Height="285" MaxHeight="285" MaxWidth="265" Initialized="UserControl_Initialized" SizeChanged="UserControl_SizeChanged">
     <Grid>
         <Border Background="Black" CornerRadius="10,10,0,0">
-            <Grid x:Name="grid_content">
-                <Path x:Name="path_baseline" Margin="5" Stroke="Gray" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid x:Name="grid_content" Grid.Row="0">
+                    <Path x:Name="path_baseline" Margin="5" Stroke="Gray" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
-                <Path x:Name="path_s1" Margin="5" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                <Path x:Name="path_s2" Margin="5" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                <Path x:Name="path_s3" Margin="5" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <Path x:Name="path_s1" Margin="5" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <Path x:Name="path_s2" Margin="5" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <Path x:Name="path_s3" Margin="5" StrokeThickness="3" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeDashCap="Round" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
 
-                <Grid x:Name="grid_drs" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                <Grid x:Name="grid_marshal" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                <Grid x:Name="grid_cars" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <Grid x:Name="grid_drs" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <Grid x:Name="grid_marshal" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                    <Grid x:Name="grid_cars" Margin="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                </Grid>
+                <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding TrackName, FallbackValue='Trackname'}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="3"/>
+                    <TextBlock Text="{Binding SeasonYear, FallbackValue='20XX'}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="3"/>
+                </StackPanel>
             </Grid>
         </Border>
     </Grid>

@@ -1,4 +1,5 @@
-﻿using F1Telemetry.Models.LapDataPacket;
+﻿using F1Telemetry.CustomModels.SessionHistoryPacket2;
+using F1Telemetry.Models.LapDataPacket;
 using F1Telemetry.Models.ParticipantsPacket;
 using F1Telemetry.Models.SessionHistoryPacket;
 using F1TelemetryApp.Classes;
@@ -6,10 +7,15 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
+using System.Xml.Serialization;
+using static F1Telemetry.Helpers.Appendences;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 
 namespace F1TelemetryApp.UserControls.Session
 {
@@ -55,10 +61,9 @@ namespace F1TelemetryApp.UserControls.Session
         {
             if (u.Connention != null)
             {
-                u.Connention.SessionHistoryPacket += Connention_SessionHistoryPacket;
+                //u.Connention.SessionHistoryPacket += Connention_SessionHistoryPacket;
                 u.Connention.ParticipantsPacket += Connention_ParticipantsPacket;
-                //u.Connention.LapDataPacket += Connention_LapDataPacket;
-                //u.Connention.RawDataRecieved += Connention_RawDataRecieved;
+                u.Connention.SessionHistoryPacket2 += Connention_SessionHistoryPacket2;
             }
         }
 
@@ -66,48 +71,11 @@ namespace F1TelemetryApp.UserControls.Session
         {
             if (u.Connention != null)
             {
-                u.Connention.SessionHistoryPacket -= Connention_SessionHistoryPacket;
+                //u.Connention.SessionHistoryPacket -= Connention_SessionHistoryPacket;
                 u.Connention.ParticipantsPacket -= Connention_ParticipantsPacket;
-                //u.Connention.LapDataPacket -= Connention_LapDataPacket;
-                //u.Connention.RawDataRecieved -= Connention_RawDataRecieved;
+                u.Connention.SessionHistoryPacket2 -= Connention_SessionHistoryPacket2;
             }
         }
-
-        //private void Connention_RawDataRecieved(byte[] rawData, EventArgs e)
-        //{
-        //    if (!this.isWorking_LapdataEvent)
-        //    {
-        //        this.isWorking_LapdataEvent = true;
-        //        this.Dispatcher.Invoke(() =>
-        //        {
-        //            if (DateTime.Now - this.lastClean > this.delta)
-        //            {
-        //                this.listBox_drivers.Items.Refresh();
-        //                this.lastClean = DateTime.Now;
-        //            }
-
-        //            this.isWorking_LapdataEvent = false;
-        //        }, DispatcherPriority.Render);
-        //    }
-        //}
-
-        //private void Connention_LapDataPacket(PacketLapData packet, EventArgs e)
-        //{
-        //    if (!this.isWorking_LapdataEvent)
-        //    {
-        //        this.isWorking_LapdataEvent = true;
-        //        this.Dispatcher.Invoke(() =>
-        //        {
-        //            if (DateTime.Now - this.lastClean > TimeSpan.FromSeconds(0.1))
-        //            {
-        //                this.listBox_drivers.Items.Refresh();
-        //                this.lastClean = DateTime.Now;
-        //            }
-
-        //            this.isWorking_LapdataEvent = false;
-        //        }, DispatcherPriority.Render);
-        //    }
-        //}
 
         private void Connention_ParticipantsPacket(PacketParticipantsData packet, EventArgs e)
         {
@@ -168,6 +136,88 @@ namespace F1TelemetryApp.UserControls.Session
                 this.isWorking_sessionHistory = false;
                 //}, DispatcherPriority.Render);
             }
+        }
+
+        private void Connention_SessionHistoryPacket2(SessionHistory2 packet, EventArgs e)
+        {
+            if (u.CanDoUdp && !this.isWorking_sessionHistory)
+            {
+                this.isWorking_sessionHistory = true;
+                this.UpdateSessionHistory2(packet);
+                this.isWorking_sessionHistory = false;
+            }
+        }
+
+        private void UpdateSessionHistory2(SessionHistory2 packet)
+        {
+            
+            var ses = u.Connention?.LastSessionDataPacket?.SessionType ?? SessionTypes.Unknown;
+
+            foreach (var cur in packet.DriversHistory)
+            {
+                var p = this.participantsList.Where(x => x.ArrayIndex == cur.CarIndex).FirstOrDefault();
+                if (p != null)
+                {
+                    if (p.CarPosition == 1)
+                    {
+                        p.IntervalTime = "interval";
+                        p.LeaderIntervalTime = "leader";
+                        p.TextColor = Brushes.White;
+                    }
+                    else if (!p.IsOut)
+                    {
+                        p.IntervalTime = "";
+                        p.LeaderIntervalTime = "";
+
+                        var prev = this.participantsList.Where(x => x.CarPosition == p.CarPosition - 1).FirstOrDefault();
+                        if (prev != null)
+                        {
+                            var delta = packet.CalculateInterval(cur.CarIndex, prev.ArrayIndex, ses);
+                            this.SetIntervalByDelta(delta, p);
+                        }
+
+                        var f = this.participantsList.Where(x => x.CarPosition == 1).FirstOrDefault();
+                        if (f != null)
+                        {
+                            var delta = packet.CalculateInterval(cur.CarIndex, f.ArrayIndex, ses);
+                            p.LeaderIntervalTime = this.FormatIntervalText(delta).ToString();
+                        }
+                    }
+                    else
+                    {
+                        p.IntervalTime = "";
+                        p.setStateText();
+
+                        var white = Brushes.White;
+                        if (white.CanFreeze) white.Freeze();
+                        p.TextColor = white;
+                    }
+                }
+            }
+        }
+
+        private StringBuilder FormatIntervalText(TimeSpan delta)
+        {
+            var sb = new StringBuilder();
+
+            if (delta > TimeSpan.Zero) sb.Append('+');
+            else sb.Append('-');
+            sb.Append(delta.ToString(@"s\.fff"));
+
+            return sb;
+        }
+
+        private void SetIntervalByDelta(TimeSpan delta, PlayerListItemData pilot)
+        {
+            var fontColor = Brushes.White;
+
+            if (Math.Abs(delta.TotalSeconds) <= 1) fontColor = Brushes.Orange;
+            else if (Math.Abs(delta.TotalSeconds) <= 2) fontColor = Brushes.Yellow;
+
+            if (fontColor.CanFreeze) fontColor.Freeze();
+            pilot.TextColor = fontColor;
+
+            pilot.IntervalTime = this.FormatIntervalText(delta).ToString();
         }
 
         private void UpdateSessionHistory(PacketSessionHistoryData curHistory)

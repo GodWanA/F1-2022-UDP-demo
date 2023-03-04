@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "F1Telemetry": {
+      "commandName": "Project"
+    },
+    "Profile 1": {
+      "commandName": "Project"
+    }
+  }
+}

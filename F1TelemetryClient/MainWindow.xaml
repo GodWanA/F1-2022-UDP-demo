@@ -111,7 +111,7 @@
             </Grid.RowDefinitions>
             <Grid Margin="5,5,2.5,5" HorizontalAlignment="Left" Width="265" Grid.RowSpan="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="265" MaxHeight="265" MinHeight="10"/>
+                    <RowDefinition Height="285" MaxHeight="285" MinHeight="10"/>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>

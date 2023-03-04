@@ -8,38 +8,25 @@ namespace F1Telemetry.CustomModels.SessionHistoryPacket2
 {
     public class LapHistoryData2 : ProtoModel
     {
-        public DataTable LapDatas { get; private set; }
-        public TimeSpan BestLapTime { get; private set; }
-        public TimeSpan BestSector1 { get; private set; }
-        public TimeSpan BestSector2 { get; private set; }
-        public TimeSpan BestSector3 { get; private set; }
+        public DataTable LapDatas { get; protected set; }
+        public TimeSpan BestLapTime { get; protected set; }
+        public TimeSpan BestSector1 { get; protected set; }
+        public TimeSpan BestSector2 { get; protected set; }
+        public TimeSpan BestSector3 { get; protected set; }
 
-        public LapHistoryData2()
+        public byte CarIndex { get; protected set; }
+
+        public LapHistoryData2(byte carIndex)
         {
+            this.CarIndex = carIndex;
             this.LapDatas = new DataTable();
 
             this.LapDatas.Columns.Add("LapNumber", typeof(int));
-            this.LapDatas.Columns.Add("0%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("5%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("10%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("15%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("20%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("25%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("30%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("35%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("40%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("45%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("50%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("55%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("60%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("65%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("70%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("75%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("80%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("85%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("90%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("95%", typeof(TimeSpan));
-            this.LapDatas.Columns.Add("100%", typeof(TimeSpan));
+
+            for (int i = 0; i <= 100; i++)
+            {
+                this.LapDatas.Columns.Add($"{i}%", typeof(TimeSpan));
+            }
 
             this.LapDatas.Columns.Add("Sector1", typeof(TimeSpan));
             this.LapDatas.Columns.Add("Sector2", typeof(TimeSpan));
@@ -64,6 +51,7 @@ namespace F1Telemetry.CustomModels.SessionHistoryPacket2
         internal void UpdateLapNumber(int lapNumber)
         {
             var row = this.LapDatas.AsEnumerable().Where(x => x["LapNumber"] != DBNull.Value && (int)x["LapNumber"] == lapNumber).FirstOrDefault();
+
             if (row == null)
             {
                 row = this.GetLastLapDatasRow();
@@ -91,14 +79,11 @@ namespace F1Telemetry.CustomModels.SessionHistoryPacket2
 
         internal void UpdateLaptime(float percent, TimeSpan laptime)
         {
-            int p = (int)MathF.Floor(percent);
-
-            if (p > 0 && p % 5 == 0)
+            var p = (int)MathF.Round(percent);
+            if (p >= 0)
             {
-                string col = p + "%";
                 var row = this.GetLastLapDatasRow();
-                //if (row[col] == DBNull.Value) row[col] = laptime;
-                row[col] = laptime;
+                if (row != null) row[$"{p}%"] = laptime;
             }
         }
 
@@ -137,7 +122,7 @@ namespace F1Telemetry.CustomModels.SessionHistoryPacket2
             }
         }
 
-        internal void UpdateLastLapTime(TimeSpan lastLapTime, byte currentLapNum)
+        internal void UpdateLastLapTime(TimeSpan lastLapTime, byte currentLapNum, bool isValidLap)
         {
             if (lastLapTime > TimeSpan.Zero)
             {
@@ -147,10 +132,68 @@ namespace F1Telemetry.CustomModels.SessionHistoryPacket2
                 if (row != null)
                 {
                     row["100%"] = lastLapTime;
-                    var bestLap = this.LapDatas.AsEnumerable().Where(x => x["100%"] != DBNull.Value).Min(x => (TimeSpan)x["100%"]);
-                    if (bestLap > TimeSpan.Zero && this.BestLapTime != bestLap) this.BestLapTime = bestLap;
+
+                    if (isValidLap)
+                    {
+                        var bestLap = this.LapDatas.AsEnumerable().Where(x => x["100%"] != DBNull.Value).Min(x => (TimeSpan)x["100%"]);
+                        if (bestLap > TimeSpan.Zero && this.BestLapTime != bestLap) this.BestLapTime = bestLap;
+                    }
                 }
             }
+        }
+
+        internal int GetLapNumber()
+        {
+            var lastLap = this.GetLastLapDatasRow();
+
+            if (lastLap != null && lastLap["LapNumber"] != DBNull.Value) return (int)lastLap["LapNumber"];
+            else return -1;
+        }
+
+        internal int GetLapPercent(int lapNumber)
+        {
+            if(lapNumber < 1) return -1;
+
+            var r = this.LapDatas.AsEnumerable().Where(r => r["LapNumber"]!= DBNull.Value && (int)r["LapNumber"] == lapNumber).FirstOrDefault();
+            var p = 0;
+
+            if (r != null)
+            {
+                for (int i = 0; i <= 100; i++)
+                {
+                    var c = r[$"{i}%"];
+
+                    if (c != DBNull.Value) p = i;
+                    else break;
+                }
+            }
+
+            return p;
+        }
+
+        internal TimeSpan GetRaceTime(int lapnum, int percent)
+        {
+            if (lapnum <= 0 && percent<=0) return TimeSpan.Zero;
+
+            var enumerable = this.LapDatas.AsEnumerable();
+            var fullLaps = enumerable.Where(r => r["LapNumber"] != DBNull.Value && (int)r["LapNumber"] <= lapnum);
+
+            var sum = fullLaps.Sum(x => {
+                if (x["100%"] != DBNull.Value) return ((TimeSpan)x["100%"]).TotalMilliseconds;
+                else return 0;
+                    });
+
+            var c= enumerable.
+                Where(r => r["LapNumber"] != DBNull.Value && (int)r["LapNumber"] == lapnum)
+                .Select(r => {
+                    var c =r[$"{percent}%"];
+                    if (c != DBNull.Value) return (TimeSpan)c;
+                    else return TimeSpan.Zero;
+                })
+                .FirstOrDefault();
+            
+            sum += c.TotalMilliseconds;
+            return TimeSpan.FromMilliseconds(sum);
         }
     }
 }

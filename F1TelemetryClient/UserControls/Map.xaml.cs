@@ -13,15 +13,15 @@ using F1Telemetry.Models.ParticipantsPacket;
 using F1Telemetry.Models.MotionPacket;
 using F1Telemetry.Models.CarStatusPacket;
 using F1Telemetry.Models.LapDataPacket;
-using F1Telemetry.Models;
 using F1Telemetry.Helpers;
+using System.ComponentModel;
 
 namespace F1TelemetryApp.UserControls
 {
     /// <summary>
     /// Interaction logic for Map.xaml
     /// </summary>
-    public partial class Map : UserControl, IConnectUDP, IDisposable
+    public partial class Map : UserControl, IConnectUDP, IDisposable, INotifyPropertyChanged
     {
         internal Tracks TrackID { get; set; } = Tracks.Unknown;
         internal TrackLayout RawTrack { get; private set; }
@@ -40,9 +40,44 @@ namespace F1TelemetryApp.UserControls
         private bool isStatusRunning;
         private bool isLapdataRunning;
 
+        private string _trackName;
+
+        public string TrackName
+        {
+            get { return _trackName; }
+            set
+            {
+                if (value != _trackName)
+                {
+                    this._trackName = value;
+                    this.OnPropertyChanged("TrackName");
+                }
+            }
+        }
+
+
+        private string _seasonYear;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public string SeasonYear
+        {
+            get { return _seasonYear; }
+            set
+            {
+                if (value != _seasonYear)
+                {
+                    this._seasonYear = value;
+                    this.OnPropertyChanged("SeasonYear");
+                }
+            }
+        }
+
+
         public Map()
         {
             InitializeComponent();
+            this.DataContext = this;
         }
 
         public void SubscribeUDPEvents()
@@ -285,6 +320,9 @@ namespace F1TelemetryApp.UserControls
 
                     this.Dispatcher.Invoke(() =>
                     {
+                        this.TrackName = RawTrack.TrackName;
+                        this.SeasonYear = RawTrack.Year.ToString();
+
                         this.DrawPath(this.path_baseline, RawTrack.BaseLine);
 
                         this.DrawPath(this.path_s1, RawTrack.SectorZones[0]);
@@ -337,8 +375,8 @@ namespace F1TelemetryApp.UserControls
 
         private void CalcMaxPoints()
         {
-            this.maxWidth = this.ActualWidth - 30;
-            this.maxHight = this.ActualHeight - 30;
+            this.maxWidth = this.grid_content.ActualWidth - 30;
+            this.maxHight = this.grid_content.ActualHeight - 30;
         }
 
         private static Border CreateEllipse(Brush fill, Brush stroke, int raceNumber)
@@ -495,7 +533,7 @@ namespace F1TelemetryApp.UserControls
         {
             if (this.IsLoaded)
             {
-                if (this.ActualHeight < 60)
+                if (this.grid_content.ActualHeight < 60)
                 {
                     if (this.IsEnabled)
                     {
@@ -528,5 +566,11 @@ namespace F1TelemetryApp.UserControls
                 }
             }
         }
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
     }
 }

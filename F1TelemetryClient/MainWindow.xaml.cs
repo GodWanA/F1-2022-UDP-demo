@@ -142,7 +142,7 @@ namespace F1TelemetryClient
             this.Dispatcher.Invoke(() =>
             {
                 var res = MessageBox.Show(
-                    ex.Message,
+                    ex.Message + "\r\n" + ex.Source + "\r\n" + ex.StackTrace,
                     "Error!",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error

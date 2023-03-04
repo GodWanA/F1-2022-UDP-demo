@@ -1,4 +1,5 @@
 ﻿using F1Telemetry.Models.CarStatusPacket;
+using F1Telemetry.Models.CarTelemetryPacket;
 using F1Telemetry.Models.LapDataPacket;
 using F1Telemetry.Models.ParticipantsPacket;
 using F1TelemetryApp.Classes;
@@ -20,8 +21,9 @@ namespace F1TelemetryApp.UserControls
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private string driverName;
         public static bool PosChange { get; set; }
+
+        private string driverName;
 
         public string DriverName
         {
@@ -33,6 +35,22 @@ namespace F1TelemetryApp.UserControls
                     driverName = value;
                     //this.textblock_driver.Text = this.driverName;
                     this.OnPropertyChanged("DriverName");
+                }
+            }
+        }
+
+        private string driverCode;
+
+        public string DriverCode
+        {
+            get { return driverCode; }
+            set
+            {
+                if (value != driverCode)
+                {
+                    driverCode = value;
+                    //this.textblock_driver.Text = this.driverName;
+                    this.OnPropertyChanged("DriverCode");
                 }
             }
         }
@@ -65,6 +83,22 @@ namespace F1TelemetryApp.UserControls
                     leaderIntervalTime = value;
                     //this.textblock_leaderInterval.Text = this.leaderIntervalTime;
                     this.OnPropertyChanged("LeaderIntervalTime");
+                }
+            }
+        }
+
+        private double tyreWearAvarege;
+
+        public double TyreWearAvarege
+        {
+            get { return tyreWearAvarege; }
+            set
+            {
+                if (value != tyreWearAvarege)
+                {
+                    tyreWearAvarege = value;
+                    //this.textblock_leaderInterval.Text = this.leaderIntervalTime;
+                    this.OnPropertyChanged("TyreWearAvarege");
                 }
             }
         }
@@ -396,6 +430,8 @@ namespace F1TelemetryApp.UserControls
         private bool isLapdata;
         private bool isParticipants;
         private bool isStatus;
+        private bool isTelemetry;
+        private bool isCarDemage;
 
         public ResultSatuses ResultStatus
         {
@@ -572,6 +608,7 @@ namespace F1TelemetryApp.UserControls
                 {
                     var current = packet.Participants[this.ArrayIndex];
                     this.DriverName = current.ParticipantName;
+                    this.DriverCode = current.ShortName;
                     this.Nationality = current.Nationality;
                     this.TeamID = current.TeamID;
                     this.IsMyTeam = current.IsMyTeam;
@@ -643,6 +680,7 @@ namespace F1TelemetryApp.UserControls
             u.Connention.LapDataPacket += Connention_LapDataPacket;
             u.Connention.ParticipantsPacket += Connention_ParticipantsPacket;
             u.Connention.CarStatusPacket += Connention_CarStatusPacket;
+            u.Connention.CarDemagePacket += Connention_CarDemagePacket;
         }
 
         public void UnsubscribeUDPEvents()
@@ -650,16 +688,31 @@ namespace F1TelemetryApp.UserControls
             u.Connention.LapDataPacket -= Connention_LapDataPacket;
             u.Connention.ParticipantsPacket -= Connention_ParticipantsPacket;
             u.Connention.CarStatusPacket -= Connention_CarStatusPacket;
+            u.Connention.CarDemagePacket -= Connention_CarDemagePacket;
+        }
+
+        private void Connention_CarDemagePacket(F1Telemetry.Models.CarDamagePacket.PacketCarDamageData packet, EventArgs e)
+        {
+            if (packet != null && !this.isCarDemage)
+            {
+                this.isCarDemage = true;
+
+                var driverTyreWear = packet.CarDamageData[this.arrayIndex].TyreWear;
+                var sum = 0.0;
+
+                foreach (var item in driverTyreWear) sum += 100 - item.Value;
+                this.TyreWearAvarege = sum / 4.0;
+                this.isCarDemage = false;
+            }
         }
 
         private void UserControl_ToolTipOpening(object sender, ToolTipEventArgs e)
         {
             var sb = new StringBuilder();
 
-            var par = u.Connention?.CurrentParticipantsPacket?.Participants[this.ArrayIndex];
             var lap = u.Connention?.CurrentLapDataPacket?.Lapdata[this.arrayIndex];
 
-            sb.AppendLine("Driver name: " + this.DriverName + " | " + par?.ShortName);
+            sb.AppendLine("Driver name: " + this.DriverName + " | " + this.DriverCode);
             sb.AppendLine("Racenumber: " + this.RaceNumber);
             sb.AppendLine("Nationality: " + this.Nationality);
             sb.AppendLine("Team: " + this.TeamID);

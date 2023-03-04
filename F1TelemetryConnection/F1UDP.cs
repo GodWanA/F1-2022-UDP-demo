@@ -146,8 +146,9 @@ namespace F1Telemetry
         /// </summary>
         public DateTime LastTime_CarStatus { get; private set; }
 
-        public SessionHistory2 CurrentSessionHistory2Data { get; private set; } = new SessionHistory2();
+        public SessionHistory2 CurrentSessionHistory2Packet { get; private set; } = new SessionHistory2();
         public PacketCarDamageData LastCarDemagePacket { get; private set; }
+        public DateTime lastTime_SessionHistoryPacket2 { get; private set; }
 
         // udp events:
 
@@ -197,6 +198,7 @@ namespace F1Telemetry
 
         public delegate void Warning2EventHandler(Warning2 packet, EventArgs e);
         public delegate void DriverOnPits2Handler(DriverOnPits2 packet, EventArgs e);
+        public delegate void SessionHistory2Handler(SessionHistory2 packet, EventArgs e);
 
         /// <summary>
         /// Raw recieved byte array.
@@ -252,6 +254,11 @@ namespace F1Telemetry
         /// Occours on lap data packet read. Sender is a PacketSessionHistoryData object.
         /// </summary>
         public event SessionHistoryHandler SessionHistoryPacket;
+
+        /// <summary>
+        /// Occours on lap data packet read. Sender is a SessionHistory2 object.
+        /// </summary>
+        public event SessionHistory2Handler SessionHistoryPacket2;
 
         /// <summary>
         /// Occours on lap data packet read. Sender is a PacketFinalClassificationData object.
@@ -942,7 +949,11 @@ namespace F1Telemetry
 
         protected virtual void OnLapDataPacket(PacketLapData sender)
         {
-            //if (sender.Header.PacketFormat < 2021 && this.CurrentSessionDataPacket != null && this.CurrentLapDataPacket != null)
+            //if (
+            //    sender.Header.PacketFormat < 2021 &&
+            //    this.CurrentSessionDataPacket != null &&
+            //    this.CurrentLapDataPacket != null
+            //)
             //{
             //    for (int i = 0; i < sender.Lapdata.Length; i++)
             //    {
@@ -971,8 +982,32 @@ namespace F1Telemetry
             for (int i = 0; i < sender.Lapdata.Length; i++)
             {
                 var current = sender.Lapdata[i];
-                if (this.CurrentSessionDataPacket != null) current.SetLapPercentage(this.CurrentSessionDataPacket.TrackLength);
-                this.CurrentSessionHistory2Data.UpdateDriverHistory(ref current, i);
+                var last = this.CurrentLapDataPacket?.Lapdata[i];
+
+                if (last != null)
+                {
+                    current.SetLastPitLap(last.GetLastPitLap());
+
+                    if (sender.Header.PacketFormat < 2020 && current.Warnings != last.Warnings)
+                    {
+                        this.OnEventWarning2(new Warning2(i, current.Warnings, current.CurrentLapNum, InfringementTypes.CornerCuttingGainedTime));
+                    }
+
+                    if (
+                           this.CurrentSessionDataPacket != null &&
+                           ((this.CurrentSessionDataPacket.SessionType == SessionTypes.Race || this.CurrentSessionDataPacket.SessionType == SessionTypes.Race2 || this.CurrentSessionDataPacket.SessionType == SessionTypes.Race3)
+                           && (current.PitStatus == PitStatuses.InPitArea || current.PitStatus == PitStatuses.Pitting)
+                           && (last.PitStatus == PitStatuses.None || last.PitStatus == PitStatuses.Unknown))
+                       )
+                    {
+                        this.OnEventDriverOnPits2(new DriverOnPits2(i, current.CurrentLapNum));
+                    }
+
+                    if (this.CurrentSessionDataPacket != null) current.SetLapPercentage(this.CurrentSessionDataPacket.TrackLength);
+
+                    this.CurrentSessionHistory2Packet.UpdateDriverHistory(ref current, i);
+                    //if (this.SessionHistoryPacket2 != null) this.SessionHistoryPacket2(this.CurrentSessionHistory2Data, new EventArgs());
+                }
             }
 
             this.LastLapDataPacket = this.CurrentLapDataPacket;
@@ -1062,6 +1097,15 @@ namespace F1Telemetry
         {
             this.CurrentSessionHistoryPacket[sender.CarIndex] = sender;
             if (this.SessionHistoryPacket != null) this.SessionHistoryPacket(sender, new EventArgs());
+
+            var now = DateTime.Now;
+            var delta = now - this.lastTime_SessionHistoryPacket2;
+
+            if (this.SessionHistoryPacket2 != null && delta.TotalSeconds >= 0.1)
+            {
+                this.SessionHistoryPacket2(this.CurrentSessionHistory2Packet, new EventArgs());
+                this.lastTime_SessionHistoryPacket2 = now;
+            }
         }
 
         protected virtual void OnCarDemagePacket(PacketCarDamageData sender)
@@ -1164,6 +1208,7 @@ namespace F1Telemetry
             {
                 this.EventPacketSessionEnded(data, new EventArgs());
                 SpeedTrap.ResetHelpers();
+                //this.CurrentSessionHistory2Packet.Reset();
             }
         }
 
@@ -1174,6 +1219,8 @@ namespace F1Telemetry
                 SpeedTrap.ResetHelpers();
                 this.EventPacketSessionStart(data, new EventArgs());
             }
+
+            this.CurrentSessionHistory2Packet.Reset();
         }
 
         protected virtual void OnEventWarning2(Warning2 sender)

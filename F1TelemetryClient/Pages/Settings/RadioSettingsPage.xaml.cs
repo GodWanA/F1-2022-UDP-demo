@@ -1,19 +1,8 @@
 ﻿using F1TelemetryApp.Classes;
 using F1TelemetryApp.Windows;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace F1TelemetryApp.Pages.Settings
 {
@@ -39,7 +28,7 @@ namespace F1TelemetryApp.Pages.Settings
 
         private void button_messageTest_Click(object sender, RoutedEventArgs e)
         {
-            RadioMessageWindow.CurrentRadioMessageWindow.AppendMessage("Test message", Colors.Magenta);
+            RadioMessageWindow.CurrentRadioMessageWindow.AppendMessage("Test message", new SolidColorBrush(Colors.Magenta));
         }
     }
 }

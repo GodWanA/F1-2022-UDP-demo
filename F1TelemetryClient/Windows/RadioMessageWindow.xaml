@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:F1TelemetryApp.Windows"
         mc:Ignorable="d"
-        Title="Radio report" Height="450" Width="200" Topmost="True" AllowsTransparency="True" WindowStyle="None" Background="{x:Null}" Loaded="Window_Loaded" Unloaded="Window_Unloaded" Closing="Window_Closing">
+        Title="Radio report" Height="450" Width="200" Topmost="True" AllowsTransparency="True" WindowStyle="None" Background="{x:Null}" Loaded="Window_Loaded" Unloaded="Window_Unloaded" Closing="Window_Closing" Opacity="0">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="TextElement.FontFamily" Value="{StaticResource Formula1 Display}"/>

@@ -298,6 +298,7 @@ namespace F1TelemetryApp.Classes
                 {
                     case SessionTypes.Race:
                     case SessionTypes.Race2:
+                    case SessionTypes.Race3:
                         int lap = nextHistory.NumberOfLaps;
                         int sector = 0;
 

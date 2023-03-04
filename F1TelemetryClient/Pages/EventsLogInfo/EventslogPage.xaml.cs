@@ -229,7 +229,8 @@ namespace F1TelemetryApp.Pages.EventsLogInfo
         {
             var array = u.Connention?.CurrentParticipantsPacket?.Participants;
 
-            if (index < 0 || index > array.Length) return null;
+            if (array == null) return null;
+            else if (index < 0 || index > array.Length) return null;
             else return array[index];
         }
 
@@ -279,14 +280,17 @@ namespace F1TelemetryApp.Pages.EventsLogInfo
         private void Connention_EventPacketWarning2(Warning2 packet, EventArgs e)
         {
             var driver = EventslogPage.GetDriver(packet.VehicleIndex);
-            var sb = new StringBuilder();
+            if (driver != null)
+            {
+                var sb = new StringBuilder();
 
-            sb.Append("Driver \"");
-            sb.Append(driver.ParticipantName + " (" + driver.RaceNumber + ") ");
-            sb.Append("\" recieved a warning. ");
-            sb.Append("Total number of driver's warnings: " + packet.TotalWarnings);
+                sb.Append("Driver \"");
+                sb.Append(driver.ParticipantName + " (" + driver.RaceNumber + ") ");
+                sb.Append("\" recieved a warning. ");
+                sb.Append("Total number of driver's warnings: " + packet.TotalWarnings);
 
-            this.AddRow(packet.EventName, packet.EventType, sb.ToString());
+                this.AddRow(packet.EventName, packet.EventType, sb.ToString());
+            }
         }
 
         private void Connention_EventPacketTeamMateInPits(F1Telemetry.Models.EventPacket.TeamMateInPits packet, EventArgs e)

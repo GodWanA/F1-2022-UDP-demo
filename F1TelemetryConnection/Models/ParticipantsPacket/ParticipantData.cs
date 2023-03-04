@@ -1,5 +1,7 @@
 ﻿using F1Telemetry.Helpers;
 using System;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using static F1Telemetry.Helpers.Appendences;
 
@@ -147,7 +149,7 @@ namespace F1Telemetry.Models.ParticipantsPacket
             //char m_name[48];               // Name of participant in UTF-8 format – null terminated
             //                               // Will be truncated with … (U+2026) if too long
             this.Index += ByteReader.toStringFromUint8(array, this.Index, 48, out s);
-            this.ParticipantName = s;
+            this.ParticipantName = this.GenerateName(s);
             this.CreateShortName(this.DriverID);
         }
 
@@ -195,7 +197,7 @@ namespace F1Telemetry.Models.ParticipantsPacket
             //char m_name[48];               // Name of participant in UTF-8 format – null terminated
             //                               // Will be truncated with … (U+2026) if too long
             this.Index += ByteReader.toStringFromUint8(array, this.Index, 48, out s);
-            this.ParticipantName = s;
+            this.ParticipantName = this.GenerateName(s);
             //uint8 m_yourTelemetry;          // The player's UDP setting, 0 = restricted, 1 = public
             this.Index += ByteReader.ToUInt8(array, this.Index, out uint8);
             this.YouTelemetry = (TelemetrySettings)uint8;
@@ -233,23 +235,57 @@ namespace F1Telemetry.Models.ParticipantsPacket
             switch (driver)
             {
                 default:
-                    var elements = Regex.Split(driver.ToString(), "(?=[A-Z])", RegexOptions.IgnorePatternWhitespace);
-
-                    if (
-                        elements != null
-                        && elements.Length > 0
-                        && elements[elements.Length - 1].Length >= 3
-                    )
-                    {
-                        this.ShortName = elements[elements.Length - 1].Substring(0, 3).ToUpper();
-                    }
-
+                    this.ShortName = this.GenerateShortName(driver.ToString());
+                    //this.ShortName = ParticipantData.GenerateShortName(this.ParticipantName.ToString());
                     break;
                 case Drivers.MickSchumacher:
                 case Drivers.MichaelSchumacher:
                     this.ShortName = "MSC";
                     break;
+                case Drivers.NyckDeVries:
+                    this.ShortName = "DEV";
+                    break;
+                case Drivers.Unknown:
+                    this.ShortName = this.GenerateShortName(this.ParticipantName.ToString());
+                    break;
             }
+        }
+
+        private string GenerateShortName(string name)
+        {
+            name = Regex.Replace(name, @"[0-9A-Za-z ,.!$&()-=@{}[]-]", "");
+            var elements = Regex.Split(name, "(?=[A-Z])", RegexOptions.IgnorePatternWhitespace).Where(x => x != "").ToArray();
+            var ret = "";
+
+            if (Regex.IsMatch(name, "^player#\\d+ \\([A-Z\\-]+\\)", RegexOptions.IgnoreCase))
+            {
+                ret = "#" + this.RaceNumber + " (" + this.Nationality.CountryCode() + ")";
+            }
+            else if (elements?.Length > 1)
+            {
+                var sb = new StringBuilder();
+
+                for (int i = 1; i < elements.Length; i++)
+                {
+                    sb.Append(elements[i]);
+                }
+
+                if (sb.Length > 3) ret = sb.ToString().Substring(0, 3).ToUpper();
+                else ret = sb.ToString().ToUpper();
+            }
+            else
+            {
+                if (name.Length > 3) ret = name?.Substring(0, 3)?.ToUpper();
+                else ret = name?.ToUpper();
+            }
+
+            return ret;
+        }
+
+        private string GenerateName(string name)
+        {
+            if (this.DriverID == Drivers.Unknown && Regex.IsMatch(name,"player",RegexOptions.IgnoreCase)) return name + "#" + this.RaceNumber.ToString().PadLeft(2,'0') + " (" + this.Nationality.CountryCode() + ")";
+            else return name;
         }
 
         protected override void Reader2022(byte[] array)

@@ -83,6 +83,11 @@ namespace F1Telemetry.Models.LobbyInfoPacket
             this.ReadyStatus = (ReadyStatuses)uint8;
         }
 
+        protected override void Reader2022(byte[] array)
+        {
+            this.Reader2021(array);
+        }
+
         private void ReaderCommon(byte[] array)
         {
             byte uint8;

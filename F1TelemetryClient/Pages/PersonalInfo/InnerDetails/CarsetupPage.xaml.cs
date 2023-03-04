@@ -367,6 +367,7 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
             }
         }
 
+        protected int lastVersion;
 
         public CarsetupPage()
         {
@@ -404,6 +405,26 @@ namespace F1TelemetryApp.Pages.PersonalInfo.InnerDetails
         {
             if (packet != null)
             {
+                if (packet.Header.PacketVersion != this.lastVersion)
+                {
+                    var format = packet.Header.PacketFormat;
+                    
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        switch (format)
+                        {
+                            case 2022:
+                                this.slider_frontWing.Maximum = 50;
+                                this.slider_rearWing.Maximum = 50;
+                                break;
+                            default:
+                                this.slider_frontWing.Maximum = 11;
+                                this.slider_rearWing.Maximum = 11;
+                                break;
+                        }
+                    });
+                }
+
                 if (u.SelectedIndex > -1 && u.SelectedIndex < packet.CarSetups.Length)
                 {
                     if (u.SelectedPlayer != null)

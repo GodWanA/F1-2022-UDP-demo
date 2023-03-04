@@ -1,4 +1,5 @@
 ﻿using F1TelemetryApp.Classes;
+using F1TelemetryApp.Windows;
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -18,6 +19,10 @@ namespace F1TelemetryApp.UserControls.RadioMessages
         private bool disposedValue;
         private string _messageText;
         private SolidColorBrush _teamColor;
+
+        public delegate void DeathHandler(object sender, EventArgs e);
+        public DeathHandler OnDeathHandler;
+
         public bool IsAlive { get; set; } = true;
         public string MessageText
         {
@@ -56,17 +61,16 @@ namespace F1TelemetryApp.UserControls.RadioMessages
             this.SetMessageType(MessageType.Engineer);
         }
 
-        public RadioMessageCard(string message, Color teamColor, MessageType type, int lifeTimeInSec)
+        public RadioMessageCard(string message, Brush teamColor, MessageType type, int lifeTimeInSec)
         {
             this.InitializeComponent();
             this.DataContext = this;
 
             this.SetMessageType(type);
 
-            var brush = new SolidColorBrush(teamColor);
-            if (brush.CanFreeze) brush.Freeze();
+            if (teamColor.CanFreeze) teamColor.Freeze();
 
-            this.TeamColor = brush;
+            this.TeamColor = teamColor as SolidColorBrush;
             this.MessageText = "\"" + message + "\"";
             this.StartDeathTimer(lifeTimeInSec);
         }
@@ -83,6 +87,7 @@ namespace F1TelemetryApp.UserControls.RadioMessages
         private void DeathTimer_Tick(object sender, EventArgs e)
         {
             this.deathTimer.Stop();
+            this.OnDeathHandler?.Invoke(this, new EventArgs());
             this.Dispose();
         }
 
@@ -109,6 +114,8 @@ namespace F1TelemetryApp.UserControls.RadioMessages
                 this._messageText = null;
                 this.PropertyChanged = null;
                 disposedValue = true;
+
+                RadioMessageWindow.MessageRemove?.Invoke(RadioMessageWindow.CurrentRadioMessageWindow, new EventArgs());
             }
         }
 

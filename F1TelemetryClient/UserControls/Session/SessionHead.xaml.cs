@@ -177,6 +177,21 @@ namespace F1TelemetryApp.UserControls.Session
             }
         }
 
+        private string _seasonYear;
+
+        public string SeasonYear
+        {
+            get { return _seasonYear; }
+            set
+            {
+                if (value != this._nonLapInfo)
+                {
+                    this._seasonYear = value;
+                    this.OnPropertyChanged("SeasonYear");
+                }
+            }
+        }
+
 
         public SessionHead()
         {
@@ -257,6 +272,7 @@ namespace F1TelemetryApp.UserControls.Session
                 //{
                 this.TotalLaps = packet.TotalLaps;
                 this.SessionTimeLeft = packet.SessionTimeLeft;
+
                 //});
 
                 if (!this.isRaceOver)
@@ -315,7 +331,7 @@ namespace F1TelemetryApp.UserControls.Session
 
                     if (this.track == null || this.track.TrackName != s || this.track.Year != packet.Header.PacketFormat) this.track = TrackLayout.FindNearestMap(s, packet.Header.PacketFormat);
 
-                    if (this.track != null)
+                    if (this.track != null && packet.NumberOfMarshalZones == this.track.MarshalZones.Count)
                     {
                         for (int i = 0; i < packet.NumberOfMarshalZones; i++)
                         {
